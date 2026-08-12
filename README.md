@@ -1,18 +1,3 @@
-<!-- BANNER (image pending): generate dark + light banner PNGs (e.g. with Codex),
-     save as assets/midas-banner-light.png and assets/midas-banner-dark.png,
-     then DELETE this opening <!-- line and the closing --> after </p> to activate.
-
-<p align="center">
-  <a href="https://github.com/b9b4ymiN/midas">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/midas-banner-dark.png">
-      <source media="(prefers-color-scheme: light)" srcset="assets/midas-banner-light.png">
-      <img alt="midas" src="assets/midas-banner-light.png" width="560">
-    </picture>
-  </a>
-</p>
--->
-
 # midas
 
 [![skills.sh](https://skills.sh/b/b9b4ymiN/midas)](https://skills.sh/b9b4ymiN/midas)
