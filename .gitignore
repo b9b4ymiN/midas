@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Scratch / working dirs (per-skill workspaces, eval runs)
+.scratch/
+*-workspace/
+.eval/
+evals/
+
+# Local install lock (machine-specific, not source of truth)
+skills-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Editors
+.vscode/
+.idea/
+*.swp
