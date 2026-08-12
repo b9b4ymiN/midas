@@ -1,3 +1,13 @@
+<p align="center">
+  <a href="https://github.com/b9b4ymiN/midas">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="assets/midas-banner-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="assets/midas-banner-light.svg">
+      <img alt="midas" src="assets/midas-banner-light.svg" width="560">
+    </picture>
+  </a>
+</p>
+
 # midas
 
 [![skills.sh](https://skills.sh/b/b9b4ymiN/midas)](https://skills.sh/b9b4ymiN/midas)
