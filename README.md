@@ -1,10 +1,6 @@
 <p align="center">
   <a href="https://github.com/b9b4ymiN/midas">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="assets/midas-banner-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="assets/midas-banner-light.svg">
-      <img alt="midas" src="assets/midas-banner-light.svg" width="560">
-    </picture>
+    <img alt="A stern panda investment master snapping a gold-gloved hand in a vintage comic poster" src="assets/midas-panda-banner.png" width="560">
   </a>
 </p>
 

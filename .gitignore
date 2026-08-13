@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+docs/
 
 # Scratch / working dirs (per-skill workspaces, eval runs)
 .scratch/
