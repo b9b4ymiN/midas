@@ -22,7 +22,7 @@ The repo has three layers:
 **Not for:** attacking a thesis you already have (use `stock-grill`), or a single slice like pure valuation (use `company-valuation` directly).
 
 ### `stock-grill` — adversarial thesis stress-test
-**Use when:** you have a thesis / Investment Synthesis / SEPA verdict already and want to **attack it before committing capital** — pre-mortem, sensitivity attack, variant-perception check, gate audit, sell pre-commit.
+**Use when:** you have a **BF-Report** (or a thesis / Investment Synthesis / SEPA verdict) and want to **attack it before committing capital**. Point it at the report file — R0 checks the document against itself, then R1-R5 attack the reasoning — pre-mortem, sensitivity attack, variant-perception check, gate audit, sell pre-commit.
 **Not for:** building a valuation or trade plan — build first (`both-stock-analysis`), then grill.
 
 ### `minervini-sepa` — SEPA trade timing

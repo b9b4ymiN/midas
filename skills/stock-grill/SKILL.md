@@ -25,7 +25,24 @@ You do **not build** the valuation, narrative, or trade plan — you consume the
 
 ## Dependencies (input contract)
 
-This skill synthesizes; it does not generate. Before starting, confirm the following inputs are present — if any are missing, tell the user to run the source skill first; do not invent numbers:
+**Primary input: the BF-Report HTML file that `both-stock-analysis` produced.**
+
+```bash
+python scripts/read_report.py /path/to/TICKER_BF-Report.html
+```
+
+Grilling the report rather than a remembered analysis matters for two reasons.
+The document is what will actually be acted on, so it is the thing that has to
+survive attack. And a file with a fixed section structure can be checked
+against *itself* — which is what R0 does, and which is impossible when the
+input is whatever is still in context.
+
+It also means a report can be grilled **at any time**: three months later,
+reopened from disk, with nothing else loaded.
+
+If no report exists, fall back to the older contract and confirm these are
+present — if any are missing, tell the user to run the source skill first; do
+not invent numbers:
 
 - **From investment-synthesis** — thesis paragraph, bull/base/bear table + probabilities + E[return], conviction-builders, thesis-breakers, setup archetype
 - **From company-valuation** — blended fair value, sensitivity grid (the inputs that move fair value the most), ROIC−WACC spread, leverage read
@@ -50,16 +67,23 @@ Borrow the chassis of the generic grilling skill, but seed the frontier with the
 
 1. **Rounds** — work in rounds R1→R5 in order (order matters — R1 pre-mortem must come first).
 2. **Frontier** — in each round, ask only the questions whose prerequisites are settled (the questions answerable *now*). Ask one round at a time, give a recommended answer the user can accept in a word, then wait.
-3. **Facts are your job** — price, historical drawdown, consensus, sensitivity grid — find them yourself (yfinance, the source skills' output files). Never ask the user for anything you could look up.
+3. **Facts are your job** — price, historical drawdown, consensus, sensitivity grid — read them out of the report (`--extract`) or find them yourself. Never ask the user for anything you could look up. **Cite the section**: not "what if margins fall" but "§3 assumes 5.1% operating margin while §2 shows the last reported year at 4.6% — which is the thesis relying on?"
 4. **Decisions are the user's job** — confidence, sell trigger, hold/exit — put them to the user and wait. Do not decide for them.
 5. **Probability space** — track every claim as a confidence %. A claim with high confidence but weak evidence is a top-priority probe.
 
 ---
 
-## The five rounds (overview — detail in `references/question-bank.md`)
+## The rounds (overview — detail in `references/question-bank.md`)
+
+R0 is mechanical and runs first: its findings invalidate the rounds above it.
+If §5 and §3 disagree about the current price, every return figure in §6 is
+computed off one of two different numbers, and debating the bull case is
+premature. R1-R5 are unchanged — only their source of truth moved, from memory
+to a section you can cite.
 
 | Round | What it does | Method source |
 |---|---|---|
+| **R0 Consistency** | Does the report agree with itself? Price consistent across sections, probabilities sum to 100, targets anchored to the §3 fair value, every figure sourced. **Mechanical — run the script.** | `scripts/read_report.py` |
 | **R1 Pre-mortem** | "In 12 months this stock is down 40% embarrassingly — why? top 3" **User writes first, then you reveal** (independence) | Klein — prospective hindsight |
 | **R2 Sensitivity attack** | Take the input that moves fair value the most and challenge whether it is defensible | valuation's own grid |
 | **R3 Variant perception** | "What is the market pricing in? Where do you differ, across 5 dimensions? Why are you right and the market wrong?" | CFA Institute |
@@ -87,6 +111,7 @@ At the end of each run → write a **pre-registered decision journal entry** (ex
 
 ## Reference files
 
+- [`references/r0-consistency.md`](references/r0-consistency.md) — the R0 checks, what they catch, and the two things they get right that are easy to get wrong (read before running R0)
 - [`references/question-bank.md`](references/question-bank.md) — the full questions for all 5 rounds + the frontier mechanic + find-facts-yourself rules (read at the start of each round)
 - [`references/decision-journal-template.md`](references/decision-journal-template.md) — the 10-field template for the output artifact
 - [`references/integration-map.md`](references/integration-map.md) — which round consumes which skill's output (read when building the input contract)

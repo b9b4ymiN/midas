@@ -20,7 +20,7 @@ description: >
 
 A full-stack equity research pipeline. You are the analyst, working **in the spirit of Aswath Damodaran**: every valuation is a bridge between a *story* about the business and the *numbers* that story implies. You are rigorous, intellectually honest about uncertainty, allergic to hype with no cash flows behind it, and you always tie value back to four drivers — **cash flows, growth, reinvestment efficiency, and risk (cost of capital).**
 
-The pipeline runs in six steps plus a technical-timing step and finishes by producing a written report. It chains seven installed sub-skills:
+The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains nine installed sub-skills:
 
 | Step | Sub-skill used | Purpose |
 |---|---|---|
@@ -32,8 +32,9 @@ The pipeline runs in six steps plus a technical-timing step and finishes by prod
 | 4.5 | `bf-tech-analysis` | TradingView chart image + top-down technical timing, entry zone, stop, target, R |
 | 5 | `investment-synthesis` | Select the key investment insight → thesis, 1–3 yr scenarios + investment plan |
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
+| 7 | `stock-grill` | Attack the finished report before any capital moves — R0 consistency, then the five adversarial rounds |
 
-> **Dependencies:** This skill assumes `business-narrative`, `earnings-quality`, `company-valuation`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, and `bf-report` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `business-narrative`, `earnings-quality`, `company-valuation`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -202,6 +203,42 @@ Read and follow the **`bf-report`** skill to generate the deliverable: a single 
 `bf-report` owns the house style (sober editorial palette, sticky linked TOC, numbered/anchored sections, judgement-coloured metrics, inline SVG sparklines, the moat meter, print CSS) — **do not** brand-match the palette to the company. It writes one `.html` via bash heredoc, then presents it. For Thai investors, write the report in **Thai** unless the user explicitly asks otherwise. The final HTML must be responsive and usable on mobile, with no horizontal overflow in the first viewport or key tables.
 
 Then present the finished HTML file to the user.
+
+---
+
+## Step 7: Attack What You Just Built — use `stock-grill`
+
+**Do not end at Step 6.** A finished report is the moment confirmation bias is
+strongest: the reader has just watched a case assemble itself and it looks
+convincing, because it was built to. That is precisely when it should be
+attacked.
+
+Hand `stock-grill` the HTML file Step 6 produced:
+
+```bash
+python skills/stock-grill/scripts/read_report.py [TICKER]_BF-Report.html
+```
+
+It runs **R0 first** — a mechanical pass over the document's self-agreement:
+does the current price match across §3 and §5, do the scenario probabilities sum
+to 100, is the §6 target anchored to the §3 fair value, does every figure have a
+source. Those are arithmetic errors, not wrong opinions, and they invalidate any
+argument built on top of them. Fix the high findings before going further.
+
+Then R1-R5 as documented in `stock-grill`: pre-mortem, sensitivity attack,
+variant-perception check, gate audit, and the sell pre-commit that ends in a
+**pre-registered decision journal**.
+
+Two rules carried from `stock-grill`:
+
+- The journal is written **ex ante**, before the outcome is known, and stored
+  with the stock's analysis output — **never committed back to this repo**.
+- Every question cites a section. Not "what if margins fall" but "§3 assumes a
+  5.1% operating margin while §2 shows the last reported year at 4.6% — which
+  is the thesis relying on?"
+
+If the user declines the grill, say plainly that the report has not been
+stress-tested, and note it in the handover. An unattacked thesis is a draft.
 
 ---
 

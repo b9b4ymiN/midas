@@ -1,11 +1,19 @@
 # Integration Map — which round consumes which skill's output
 
+**Input changed:** stock-grill now reads the **BF-Report HTML file** as its primary
+input, not the in-context output of five skills. The table below still describes
+which upstream skill each round's material *originates* from, but at grill time
+that material is read out of the report — `read_report.py --extract` gives you
+sections, stat cards, tables and per-section numbers, so every question can cite
+a section rather than a memory.
+
 stock-grill is an adversarial adapter — it **does not recompute**. It consumes the output of the construction skills (all in this repo) and attacks it. Read this when building the input contract before starting a grill.
 
 ## Round × input table
 
 | Round | Consumes output from | Used for |
 |---|---|---|
+| **R0 Consistency** | the BF-Report HTML itself | mechanical self-agreement checks — run `scripts/read_report.py` before anything else |
 | **R1 Pre-mortem** | thesis-breakers (synthesis) · the most sensitive input (sensitivity grid) | seed failure causes + add what the user missed |
 | **R2 Sensitivity attack** | sensitivity grid · blended fair value · metric history (find yourself) | challenge the assumption that moves the price most |
 | **R3 Variant perception** | consensus/estimates · analyst targets (find yourself) · earnings positioning read | identify "what the market thinks" to find the divergence |
