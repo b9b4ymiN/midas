@@ -1,0 +1,18 @@
+{
+  "provider": "gurufocus",
+  "tier": "primary",
+  "status": "STUB — capture required, LOGIN NEEDED, highest maintenance",
+  "coverage": "ROIC, Piotroski F-Score, Altman Z-Score, long history.",
+  "auth": "session cookie via $HAR2API_AUTH — expires, so this provider will fail periodically by design",
+  "routes": [],
+  "capture": {
+    "urls_to_watch": ["https://*.gurufocus.com/*"],
+    "browse": ["log in first, then https://www.gurufocus.com/stock/PTXLF/summary"],
+    "then": "python scripts/parse_har.py devproxy.har --profile profiles/gurufocus.json --provider-name gurufocus --host-filter gurufocus.com"
+  },
+  "facts_wanted": ["roic", "piotroski_f", "altman_z", "goodwill_to_assets"],
+  "notes": [
+    "Do this provider LAST. When it starts returning 401, fetch.py says so explicitly — re-capture and update $HAR2API_AUTH; the profile itself rarely needs regenerating.",
+    "Never paste the cookie value into this file."
+  ]
+}

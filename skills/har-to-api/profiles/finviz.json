@@ -1,0 +1,15 @@
+{
+  "provider": "finviz",
+  "tier": "primary",
+  "status": "STUB — capture required (see references/finance-profiles.md)",
+  "coverage": "Technical + snapshot metrics. US coverage is strong; non-US is thin — expect gaps for SET names and let them stay gaps.",
+  "auth": "none for the public screener/quote pages",
+  "routes": [],
+  "capture": {
+    "urls_to_watch": ["https://finviz.com/*", "https://*.finviz.com/*"],
+    "browse": ["https://finviz.com/quote.ashx?t=AAPL"],
+    "then": "python scripts/parse_har.py devproxy.har --profile profiles/finviz.json --provider-name finviz --host-filter finviz.com"
+  },
+  "facts_wanted": ["rsi_14", "atr_14", "sma_20", "sma_50", "sma_200", "rel_volume", "beta", "week52_high", "week52_low"],
+  "notes": ["If parse_har reports 'kept: 0', the quote page is server-rendered — say so and fall back rather than scraping HTML here."]
+}

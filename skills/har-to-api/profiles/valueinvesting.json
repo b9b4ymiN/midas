@@ -1,0 +1,17 @@
+{
+  "provider": "valueinvesting",
+  "tier": "primary",
+  "status": "STUB — capture required; may turn out not to be worth it",
+  "coverage": "WACC and cost-of-capital components.",
+  "auth": "none for public pages",
+  "routes": [],
+  "capture": {
+    "urls_to_watch": ["https://valueinvesting.io/*"],
+    "browse": ["https://valueinvesting.io/TU.BK/valuation/wacc"],
+    "then": "python scripts/parse_har.py devproxy.har --profile profiles/valueinvesting.json --provider-name valueinvesting --host-filter valueinvesting.io"
+  },
+  "facts_wanted": ["wacc", "cost_of_equity", "cost_of_debt", "beta_levered"],
+  "notes": [
+    "references/examples.md flags this site as possibly pure SSR. If parse_har reports 'kept: 0', that is the answer, not a failure — compute WACC from CAPM instead and mark it as computed."
+  ]
+}

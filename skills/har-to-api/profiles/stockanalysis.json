@@ -1,0 +1,171 @@
+{
+  "provider": "stockanalysis",
+  "tier": "primary",
+  "status": "endpoints + fact paths VERIFIED against a real TU (BKK) payload, 2026-08-13",
+  "coverage": "US + non-US incl. Thai SET (BKK). Thai names return full 5y+TTM in THB.",
+  "auth": "none",
+  "routes": [
+    {
+      "id": "financials",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/__data.json",
+      "required_query": {
+        "x-sveltekit-trailing-slash": "1"
+      },
+      "path_params": [
+        "market",
+        "symbol"
+      ],
+      "requires_auth": false,
+      "framework_data_route": true,
+      "note": "market is the lowercase venue code (bkk for SET). For US names use https://stockanalysis.com/stocks/{symbol}/financials/__data.json instead.",
+      "facts": {
+        "revenue_ttm": "nodes[2].data.sections[id=revenue-income].ttm.revenue",
+        "gross_profit_ttm": "nodes[2].data.sections[id=revenue-income].ttm.gp",
+        "operating_income_ttm": "nodes[2].data.sections[id=revenue-income].ttm.opinc",
+        "net_income_ttm": "nodes[2].data.sections[id=revenue-income].ttm.netinccmn",
+        "eps_diluted_ttm": "nodes[2].data.sections[id=revenue-income].ttm.epsdil",
+        "revenue_fy0": "nodes[2].data.sections[id=revenue-income].data.revenue[0]",
+        "net_income_fy0": "nodes[2].data.sections[id=revenue-income].data.netinccmn[0]",
+        "fiscal_years": "nodes[2].data.sections[id=revenue-income].data.fiscalYear",
+        "gross_margin_ttm": "nodes[2].data.sections[id=margins].ttm.grossMargin",
+        "operating_margin_ttm": "nodes[2].data.sections[id=margins].ttm.operatingMargin",
+        "profit_margin_ttm": "nodes[2].data.sections[id=margins].ttm.profitMargin",
+        "fcf_margin_ttm": "nodes[2].data.sections[id=margins].ttm.fcfMargin",
+        "total_debt": "nodes[2].data.sections[id=cash-debt].ttm.debt",
+        "net_cash": "nodes[2].data.sections[id=cash-debt].ttm.netcash",
+        "net_cash_per_share": "nodes[2].data.sections[id=cash-debt].ttm.netcashpershare",
+        "cash_and_investments": "nodes[2].data.sections[id=cash-debt].ttm.cashAndInvestments",
+        "operating_cash_flow_ttm": "nodes[2].data.sections[id=cash-flow-capex].ttm.ncfo",
+        "capex_ttm": "nodes[2].data.sections[id=cash-flow-capex].ttm.capex",
+        "fcf_ttm": "nodes[2].data.sections[id=cash-flow-capex].ttm.fcf",
+        "dividend_per_share": "nodes[2].data.sections[id=dividends].ttm.dps",
+        "dividend_yield": "nodes[2].data.sections[id=dividends].ttm.dividendyield",
+        "pe_ratio": "nodes[2].data.sections[id=valuation].ttm.pe",
+        "pe_forward": "nodes[2].data.sections[id=valuation].ttm.peForward",
+        "pfcf_ratio": "nodes[2].data.sections[id=valuation].ttm.pfcf",
+        "ps_ratio": "nodes[2].data.sections[id=valuation].ttm.ps",
+        "currency": "nodes[2].data.details.currency",
+        "segment_revenue": "nodes[2].data.sections[id=revenue-segments].ttm",
+        "segment_total": "nodes[2].data.sections[id=revenue-segments].ttm.total"
+      },
+      "as_of_path": "nodes[2].data.sections[id=revenue-income].ttm.datekey",
+      "segment_source_path": "nodes[2].data.sections[id=revenue-segments].source"
+    },
+    {
+      "id": "balance_sheet",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/balance-sheet/__data.json",
+      "required_query": {
+        "x-sveltekit-trailing-slash": "1"
+      },
+      "path_params": [
+        "market",
+        "symbol"
+      ],
+      "requires_auth": false,
+      "framework_data_route": true,
+      "facts": {}
+    },
+    {
+      "id": "cash_flow",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/cash-flow-statement/__data.json",
+      "required_query": {
+        "x-sveltekit-trailing-slash": "1"
+      },
+      "path_params": [
+        "market",
+        "symbol"
+      ],
+      "requires_auth": false,
+      "framework_data_route": true,
+      "facts": {}
+    },
+    {
+      "id": "ratios",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/ratios/__data.json",
+      "required_query": {
+        "x-sveltekit-trailing-slash": "1"
+      },
+      "path_params": [
+        "market",
+        "symbol"
+      ],
+      "requires_auth": false,
+      "framework_data_route": true,
+      "facts": {}
+    },
+    {
+      "id": "history",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/api/symbol/s/{symbol}/history",
+      "required_query": {
+        "type": "annual"
+      },
+      "path_params": [
+        "symbol"
+      ],
+      "requires_auth": false,
+      "facts": {}
+    },
+    {
+      "id": "search",
+      "method": "GET",
+      "url_template": "https://stockanalysis.com/api/search",
+      "required_query": {
+        "q": "PTT"
+      },
+      "path_params": [],
+      "requires_auth": false,
+      "note": "resolve a company name to its venue+symbol before anything else",
+      "facts": {}
+    }
+  ],
+  "units": {
+    "revenue_ttm": "THB",
+    "gross_profit_ttm": "THB",
+    "operating_income_ttm": "THB",
+    "net_income_ttm": "THB",
+    "revenue_fy0": "THB",
+    "net_income_fy0": "THB",
+    "total_debt": "THB",
+    "net_cash": "THB",
+    "cash_and_investments": "THB",
+    "operating_cash_flow_ttm": "THB",
+    "capex_ttm": "THB",
+    "fcf_ttm": "THB",
+    "segment_total": "THB",
+    "gross_margin_ttm": "ratio",
+    "operating_margin_ttm": "ratio",
+    "profit_margin_ttm": "ratio",
+    "fcf_margin_ttm": "ratio",
+    "dividend_yield": "ratio",
+    "pe_ratio": "ratio",
+    "pe_forward": "ratio",
+    "pfcf_ratio": "ratio",
+    "ps_ratio": "ratio"
+  },
+  "how_to_finish": [
+    "python scripts/discover.py --url 'https://stockanalysis.com/quote/bkk/TU/financials/__data.json?x-sveltekit-trailing-slash=1' --save /tmp/tu.json",
+    "check the printed numbers against the page in a browser",
+    "paste the suggested block into this file's `facts` map",
+    "python scripts/fetch.py TU.BK --market bkk --profiles ./profiles"
+  ],
+  "notes": [
+    "Segment coverage is UNEVEN across issuers — the revenue-segments section is absent entirely for some. Paths use [id=...] selectors so a missing section yields None instead of silently binding to the next section.",
+    "Segment labels are the provider's rendering of the company's reporting; cross-check the mix against the filing before building peer selection or driver work on it.",
+    "Watchlist routes need a session cookie; nothing here does."
+  ],
+  "verified_against": {
+    "symbol": "TU",
+    "market": "bkk",
+    "payload_date": "2026-08-13",
+    "checks": [
+      "revenue TTM 135,439,918,000 THB as of 2026-06-30",
+      "segment ambient_seafood = 47.2% of gross — matches the company's own Q1/2026 release",
+      "data source tag = spg (S&P Global)"
+    ]
+  }
+}
