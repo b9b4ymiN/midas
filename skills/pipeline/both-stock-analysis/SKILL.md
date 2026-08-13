@@ -26,13 +26,14 @@ The pipeline runs in six steps plus a technical-timing step and finishes by prod
 |---|---|---|
 | 1 | — | Confirm market, set country/currency parameters |
 | 2 | `business-narrative` | Damodaran story research → story-to-numbers map |
+| 2.5 | `earnings-quality` | Normalise the earnings base (Damodaran: average the MARGIN over a cycle, not the earnings) + rule on whether growth may be stacked |
 | 3 | `company-valuation` | Financial health snapshot (~20 metrics, 5-yr trends + reads) → DCF + relative + SOTP → intrinsic value + candidate investment hooks |
 | 4 | `earnings-preview` + `earnings-recap` | Setup, track record, sentiment |
 | 4.5 | `bf-tech-analysis` | TradingView chart image + top-down technical timing, entry zone, stop, target, R |
 | 5 | `investment-synthesis` | Select the key investment insight → thesis, 1–3 yr scenarios + investment plan |
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
 
-> **Dependencies:** This skill assumes `business-narrative`, `company-valuation`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, and `bf-report` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `business-narrative`, `earnings-quality`, `company-valuation`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, and `bf-report` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -92,6 +93,38 @@ Use the correctly-resolved ticker and currency from Step 1.
 
 ---
 
+## Step 2.5: Normalise the Earnings Base — use `earnings-quality`
+
+Before valuing anything, decide what the company earns in a *normal* year. A
+DCF built on a distorted base is a precise calculation of a wrong number.
+
+Read and follow the **`earnings-quality`** skill. It applies Damodaran's method
+— average the **operating margin** across a full cycle (5-10 years, chosen from
+the industry) and apply it to current revenue, rather than averaging reported
+earnings, which breaks whenever a company has changed scale or taken a hit
+below the operating line.
+
+Feed it the ~5-year series from the data layer and carry three things forward:
+
+- **The normalised operating income and the margin behind it** -> the starting
+  point for Step 3's projection, replacing the naive "last year's EBIT".
+- **The exclusion table** (every item removed, its amount, and why) -> goes
+  into the report appendix and gives `stock-grill` something concrete to attack.
+- **The growth-eligibility verdict.** If the gates fail, the normalised base
+  *already contains* the recovery, and Step 3 must NOT also apply a consensus
+  growth rate built from that same recovery — that is Damodaran's
+  double-counting trap and it silently inflates fair value.
+
+If earnings cannot be normalised responsibly (too little history, an erratic
+margin, a structurally impaired business), say so plainly and let Step 3 widen
+its scenario range instead of feigning precision.
+
+**Consistency rule:** if you normalise earnings, normalise capex, working
+capital and the financing assumption over the same window. A mid-cycle profit
+paired with trough-year capex describes a year that never happened.
+
+---
+
 ## Step 3: Full Valuation — use `company-valuation`
 
 Read and follow the **`company-valuation`** skill end-to-end. It now runs in two parts:
@@ -146,6 +179,7 @@ Capture from this step: TradingView chart image(s), weekly context, daily condit
 
 Pull Steps 2–4.5 into a decision. Read and follow the **`investment-synthesis`** skill, feeding it its inputs:
 - **From Step 2** — the narrative, the 3 P's verdict, the life-cycle stage, and the confidence level.
+- **From Step 2.5** — the normalised earnings base, the exclusion table, and whether a growth rate may be stacked on it.
 - **From Step 3** — blended fair value, per-method prices, WACC components, the sensitivity grid, the Bull/Base/Bear table, the ROIC−WACC spread / leverage read, and the candidate investment hooks.
 - **From Step 4** — the recent-quarter execution read and the upcoming-quarter setup (is the stock priced for perfection or for pessimism?).
 - **From Step 4.5** — the TradingView chart image, technical condition, entry zone, stop, target(s), R-multiple, timing verdict, and invalidation level.

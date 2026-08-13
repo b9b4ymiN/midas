@@ -11,7 +11,7 @@ _From ticker to decision — build the thesis, then try to break it._
 The router over the **midas** investment skills — a self-contained pipeline from construction to stress-test. You don't remember every skill, so ask here first.
 
 The repo has three layers:
-- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 7 sub-skills (`business-narrative` → `company-valuation` → `earnings-preview`/`earnings-recap` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) to build a full thesis + report from a ticker.
+- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 8 sub-skills (`business-narrative` → `earnings-quality` → `company-valuation` → `earnings-preview`/`earnings-recap` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) to build a full thesis + report from a ticker.
 - **Adversarial** (`skills/stock-grill`) — attacks a finished thesis before you commit capital.
 - **Standalone technical** (`skills/minervini-sepa`) — the SEPA trading system, usable standalone or referenced by the technical-timing step.
 
@@ -30,7 +30,7 @@ The repo has three layers:
 **Not for:** fundamental valuation (use `company-valuation`) or a full report (use `both-stock-analysis`).
 
 ### Sub-skills (usually reached via `both-stock-analysis`, not directly)
-`business-narrative` · `company-valuation` · `earnings-preview` · `earnings-recap` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
+`business-narrative` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
 
 ## How to choose (when to use what)
 
@@ -41,6 +41,8 @@ The repo has three layers:
 | Already in a position, want a pre-mortem ("why would this drop 40%?") | `stock-grill` |
 | Want pure SEPA / trade timing on a stock | `minervini-sepa` |
 | Want just one slice (valuation, narrative, earnings, report) | the specific sub-skill |
+| "Are these earnings real?" / strip out one-off items | `earnings-quality` |
+| Need the same numbers twice, or "where did this figure come from" | `har-to-api` (data layer) |
 
 ## Vocabulary
 

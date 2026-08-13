@@ -83,7 +83,8 @@ Nothing updates behind the scenes — pull the latest with `npx skills update` w
 Three layers, all sharing one canonical vocabulary ([`CONTEXT.md`](./CONTEXT.md) — 24 terms):
 
 - **Router** — `/midas` points you to the right skill when you don't remember which to reach for.
-- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates seven sub-skills into a full research report from a single ticker.
+- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates eight sub-skills into a full research report from a single ticker.
+- **Data layer** (`skills/har-to-api/`) — reverse-engineered provider APIs with provenance, dated snapshots and flagged fallbacks, so the same run twice gives the same numbers.
 - **Adversarial + technical** — `/stock-grill` attacks a finished thesis; `minervini-sepa` is the standalone SEPA trading-timing system.
 
 ## Reference
@@ -102,6 +103,7 @@ Builds the thesis and report from a ticker. Usually entered via `both-stock-anal
 
 - **[both-stock-analysis](./skills/pipeline/both-stock-analysis/SKILL.md)** — Full equity research in the spirit of Damodaran; orchestrates the seven sub-skills into a filing-grade HTML report.
 - **[business-narrative](./skills/pipeline/business-narrative/SKILL.md)** — The story behind the numbers → story-to-numbers map.
+- **[earnings-quality](./skills/pipeline/earnings-quality/SKILL.md)** — Normalise the earnings base Damodaran's way (average the margin over a cycle, not the earnings) → defensible base + growth-eligibility ruling.
 - **[company-valuation](./skills/pipeline/company-valuation/SKILL.md)** — DCF + relative + SOTP → blended fair value, sensitivity grid, candidate investment hooks.
 - **[earnings-preview](./skills/pipeline/earnings-preview/SKILL.md)** — Pre-earnings: consensus, beat/miss track record, positioning.
 - **[earnings-recap](./skills/pipeline/earnings-recap/SKILL.md)** — Post-earnings: actual vs estimate, reaction, what changed.
