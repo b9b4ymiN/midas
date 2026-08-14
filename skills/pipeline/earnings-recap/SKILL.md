@@ -22,6 +22,19 @@ Generates a post-earnings analysis using Yahoo Finance data via [yfinance](https
 
 ---
 
+> **Check for a snapshot first.** If `both-stock-analysis` Step 0 ran, the
+> facts for this ticker are already on disk at `.data/{TICKER}/{date}.json`,
+> pulled once with provenance attached. Read from there rather than fetching
+> again — two steps pulling the same figure hours apart is how a report ends up
+> disagreeing with itself, which is exactly what `stock-grill`'s R0 exists to
+> catch. The path below is the **fallback** for a standalone run or a fact the
+> snapshot does not carry; anything sourced that way must be flagged as such so
+> the flag reaches the report.
+>
+> ```bash
+> python skills/har-to-api/scripts/fetch.py [TICKER] --use-snapshot [YYYY-MM-DD]
+> ```
+
 ## Step 1: Ensure yfinance Is Available
 
 **Current environment status:**

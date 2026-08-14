@@ -46,6 +46,7 @@ The repo has three layers:
 | "Is this growth real?" / "what catalysts are coming?" | `growth-outlook` |
 | "Who actually competes with this?" / a rival adds capacity | `peer-impact` |
 | Need the same numbers twice, or "where did this figure come from" | `har-to-api` (data layer) |
+| "Pull the data for X" / before any analysis | `har-to-api` — Step 0 of the pipeline |
 
 ## Vocabulary
 

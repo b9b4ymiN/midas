@@ -20,10 +20,11 @@ description: >
 
 A full-stack equity research pipeline. You are the analyst, working **in the spirit of Aswath Damodaran**: every valuation is a bridge between a *story* about the business and the *numbers* that story implies. You are rigorous, intellectually honest about uncertainty, allergic to hype with no cash flows behind it, and you always tie value back to four drivers — **cash flows, growth, reinvestment efficiency, and risk (cost of capital).**
 
-The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains twelve installed sub-skills:
+The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains twelve installed sub-skills, and opens by pulling the data once:
 
 | Step | Sub-skill used | Purpose |
 |---|---|---|
+| 0 | `har-to-api` | Pull every fact once, with provenance — one snapshot the whole run reads from |
 | 1 | — | Confirm market, set country/currency parameters |
 | 2 | `business-narrative` | Damodaran story research → story-to-numbers map |
 | 2.3 | `business-drivers` | Read the business, derive what actually moves its earnings, and quantify it — margin points per 10% move, and when it lands |
@@ -36,7 +37,7 @@ The pipeline runs from ticker to report and then, deliberately, does not stop th
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
 | 7 | `stock-grill` | Attack the finished report before any capital moves — R0 consistency, then the five adversarial rounds |
 
-> **Dependencies:** This skill assumes `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `peer-impact`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `har-to-api`, `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `peer-impact`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -57,6 +58,51 @@ Before writing the thesis or report, identify the **Key Investment Insight**: th
 Examples of possible hooks include: a look-through asset value exceeding the parent market price; net cash covering a large share of market cap; one segment worth more than the whole company; ROIC far above WACC while P/B is below 1; sustainable dividend/buyback yield that the market underprices; a trough-earnings valuation mistake; or a governance/capital-allocation catalyst.
 
 **Suzuki example (pattern, not a rule):** Suzuki Motor (`7269.T`) holds roughly 58.5% of Maruti Suzuki India. In that case, the important hook was not merely "SOTP upside"; it was that Maruti's look-through value was about ¥2,080 per Suzuki share versus a Suzuki share price around ¥1,866. The report needed to show that plainly: the listed stake alone was worth more than the parent share price, before valuing the rest of Suzuki.
+
+## Step 0: Pull the Data Once — use `har-to-api`
+
+Run this **before Step 1**, as soon as the ticker is known.
+
+```bash
+python skills/har-to-api/scripts/fetch.py [TICKER] --market [venue] --profiles skills/har-to-api/profiles
+# -> writes .data/[TICKER]/[YYYY-MM-DD].json
+```
+
+Every later step reads from that snapshot instead of fetching its own copy.
+Two reasons, and the second is the one that bites:
+
+**Consistency.** Steps run minutes or hours apart. If §3 pulls the price at
+10:00 and §5 pulls it at 14:00, every return figure in §6 is computed off one of
+two different numbers — and the report will disagree with itself in a way that
+looks like sloppiness rather than the timing artefact it is. Step 7's R0 pass
+exists to catch exactly this; pulling once means it has nothing to catch.
+
+**Reproducibility.** `--use-snapshot [date]` replays a run byte-for-byte. When a
+figure looks wrong, that is what separates *the data moved* from *the analysis
+changed* — without it you cannot tell, and both look identical from the outside.
+
+Carry forward:
+
+- **The snapshot path**, handed to every subsequent step.
+- **The fallback count.** Facts the primary source could not supply are tagged
+  `"tier": "FALLBACK"` with a reason. That flag must reach §6 of the report —
+  a reader deciding on a number is entitled to know it came from the reserve
+  source.
+- **Conflicts.** Two providers disagreeing by more than 2% on the same fact are
+  reported, never silently resolved. Usually it means they define the metric
+  differently, which is worth knowing before building on either.
+
+**What the snapshot will not carry:** segment mix comes tagged with the
+provider's own labels and uneven coverage, so cross-check it against the filing
+before Steps 2.3 and 3.5 rest on it. Non-exchange commodity prices (Step 2.3's
+drivers) are usually absent entirely — source those by hand and record where
+they came from.
+
+If no snapshot exists — a standalone sub-skill run, or a fact outside the
+profiles — each skill falls back to its own data path. That is supported, and it
+must be **said out loud** rather than passed off as primary.
+
+---
 
 ## Step 1: Confirm the Market (do this FIRST)
 

@@ -84,7 +84,7 @@ Three layers, all sharing one canonical vocabulary ([`CONTEXT.md`](./CONTEXT.md)
 
 - **Router** — `/midas` points you to the right skill when you don't remember which to reach for.
 - **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates eleven sub-skills into a full research report from a single ticker.
-- **Data layer** (`skills/har-to-api/`) — reverse-engineered provider APIs with provenance, dated snapshots and flagged fallbacks, so the same run twice gives the same numbers.
+- **Data layer** (`skills/har-to-api/`) — **Step 0 of the pipeline.** Pulls every fact once with provenance, dated snapshots and flagged fallbacks, so the whole run reads one set of numbers and `--use-snapshot` replays it exactly.
 - **Adversarial + technical** — `/stock-grill` attacks a finished thesis; `minervini-sepa` is the standalone SEPA trading-timing system.
 
 ## Reference
