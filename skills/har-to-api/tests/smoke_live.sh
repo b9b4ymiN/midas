@@ -2,6 +2,12 @@
 # Run this on a machine with real outbound network to validate the
 # stockanalysis profile before relying on it.
 set -u
+
+# Resolve the skill root from this script's own location, so it runs from
+# anywhere — the repo root, the skill folder, or an absolute path. Relying on
+# the caller's cwd meant every relative path broke the moment someone ran it
+# the obvious way.
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)" || exit 1
 SYM="${1:-TU}"; MKT="${2:-bkk}"
 URL="https://stockanalysis.com/quote/${MKT}/${SYM}/financials/__data.json?x-sveltekit-trailing-slash=1"
 echo "== 1. route reachable and returns JSON =="

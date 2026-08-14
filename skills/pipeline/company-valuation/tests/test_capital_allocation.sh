@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 set -u
+
+# Resolve the skill root from this script's own location, so it runs from
+# anywhere — the repo root, the skill folder, or an absolute path. Relying on
+# the caller's cwd meant every relative path broke the moment someone ran it
+# the obvious way.
+cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)" || exit 1
 S=scripts/capital_allocation.py; pass=0; fail=0
 chk(){ if echo "$2" | grep -q -- "$3"; then echo "  PASS $1"; pass=$((pass+1)); else echo "  FAIL $1"; fail=$((fail+1)); fi }
 nchk(){ if echo "$2" | grep -q -- "$3"; then echo "  FAIL $1 (false positive)"; fail=$((fail+1)); else echo "  PASS $1"; pass=$((pass+1)); fi }
