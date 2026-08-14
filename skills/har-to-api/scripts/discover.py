@@ -122,9 +122,13 @@ def walk(doc: Any, prefix: str = "", depth: int = 0, max_depth: int = 8) -> Iter
             else:
                 yield path, v
     elif isinstance(doc, list):
-        # Only descend the first few elements — finance payloads are year-series
-        # and element 0 is nearly always the latest period.
-        for i, v in enumerate(doc[:3]):
+        # Year-series are lists of scalars and element 0 is the latest period, so
+        # three is plenty. Lists of OBJECTS are a different animal: stockanalysis
+        # puts seven named sections in one array, and capping at three hid
+        # margins, dividends and valuation entirely — the tool reported 57 fields
+        # while sitting on top of far more.
+        limit = 3 if all(not isinstance(v, (dict, list)) for v in doc) else 24
+        for i, v in enumerate(doc[:limit]):
             path = f"{prefix}[{i}]"
             if isinstance(v, (dict, list)):
                 yield from walk(v, path, depth + 1, max_depth)

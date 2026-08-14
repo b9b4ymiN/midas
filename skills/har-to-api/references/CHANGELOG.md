@@ -91,3 +91,22 @@ section genuinely is absent for some issuers, and positional addressing
 (`sections[1]`) would then bind "segments" to whatever section slid into that
 slot and return a plausible wrong number. Hence `[key=value]` selection, and
 tagging rather than refusing.
+
+### Fixed: `discover.py` hid two-thirds of the payload
+
+`walk()` capped list traversal at three elements. For year-series — lists of
+scalars, newest first — three is the right call. But stockanalysis puts its
+**seven named sections** in one array, so the cap stopped at
+`sections[0..2]` and everything from `cash-flow-capex` onward was invisible:
+operating margin, gross margin, FCF, capex, dividends per share, and the whole
+valuation block. The tool reported *"52 candidate fields out of 302 leaves"*
+and sounded thorough while doing it.
+
+Lists are now split by content: scalars keep the cap of 3, lists of objects get
+24. Same TU payload, after: **147 candidate fields out of 629 leaves**, all
+seven sections reached.
+
+`profiles/stockanalysis.json` was unaffected — its 28 fact paths were read off
+the raw payload directly rather than through `discover.py`. The cost would have
+landed on the next profile built with the tool, which is to say on
+finviz, valueinvesting and gurufocus.
