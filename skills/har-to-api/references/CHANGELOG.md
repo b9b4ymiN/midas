@@ -22,12 +22,16 @@ with an actionable reason, and the run prints a warning.
 — a template that cannot be filled unambiguously. Params are now uniquely
 named (`symbol`, `symbol2`, `id`, `id2`, …).
 
-**3. Required query params were indistinguishable from incidental ones.**
-Every query param was recorded as a "sample". For framework data routes this
-is fatal: drop SvelteKit's `x-sveltekit-trailing-slash=1` and the server
-returns the **HTML page** instead of JSON — a 200 response that parses as
-garbage rather than failing cleanly. Params present on *every* occurrence of an
-endpoint are now marked `required: true` and carried into the profile.
+**3. Always-sent query params were indistinguishable from incidental ones.**
+Every query param was recorded as a "sample", so a param the browser sends on
+every request — SvelteKit's `x-sveltekit-trailing-slash=1`, a screener's
+`p=quarterly` — was dropped from the generated client as noise. Params present
+on *every* occurrence of an endpoint are now flagged and carried into the
+profile under `always_present_query`.
+
+The field name matters and the first one was wrong. See *"Correction: a
+requirement I never tested"* below — frequency in a capture is evidence about
+the **browser**, not about what the server will reject.
 
 **4. Framework data routes were fragile to the noise filter.**
 `/__data.json` (SvelteKit) and `/_next/data/<build>/*.json` (Next.js) are the
@@ -91,6 +95,43 @@ section genuinely is absent for some issuers, and positional addressing
 (`sections[1]`) would then bind "segments" to whatever section slid into that
 slot and return a plausible wrong number. Hence `[key=value]` selection, and
 tagging rather than refusing.
+
+### Correction: a requirement I never tested
+
+**Claimed, in four places:** that `__data.json` routes on stockanalysis need
+`?x-sveltekit-trailing-slash=1`, and that without it the server serves the HTML
+page with a 200.
+
+**Actually true:** the same route without the param returns identical JSON.
+Verified live on 2026-08-14 against `TU` on `bkk` — both requests produced the
+same field count off the same payload.
+
+The mechanism was plausible. Some SvelteKit configurations really do behave
+this way, and the param really is on every browser request. What was missing is
+that I never dropped it and looked. Worse, the fixture server written to test
+the behaviour *implemented my assumption* — it served HTML when the param was
+absent — so the test suite reported a pass. A fixture that encodes the belief
+it is meant to check will confirm anything.
+
+Changed:
+
+- `required_query` → **`always_present_query`** in `parse_har.py`, `fetch.py`
+  and the profiles. The old key is still read, so existing profiles work. The
+  name now describes what was measured — presence in the capture — rather than
+  asserting a server rule.
+- `fetch.py` no longer names a cause when a data route returns HTML. It reports
+  what came back and lists the plausible explanations.
+- `tests/fixture_server.py` keeps the param-gated route, relabelled as the
+  synthetic scenario it is. It tests `fetch.py`'s error path against a server
+  that *does* gate — it is not a model of stockanalysis.
+- `tests/smoke_live.sh` step 2 now **observes** what the live route does
+  without the param and prints the finding, instead of asserting an outcome.
+
+**The generalisable part:** every claim in this layer that came from reading a
+payload has held up. Both claims that came from reasoning about how a system
+*ought* to behave — this one, and the segment refusal above — were wrong. The
+data layer exists to stop invented numbers; it has to hold its own
+documentation to that standard.
 
 ### Fixed: `discover.py` hid two-thirds of the payload
 

@@ -45,10 +45,11 @@ working coverage before taking on maintenance burden.
 | Price history | `/api/symbol/s/{symbol}/history?type=annual\|quarterly\|chart` |
 | Screener | `/stocks/screener/__data.json` |
 
-All `__data.json` routes need `?x-sveltekit-trailing-slash=1`. Without it the
-server returns the HTML page with a 200 — which is why `parse_har.py` now
-tracks required query params, and why `fetch.py` reports a `parse` failure
-naming the likely cause instead of a bare JSON error.
+Every browser request to a `__data.json` route carries
+`?x-sveltekit-trailing-slash=1`, so the profiles send it too. It is **not
+required**: verified live on 2026-08-14 that the same route without it returns
+the same JSON. Send it anyway — matching the browser is the cheaper default —
+but do not treat its absence as the explanation when a route stops working.
 
 - Thai SET: `market` = `bkk`, e.g. `/quote/bkk/TU/financials/`
 - US: use `/stocks/{symbol}/financials/` (no `{market}` segment)

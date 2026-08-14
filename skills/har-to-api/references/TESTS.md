@@ -8,11 +8,11 @@ machine before trusting the stockanalysis profile.**
 | # | What | Result |
 |---|---|---|
 | 1 | SvelteKit `__data.json` route survives the noise filter | pass |
-| 2 | Query param on every occurrence → `required: true`; param on one → `false` | pass |
+| 2 | Query param on every occurrence → flagged; param on one → not | pass |
 | 3 | `/compare/AAPL/MSFT/` → `{symbol}` + `{symbol2}`, no collision | pass |
 | 4 | 401 responses quarantined, not emitted as endpoints | pass |
 | 5 | Cookie value never appears in `endpoints.json` or the profile | pass |
-| 6 | Missing required query param → server serves HTML → `kind: parse` with cause named | pass |
+| 6 | Synthetic param-gated route serves HTML → `kind: parse`, body reported | pass |
 | 7 | `$HAR2API_AUTH` unset vs HTTP 401 both → `kind: auth`, different detail | pass |
 | 8 | `--need segment_mix` refused with a message pointing at the filing | pass |
 | 9 | `--use-snapshot` replays identical values with no network | pass |

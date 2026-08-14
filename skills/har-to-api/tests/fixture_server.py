@@ -1,4 +1,12 @@
-# Local fixture server mimicking a SvelteKit __data.json route + an auth-gated route.
+# Local fixture server: a SvelteKit-shaped __data.json payload, an auth-gated
+# route, and a route that gates on a query param.
+#
+# The query-param gate is a SYNTHETIC scenario, not a model of stockanalysis.
+# It exists to exercise fetch.py's not-JSON error path against a server that
+# really does gate. An earlier version of this file was written to reproduce a
+# believed stockanalysis behaviour and, being built from the belief, confirmed
+# it; the live route returns JSON with or without the param. Do not read a pass
+# here as a statement about any real site.
 import json, http.server, socketserver, threading
 SVELTE = {"type":"data","nodes":[
   {"type":"data","data":{"theme":"light"}},
@@ -13,7 +21,9 @@ class H(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/quote/bkk/TU/financials/__data.json"):
             if "x-sveltekit-trailing-slash=1" not in self.path:
-                # exactly what the real framework does: serves the HTML page
+                # Synthetic gate — see the header note. Some SvelteKit configs
+                # do serve the page instead of the payload; stockanalysis does
+                # not. This branch tests our handling, not their behaviour.
                 self.send_response(200); self.send_header("Content-Type","text/html"); self.end_headers()
                 self.wfile.write(b"<!DOCTYPE html><html><head><title>TU</title>"); return
             b=json.dumps(SVELTE).encode()

@@ -7,9 +7,11 @@ v2 changes (see references/CHANGELOG.md):
     A HAR captured after a session cookie expired used to produce a "working"
     spec whose every call 401s. Now it says so.
   - Path params get unique names (symbol, symbol2, ...) instead of colliding.
-  - Query params are marked required/optional by how often they appeared, so
-    framework-mandated params (SvelteKit's x-sveltekit-trailing-slash) survive
-    into the generated client instead of being dropped as "samples".
+  - Query params are marked by how often they appeared, so params the browser
+    always sends (SvelteKit's x-sveltekit-trailing-slash) survive into the
+    generated client instead of being dropped as "samples". NOTE: frequency is
+    evidence of what the browser sends, NOT proof the server requires it — the
+    profile key is named always_present_query for that reason.
   - Known data-framework routes (SvelteKit __data.json, Next.js _next/data)
     are recognised rather than filtered as static assets.
   - --profile emits a fetch.py provider profile in addition to endpoints.json.
@@ -321,7 +323,13 @@ def parse_har(
         }
         stats["kept"] += 1
 
-    # ---- v2: mark query params required if present on EVERY occurrence -----
+    # ---- v2: flag query params present on EVERY occurrence -----------------
+    # This measures the CAPTURE, not the server. A param the browser always
+    # sends may still be optional; verify by dropping it and re-requesting.
+    # Calling this field `required` once led to a documented claim that the
+    # stockanalysis __data.json routes need x-sveltekit-trailing-slash=1. They
+    # do not — see references/CHANGELOG.md, "Correction: a requirement I never
+    # tested".
     for key, ep in endpoints.items():
         total = ep["occurrences"]
         counts = qp_counts.get(key, {})
@@ -360,7 +368,9 @@ def to_profile(result: Dict[str, Any], provider_name: str) -> Dict[str, Any]:
                 "id": ep["id"],
                 "method": ep["method"],
                 "url_template": f"{ep['scheme']}://{ep['host']}{ep['template_path']}",
-                "required_query": req_q,
+                # Present on every captured occurrence — send them, but do not
+                # read this as "the server rejects the request without them".
+                "always_present_query": req_q,
                 "path_params": [
                     p["name"] for p in ep["parameters"] if p.get("in") == "path"
                 ],

@@ -101,8 +101,10 @@ python scripts/parse_har.py devproxy.har \
 ```
 
 Drops static assets, ads and analytics; normalises IDs in paths
-(`/PTT/` → `/{symbol}/`); redacts auth header **values**; marks query params
-required vs optional; and **quarantines any request that came back 4xx/5xx**.
+(`/PTT/` → `/{symbol}/`); redacts auth header **values**; records which query
+params the browser sent on *every* request (`always_present_query` — evidence
+about the browser, not proof the server demands them); and **quarantines any
+request that came back 4xx/5xx**.
 
 **Read the quarantine warning.** A capture taken after a session expired used
 to yield a spec whose every call 401s — silently. Now it says so, and refuses

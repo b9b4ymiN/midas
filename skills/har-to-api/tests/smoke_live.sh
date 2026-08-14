@@ -13,8 +13,15 @@ URL="https://stockanalysis.com/quote/${MKT}/${SYM}/financials/__data.json?x-svel
 echo "== 1. route reachable and returns JSON =="
 python3 scripts/discover.py --url "$URL" --save "/tmp/${SYM}_raw.json" | head -40
 echo
-echo "== 2. same route WITHOUT the required query param (should NOT be JSON) =="
+# OBSERVE, do not assert. This step used to be labelled "should NOT be JSON",
+# which is what I believed rather than what I had checked; on 2026-08-14 the
+# live route returned identical JSON without the param. A test that states its
+# expected answer in the caption cannot report a surprise.
+echo "== 2. same route WITHOUT x-sveltekit-trailing-slash — what happens? =="
 python3 scripts/discover.py --url "https://stockanalysis.com/quote/${MKT}/${SYM}/financials/__data.json" 2>&1 | head -4
+echo "   ^ compare with step 1. Same field count => the param is not required"
+echo "     for this site (expected, as of 2026-08-14). HTML or an error => the"
+echo "     site changed; update profiles/stockanalysis.json and the CHANGELOG." 
 echo
 echo "== 3. now paste the suggested facts into profiles/stockanalysis.json, then: =="
 echo "   python3 scripts/fetch.py ${SYM}.BK --market ${MKT} --profiles ./profiles"

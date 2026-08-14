@@ -1,7 +1,7 @@
 {
   "provider": "stockanalysis",
   "tier": "primary",
-  "status": "endpoints + fact paths VERIFIED against a real TU (BKK) payload, 2026-08-13",
+  "status": "endpoints + fact paths VERIFIED against a real TU (BKK) payload, 2026-08-13; re-verified live 2026-08-14 (7 sections, 147 candidate fields). x-sveltekit-trailing-slash is NOT required — see notes.",
   "coverage": "US + non-US incl. Thai SET (BKK). Thai names return full 5y+TTM in THB.",
   "auth": "none",
   "routes": [
@@ -9,7 +9,7 @@
       "id": "financials",
       "method": "GET",
       "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/__data.json",
-      "required_query": {
+      "always_present_query": {
         "x-sveltekit-trailing-slash": "1"
       },
       "path_params": [
@@ -56,7 +56,7 @@
       "id": "balance_sheet",
       "method": "GET",
       "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/balance-sheet/__data.json",
-      "required_query": {
+      "always_present_query": {
         "x-sveltekit-trailing-slash": "1"
       },
       "path_params": [
@@ -71,7 +71,7 @@
       "id": "cash_flow",
       "method": "GET",
       "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/cash-flow-statement/__data.json",
-      "required_query": {
+      "always_present_query": {
         "x-sveltekit-trailing-slash": "1"
       },
       "path_params": [
@@ -86,7 +86,7 @@
       "id": "ratios",
       "method": "GET",
       "url_template": "https://stockanalysis.com/quote/{market}/{symbol}/financials/ratios/__data.json",
-      "required_query": {
+      "always_present_query": {
         "x-sveltekit-trailing-slash": "1"
       },
       "path_params": [
@@ -101,7 +101,7 @@
       "id": "history",
       "method": "GET",
       "url_template": "https://stockanalysis.com/api/symbol/s/{symbol}/history",
-      "required_query": {
+      "always_present_query": {
         "type": "annual"
       },
       "path_params": [
@@ -114,7 +114,7 @@
       "id": "search",
       "method": "GET",
       "url_template": "https://stockanalysis.com/api/search",
-      "required_query": {
+      "always_present_query": {
         "q": "PTT"
       },
       "path_params": [],
@@ -154,6 +154,7 @@
     "python scripts/fetch.py TU.BK --market bkk --profiles ./profiles"
   ],
   "notes": [
+    "x-sveltekit-trailing-slash=1 is what the browser sends, NOT a server requirement: verified live 2026-08-14 that the same route WITHOUT it returns identical JSON. It is kept in always_present_query because matching the browser is the safer default, not because dropping it breaks anything.",
     "Segment coverage is UNEVEN across issuers — the revenue-segments section is absent entirely for some. Paths use [id=...] selectors so a missing section yields None instead of silently binding to the next section.",
     "Segment labels are the provider's rendering of the company's reporting; cross-check the mix against the filing before building peer selection or driver work on it.",
     "Watchlist routes need a session cookie; nothing here does."
