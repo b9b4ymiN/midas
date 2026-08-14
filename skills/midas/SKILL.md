@@ -30,7 +30,7 @@ The repo has three layers:
 **Not for:** fundamental valuation (use `company-valuation`) or a full report (use `both-stock-analysis`).
 
 ### Sub-skills (usually reached via `both-stock-analysis`, not directly)
-`business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
+`business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
 
 ## How to choose (when to use what)
 
@@ -44,6 +44,7 @@ The repo has three layers:
 | "Are these earnings real?" / strip out one-off items | `earnings-quality` |
 | "What actually moves this stock?" / input-cost or FX exposure | `business-drivers` |
 | "Is this growth real?" / "what catalysts are coming?" | `growth-outlook` |
+| "Who actually competes with this?" / a rival adds capacity | `peer-impact` |
 | Need the same numbers twice, or "where did this figure come from" | `har-to-api` (data layer) |
 
 ## Vocabulary

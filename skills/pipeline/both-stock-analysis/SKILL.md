@@ -20,7 +20,7 @@ description: >
 
 A full-stack equity research pipeline. You are the analyst, working **in the spirit of Aswath Damodaran**: every valuation is a bridge between a *story* about the business and the *numbers* that story implies. You are rigorous, intellectually honest about uncertainty, allergic to hype with no cash flows behind it, and you always tie value back to four drivers — **cash flows, growth, reinvestment efficiency, and risk (cost of capital).**
 
-The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains eleven installed sub-skills:
+The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains twelve installed sub-skills:
 
 | Step | Sub-skill used | Purpose |
 |---|---|---|
@@ -29,13 +29,14 @@ The pipeline runs from ticker to report and then, deliberately, does not stop th
 | 2.3 | `business-drivers` | Read the business, derive what actually moves its earnings, and quantify it — margin points per 10% move, and when it lands |
 | 2.5 | `earnings-quality` | Normalise the earnings base (Damodaran: average the MARGIN over a cycle, not the earnings) + rule on whether growth may be stacked |
 | 3 | `company-valuation` | Financial health snapshot (~20 metrics, 5-yr trends + reads) → DCF + relative + SOTP → intrinsic value + candidate investment hooks |
+| 3.5 | `peer-impact` | Find the competitors whose actions can actually move earnings — worldwide by revenue mix, filtered by shared input / shared customer / price setting |
 | 4 | `earnings-preview` + `earnings-recap` + `growth-outlook` | Setup, track record, sentiment · growth decomposed by source · dated catalysts |
 | 4.5 | `bf-tech-analysis` | TradingView chart image + top-down technical timing, entry zone, stop, target, R |
 | 5 | `investment-synthesis` | Select the key investment insight → thesis, 1–3 yr scenarios + investment plan |
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
 | 7 | `stock-grill` | Attack the finished report before any capital moves — R0 consistency, then the five adversarial rounds |
 
-> **Dependencies:** This skill assumes `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `peer-impact`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -184,6 +185,46 @@ Capture from this step: **the financial snapshot (metrics + 5-yr trends + reads)
 
 ---
 
+## Step 3.5: Who Can Actually Hurt You — use `peer-impact`
+
+Step 3's relative valuation already built a peer set, and it is the right one for
+its job: companies the market prices with the same logic. **This is a different
+question** — whose decisions change our margin — and it produces a different set.
+
+Read and follow **`peer-impact`**. Two layers:
+
+**Layer 1** searches worldwide from the segment mix, with **no country filter**.
+Competition for a scarce input is global by construction. A search restricted to
+the home market returns domestic companies selling different products and misses
+every real competitor, because they are all abroad.
+
+**Layer 2** keeps only candidates that reach the margin through one of three
+channels — they buy the same constrained input, sell to the same buyer, or are
+large enough to set the price you follow. Everything scoring on none is dropped
+however similar it looks.
+
+```bash
+python skills/pipeline/peer-impact/scripts/peer_impact.py \
+  --candidates peers.json --margin 0.0487 --cost-share 0.55 \
+  --pass-through 0.6 --input-move 0.10
+```
+
+For shared-input peers it chains into the same margin arithmetic as Step 2.3, so
+"they add capacity" becomes "we lose N points of margin". The capacity-to-price
+step is your estimate and the output says so.
+
+**Do not replace the Peer Validation Gate.** Step 3's multiples table keeps its
+own peer set and its own rules.
+
+Carry forward: the ranked impact table into Step 5's key risks; shared-input
+peers back into Step 2.3's driver confidence; a competitor's dated capacity
+decision into Step 4b's catalysts.
+
+**Write down who was dropped and why.** Without it a reader cannot tell a
+thorough search from a lazy one, and Step 7 cannot attack the exclusions.
+
+---
+
 ## Step 4: Earnings & Sentiment — use `earnings-recap` then `earnings-preview`
 
 Two lenses on the same stock:
@@ -245,6 +286,7 @@ Pull Steps 2–4.5 into a decision. Read and follow the **`investment-synthesis`
 - **From Step 2** — the narrative, the 3 P's verdict, the life-cycle stage, and the confidence level.
 - **From Step 2.3** — the driver list, each driver's sensitivity, and the timing lags.
 - **From Step 2.5** — the normalised earnings base, the exclusion table, and whether a growth rate may be stacked on it.
+- **From Step 3.5** — the ranked impact-peer table and the margin arithmetic for shared-input rivals.
 - **From Step 4b** — the growth decomposition (durable share) and the dated catalyst table.
 - **From Step 3** — blended fair value, per-method prices, WACC components, the sensitivity grid, the Bull/Base/Bear table, the ROIC−WACC spread / leverage read, and the candidate investment hooks.
 - **From Step 4** — the recent-quarter execution read and the upcoming-quarter setup (is the stock priced for perfection or for pessimism?).

@@ -83,7 +83,7 @@ Nothing updates behind the scenes — pull the latest with `npx skills update` w
 Three layers, all sharing one canonical vocabulary ([`CONTEXT.md`](./CONTEXT.md) — 24 terms):
 
 - **Router** — `/midas` points you to the right skill when you don't remember which to reach for.
-- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates ten sub-skills into a full research report from a single ticker.
+- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates eleven sub-skills into a full research report from a single ticker.
 - **Data layer** (`skills/har-to-api/`) — reverse-engineered provider APIs with provenance, dated snapshots and flagged fallbacks, so the same run twice gives the same numbers.
 - **Adversarial + technical** — `/stock-grill` attacks a finished thesis; `minervini-sepa` is the standalone SEPA trading-timing system.
 
@@ -108,6 +108,7 @@ Builds the thesis and report from a ticker. Usually entered via `both-stock-anal
 - **[company-valuation](./skills/pipeline/company-valuation/SKILL.md)** — DCF + relative + SOTP → blended fair value, sensitivity grid, candidate investment hooks.
 - **[earnings-preview](./skills/pipeline/earnings-preview/SKILL.md)** — Pre-earnings: consensus, beat/miss track record, positioning.
 - **[earnings-recap](./skills/pipeline/earnings-recap/SKILL.md)** — Post-earnings: actual vs estimate, reaction, what changed.
+- **[peer-impact](./skills/pipeline/peer-impact/SKILL.md)** — Competitors ranked by whether their actions move your earnings, not by how similar they look → worldwide search, three impact channels, and the names you dropped.
 - **[growth-outlook](./skills/pipeline/growth-outlook/SKILL.md)** — Growth split by source and graded for repeatability, plus a catalyst table where every row has a date and a way to verify it.
 - **[bf-tech-analysis](./skills/pipeline/bf-tech-analysis/SKILL.md)** — TradingView chart + top-down technical timing, entry zone, stop, target.
 - **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — Turn narrative + valuation + earnings into a thesis, scenarios, and a conditional plan.

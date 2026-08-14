@@ -1,0 +1,55 @@
+{
+  "company": "TU.BK",
+  "segments": {"ambient": 0.472, "frozen": 0.278, "petfood": 0.147, "value_added": 0.103},
+  "candidates": [
+    {
+      "name": "Global tuna processor A",
+      "country": "KR",
+      "overlaps": ["ambient"],
+      "channels": ["supply", "demand", "price"],
+      "evidence": "buys skipjack from the same western-Pacific grounds; competes on US retail shelves; large enough to move the published skipjack reference"
+    },
+    {
+      "name": "US canned-seafood brand B",
+      "country": "US",
+      "overlaps": ["ambient"],
+      "channels": ["demand"],
+      "evidence": "shares shelf space in US grocery; sources through third parties rather than bidding directly"
+    },
+    {
+      "name": "Regional shrimp exporter C",
+      "country": "VN",
+      "overlaps": ["frozen"],
+      "channels": ["demand"],
+      "evidence": "same EU importers for frozen seafood"
+    },
+    {
+      "name": "Global pet-food major D",
+      "country": "US",
+      "overlaps": ["petfood"],
+      "channels": ["demand", "price"],
+      "evidence": "sets wet pet-food price points in US grocery"
+    },
+    {
+      "name": "Pet-food maker using marine protein E",
+      "country": "US",
+      "overlaps": ["petfood", "ambient"],
+      "channels": ["supply"],
+      "evidence": "buys the same marine protein for wet pet food — competes for the input without competing for any customer",
+      "note": "the vertical-neighbour case: no shared shelf, real shared input"
+    },
+    {
+      "name": "Domestic snack maker F",
+      "country": "TH",
+      "overlaps": [],
+      "channels": [],
+      "rejected_because": "no shared input, no shared shelf, not a price setter — same GICS sector and same country only"
+    },
+    {
+      "name": "Local rice miller G",
+      "country": "TH",
+      "overlaps": [],
+      "channels": []
+    }
+  ]
+}
