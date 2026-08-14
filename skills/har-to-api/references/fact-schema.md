@@ -53,7 +53,7 @@ part that says how much to trust them.
 | `auth` | 401/403, or `$HAR2API_AUTH` unset | Log in, re-capture, update the env var |
 | `notfound` | 404 | The route moved, or this symbol isn't covered |
 | `network` | timeout / DNS / connection (retried twice) | Retry later |
-| `parse` | response wasn't JSON | Usually a missing required query param — the server served HTML |
+| `parse` | response wasn't JSON | Read the reported body. HTML means the route moved, the query string is incomplete, or it's an interstitial — open it in a browser rather than guessing |
 
 ## Naming
 

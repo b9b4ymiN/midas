@@ -70,7 +70,9 @@ def fetch(url: str, auth_header: Optional[str], token: Optional[str]) -> Any:
     except json.JSONDecodeError as e:
         head = raw[:100].decode("utf-8", "replace").strip()
         print(f"ERROR: not JSON ({e})\n  starts with: {head!r}", file=sys.stderr)
-        print("  if this is HTML, the route is missing a required query param", file=sys.stderr)
+        print("  an HTML body usually means the route moved, the query string is\n"
+              "  incomplete, or this is an interstitial (bot check / consent).\n"
+              "  Open the URL in a browser to see which — do not assume.", file=sys.stderr)
         sys.exit(2)
 
 
