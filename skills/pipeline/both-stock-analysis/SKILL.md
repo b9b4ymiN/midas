@@ -20,21 +20,22 @@ description: >
 
 A full-stack equity research pipeline. You are the analyst, working **in the spirit of Aswath Damodaran**: every valuation is a bridge between a *story* about the business and the *numbers* that story implies. You are rigorous, intellectually honest about uncertainty, allergic to hype with no cash flows behind it, and you always tie value back to four drivers — **cash flows, growth, reinvestment efficiency, and risk (cost of capital).**
 
-The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains nine installed sub-skills:
+The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains eleven installed sub-skills:
 
 | Step | Sub-skill used | Purpose |
 |---|---|---|
 | 1 | — | Confirm market, set country/currency parameters |
 | 2 | `business-narrative` | Damodaran story research → story-to-numbers map |
+| 2.3 | `business-drivers` | Read the business, derive what actually moves its earnings, and quantify it — margin points per 10% move, and when it lands |
 | 2.5 | `earnings-quality` | Normalise the earnings base (Damodaran: average the MARGIN over a cycle, not the earnings) + rule on whether growth may be stacked |
 | 3 | `company-valuation` | Financial health snapshot (~20 metrics, 5-yr trends + reads) → DCF + relative + SOTP → intrinsic value + candidate investment hooks |
-| 4 | `earnings-preview` + `earnings-recap` | Setup, track record, sentiment |
+| 4 | `earnings-preview` + `earnings-recap` + `growth-outlook` | Setup, track record, sentiment · growth decomposed by source · dated catalysts |
 | 4.5 | `bf-tech-analysis` | TradingView chart image + top-down technical timing, entry zone, stop, target, R |
 | 5 | `investment-synthesis` | Select the key investment insight → thesis, 1–3 yr scenarios + investment plan |
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
 | 7 | `stock-grill` | Attack the finished report before any capital moves — R0 consistency, then the five adversarial rounds |
 
-> **Dependencies:** This skill assumes `business-narrative`, `earnings-quality`, `company-valuation`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -91,6 +92,40 @@ Carry two things forward:
 - **The narrative + 3 P's verdict + confidence → Step 5** (the story half of the thesis) and **→ the report (Step 6)** as the qualitative spine.
 
 Use the correctly-resolved ticker and currency from Step 1.
+
+---
+
+## Step 2.3: What Actually Moves the Earnings — use `business-drivers`
+
+Read and follow **`business-drivers`** before valuing anything. Its governing
+rule: **understand the business first, only then go looking for data.** A step
+that starts from a list of candidate drivers returns "oil, FX, rates" for every
+company alive, which is true and useless.
+
+It reads the segment mix, cost structure, selling and buying geography and
+contract terms, derives the drivers those imply, and then quantifies each:
+
+```bash
+python skills/pipeline/business-drivers/scripts/sensitivity.py \
+  --driver "tuna" --cost-share 0.55 --margin 0.0487 --move 0.10 \
+  --pass-through 0.6 --revenue 135439918000 --lag-months 3
+```
+
+Carry forward:
+
+- **Sensitivity per driver** -> Step 3's scenario range, as a third axis beyond
+  WACC x terminal growth.
+- **The commodity price path** -> Step 2.5, where Damodaran's method calls for
+  **futures prices** rather than analyst forecasts.
+- **Timing lags** (inventory buffers, hedges, contract repricing) -> Step 4's
+  catalyst dates. A driver that moved today may not reach reported margin for
+  two quarters, and a model that books it immediately is wrong about the quarter
+  in a way that reads as simply wrong.
+- **The most sensitive driver** -> Step 5's thesis-breakers.
+
+**Check it worked:** run it on a food processor and it must produce the raw
+material without being told. If the output is generic macro variables, the
+reading was skipped.
 
 ---
 
@@ -162,6 +197,34 @@ Use the same correctly-suffixed ticker from Step 1 (e.g., `.BK` for Thai names) 
 
 ---
 
+
+### Step 4b: Growth & Catalysts — use `growth-outlook`
+
+Alongside the earnings read, run **`growth-outlook`**. It answers two questions
+the earnings skills do not.
+
+**Is the growth repeatable?** It decomposes reported revenue growth into volume,
+price, expansion, acquisition and currency, grading each by whether it can happen
+again, and reports whatever the components fail to explain as *unexplained*
+rather than spreading it across them. The test that earns its keep: price up
+while volume down is cost pass-through, not pricing power — the most common way
+a company losing customers reports a year of growth.
+
+**What is coming, and when?** A catalyst table where **every row carries a date
+and a way to verify it happened**. No date, no row — the repo's own decision
+journal already says a catalyst without a deadline is wishful thinking, and until
+now nothing produced the deadline.
+
+Carry forward: the **durable share** of growth (only that belongs in a terminal
+assumption), and the catalyst table into Step 5's scenario timeline and Step 7's
+review date.
+
+**Interaction to get right:** if Step 2.5's growth gates failed, the normalised
+base already contains the recovery. Do not stack a growth rate from this step on
+top of it — that counts the recovery twice.
+
+---
+
 ## Step 4.5: Technical Timing — use `bf-tech-analysis`
 
 Read and follow the **`bf-tech-analysis`** skill before final synthesis. It captures a TradingView chart image via the local `tradingview_chart_image` MCP tool, then performs a top-down weekly→daily technical read calibrated to the specific stock.
@@ -180,7 +243,9 @@ Capture from this step: TradingView chart image(s), weekly context, daily condit
 
 Pull Steps 2–4.5 into a decision. Read and follow the **`investment-synthesis`** skill, feeding it its inputs:
 - **From Step 2** — the narrative, the 3 P's verdict, the life-cycle stage, and the confidence level.
+- **From Step 2.3** — the driver list, each driver's sensitivity, and the timing lags.
 - **From Step 2.5** — the normalised earnings base, the exclusion table, and whether a growth rate may be stacked on it.
+- **From Step 4b** — the growth decomposition (durable share) and the dated catalyst table.
 - **From Step 3** — blended fair value, per-method prices, WACC components, the sensitivity grid, the Bull/Base/Bear table, the ROIC−WACC spread / leverage read, and the candidate investment hooks.
 - **From Step 4** — the recent-quarter execution read and the upcoming-quarter setup (is the stock priced for perfection or for pessimism?).
 - **From Step 4.5** — the TradingView chart image, technical condition, entry zone, stop, target(s), R-multiple, timing verdict, and invalidation level.
