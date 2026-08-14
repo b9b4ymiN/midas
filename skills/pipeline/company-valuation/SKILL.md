@@ -117,8 +117,19 @@ Full methodology, the pull code, and the interpretation rules are in **`referenc
 | Balance sheet / leverage | D/E, Net debt, Current ratio, Net debt/EBITDA |
 | Valuation multiples | P/E, P/B, EV/EBITDA, P/S, P/FCF |
 | Dividend / shareholder return | DPS, yield, payout ratio, buyback yield |
+| **Capital allocation quality** | **Diluted share count trend, Goodwill/Assets, ROIC before vs after deals, Related-party % of COGS** |
 
 Plus health scores (Piotroski F-Score, Altman Z-Score) as a gut-check.
+
+**Capital allocation quality** covers the three things the income statement
+cannot show: dilution moves only the denominator; an overpriced acquisition
+*raises* consolidated operating income while destroying value in the ROIC
+denominator; and related-party purchases arrive as ordinary COGS. Run
+`scripts/capital_allocation.py` and read the "Capital Allocation Quality"
+section of `references/financial_metrics.md`. The related-party figure comes
+from the notes to the financial statements — no data provider exposes it, so if
+you cannot get it, say so rather than leaving the reader to assume it was
+checked.
 
 **The point is the interpretation, not the table.** A single year is a data point; five years is a story. For each metric, report the latest value, the 5-year direction, and a one-line judgement. Lead with the three diagnostics that usually carry the thesis:
 

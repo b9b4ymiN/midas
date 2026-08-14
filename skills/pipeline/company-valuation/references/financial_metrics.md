@@ -18,6 +18,7 @@ Pull and present these six families. Aim for ~20 metrics total — enough to be 
 | **Balance sheet / leverage** | Debt/Equity (D/E), Net debt, Current ratio, Net debt/EBITDA, interest coverage | Is the balance sheet getting safer or riskier? |
 | **Valuation multiples** | P/E, P/B, EV/EBITDA, P/S, P/FCF, EV/EBIT | Cheap or expensive vs. own history and peers? |
 | **Dividend / shareholder return** | DPS, dividend yield, payout ratio, buyback yield, shareholder yield | How much cash comes back, and is it sustainable? |
+| **Capital allocation quality** | Diluted share count trend, Goodwill/Total assets, ROIC before vs after major deals, Related-party purchases as % of COGS | Is management's use of capital reaching you, or leaking before it does? |
 
 Plus a few **health scores** as a quick gut-check: Piotroski F-Score (0–9, fundamental momentum), Altman Z-Score (bankruptcy distance).
 
@@ -180,3 +181,60 @@ Lead the section with the **two or three diagnostics that carry the thesis** —
 Round every displayed number. Keep currency consistent and labelled. Cross-check the latest year against the primary filing; aggregator data lags and can be revised.
 
 > **Not financial advice.** These reads are analytical heuristics to help a reader reason, not recommendations. The same number supports different conclusions depending on price paid and horizon.
+
+
+---
+
+## Capital Allocation Quality — the three the income statement cannot show
+
+Most of what a poor steward of capital does eventually reaches reported profit,
+and ROIC, the ROIC−WACC spread and buyback yield above already cover most of the
+ground. Three things they do not cover:
+
+**1. Dilution.** Issue shares and revenue is unchanged, operating income is
+unchanged, net income is unchanged — and your claim on all three shrinks. No line
+on the income statement moves; only the denominator does. Track the **diluted**
+share count over five to ten years, adjusted for splits.
+
+| Annual change | Read |
+|---|---|
+| below +2% | routine option issuance |
+| +2% to +5% | above routine — find out what it funded |
+| above +5% | per-share results diluted faster than most businesses grow |
+| negative | buybacks — whether that was the best use of the cash depends on the price paid |
+
+**2. Overpaying for acquisitions.** The worst of the three, because the acquired
+company's profit **consolidates**: operating income goes up and the year looks
+like growth. The damage sits in goodwill and in the ROIC denominator. The income
+statement does not merely fail to show it — it points the other way.
+
+Track **goodwill / total assets** and watch for step changes marking the deal
+year, then compare **ROIC before and after**. Above 20% of assets, judge
+management on the returns those deals earn rather than on consolidated revenue.
+Above 35%, most of the balance sheet is a record of prices paid for other
+companies.
+
+**3. Related-party leakage.** Buying from an affiliate above market price arrives
+as ordinary cost of goods sold, indistinguishable from real input cost. This one
+is not in any data feed — it is in the **notes to the financial statements**.
+Material for family-controlled companies, which is most of the Thai market. Above
+5% of COGS, read how the prices were set; above 15%, those transactions
+materially set reported margin.
+
+**And the timing reason they belong together.** Even where the damage does
+eventually reach earnings, it arrives two or three years late. By then you own
+the position. All three are visible in the year they happen.
+
+### Running it
+
+```bash
+python scripts/capital_allocation.py \
+  --shares 4128,4110,4098,3980,3720 --years 2025,2024,2023,2022,2021 \
+  --goodwill 12400,12500,4100,4050,4000 \
+  --total-assets 210000,205000,190000,188000,180000 \
+  --roic 0.081,0.079,0.112,0.118,0.121 \
+  --related-party-purchases 8200 --cogs 109000
+```
+
+It reports what it could not assess rather than staying silent about it — a
+dashboard that omits a metric looks the same as one where the metric was fine.
