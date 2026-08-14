@@ -87,6 +87,10 @@ Three layers, all sharing one canonical vocabulary ([`CONTEXT.md`](./CONTEXT.md)
 - **Data layer** (`skills/har-to-api/`) — **Step 0 of the pipeline.** Pulls every fact once with provenance, dated snapshots and flagged fallbacks, so the whole run reads one set of numbers and `--use-snapshot` replays it exactly.
 - **Adversarial + technical** — `/stock-grill` attacks a finished thesis; `minervini-sepa` is the standalone SEPA trading-timing system.
 
+<p align="center">
+  <img alt="The Midas panda selects a Minervini methodology figure from categorized shelves of investor thinking modules" src="assets/midas-investor-module-lab.png" width="760">
+</p>
+
 ## Reference
 
 Grouped by role. **User-invoked** skills are typed by hand (`/midas`). **Model-invoked** skills are reached by the agent automatically when the task fits. Each line is a summary — open the `SKILL.md` for the full discipline.
