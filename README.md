@@ -4,138 +4,273 @@
   </a>
 </p>
 
+<p align="center">
+  <strong>English</strong> · <a href="README.th.md">ไทย</a>
+</p>
+
 # midas
 
 [![skills.sh](https://skills.sh/b/b9b4ymiN/midas)](https://skills.sh/b9b4ymiN/midas)
 
-Investment skills that **build a thesis — then try to break it before you commit capital.** A self-contained pipeline from ticker to decision: a construction layer assembles the case (narrative → valuation → earnings → synthesis → report), and an adversarial layer stress-tests it before you act.
+Midas is a collection of investment-research skills for AI agents. It helps you move from a ticker to a sourced thesis, a valuation, a conditional plan, and a self-contained HTML report. It can then challenge that work before you commit capital.
 
-Most investing tools help you *build* a case. Very few help you *demolish* it. midas is intentionally split along that line — every output is a conditional plan, and the decision always stays with you.
+You do not need to remember all the skill names. Start with `/midas`, describe what you want in normal language, and it will point you to the right workflow.
 
-> ⚠️ **Not financial advice.** Research and educational output only. Nothing here is a recommendation to buy, sell, or hold any security.
+> **Research and educational output only. Not financial advice.** Midas does not make the final investment decision for you and does not promise returns.
+
+## What Midas does
+
+Midas separates investment work into clear jobs:
+
+- **Choose:** find the right method for the question you are asking.
+- **Collect:** fetch dated financial facts with their sources and save a replayable snapshot.
+- **Build:** connect the business story to earnings, valuation, catalysts, and technical timing.
+- **Explain:** turn the work into a readable, self-contained BF-Report in HTML.
+- **Challenge:** look for contradictions, fragile assumptions, and reasons the thesis could fail.
+
+Every plan is conditional. It should say what evidence would strengthen the thesis, what would weaken it, and when the situation should be reviewed. The human keeps decision authority.
+
+## Why Midas exists
+
+Investment mistakes often begin after the first good idea. Once we like a thesis, confirming evidence feels stronger than disconfirming evidence. Months later, we may also forget why we entered or quietly move the rules when the price moves against us.
+
+Midas is designed around three protections:
+
+1. **Trace the evidence.** Important figures carry a source and an as-of date.
+2. **Write the logic down.** The report connects the story, numbers, scenarios, and review conditions.
+3. **Attack the finished thesis.** `stock-grill` checks the report against itself and then stress-tests the reasoning.
+
+The goal is not to guarantee a good outcome. It is to make the decision process more explicit, reproducible, and difficult to rationalize after the fact.
 
 ## Installation
+
+You need Node.js with `npm`/`npx`, Python 3.8 or newer, and an AI agent environment that supports installable Agent Skills. Node.js installs the skills; Python runs the data and analytical helpers used by a full workflow. On Windows, check both with `npx --version` and `python --version`. Run the following command in your terminal, not in the agent chat:
+
+Install every skill globally:
 
 ```bash
 npx skills add b9b4ymiN/midas -g --all --copy
 ```
 
-`--copy` is recommended on Windows (avoids symlink permission issues). After install, **restart your agent session** — skills appear in the picker as `/<name>` (e.g. `/midas`, `/stock-grill`).
+`--copy` is recommended on Windows because it avoids common symbolic-link permission problems. After installation, **restart your agent session** so the new skills appear. The `-g` option makes them available globally. If `npx` is not recognized, install a current Node.js release and open a new terminal before trying again.
 
 <details>
-<summary><strong>Install only specific skills</strong></summary>
+<summary><strong>Install only selected skills</strong></summary>
 
 ```bash
 npx skills add b9b4ymiN/midas -g -s stock-grill -s minervini-sepa --copy
 ```
 
-List what's available first with `npx skills add b9b4ymiN/midas -l`.
+Use this when you only want the adversarial review and the standalone SEPA workflow. You can list the available skills first with `npx skills add b9b4ymiN/midas -l`.
 
 </details>
 
 <details>
-<summary><strong>Project-level (editable files in your repo) instead of global</strong></summary>
+<summary><strong>Install editable copies inside the current project</strong></summary>
 
-Drop `-g` to write the skills into your current project as plain, editable files:
+Omit `-g` to install project-local files that you can inspect and edit:
 
 ```bash
 npx skills add b9b4ymiN/midas --all
 ```
 
-Nothing updates behind the scenes — pull the latest with `npx skills update` when you want.
+Installed copies do not change automatically. Run `npx skills update` when you choose to update them.
 
 </details>
 
-## Why midas exists
+## Quick Start
 
-### #1: You fell for your own thesis
+If you are unsure where to begin, type this in your AI agent's chat or prompt after restarting the session:
 
-> "The investor's chief problem — and even his worst enemy — is likely to be himself."
->
-> Benjamin Graham, *The Intelligent Investor*
+```text
+/midas
+I want to analyze CPALL.BK but I do not know which workflow to use.
+```
 
-**The problem.** Once you've built a case for a stock, confirmation bias makes every new data point feel like proof. Confirming evidence is cheap; the mind manufactures it for free.
+`/midas` explains which skill fits the request. It does not run every method automatically. Once the route is clear, ask the agent to continue with the recommended skill.
 
-**The fix** is [`/stock-grill`](./skills/stock-grill/SKILL.md) — an **adversary by role**. It consumes your finished thesis and tries to demolish it across five rounds: pre-mortem, sensitivity attack, variant-perception check, discipline audit, and sell pre-commit. It never tells you to buy or sell; it just refuses to let an assumption survive untested. Structured adversarial questioning is the one debiasing move that reliably survives replication.
+For a complete company analysis, you can also ask directly:
 
-### #2: You forgot why you bought
+```text
+Run a full analysis of CPALL.BK and produce the final BF-Report.
+```
 
-> "Know what you own, and know why you own it."
->
-> Peter Lynch, *One Up On Wall Street*
+This reaches `both-stock-analysis`, which confirms the market, gathers one consistent data snapshot, runs the research pipeline, renders the report, and finishes with an adversarial review.
 
-**The problem.** Months in, a position is down and the original reasoning has blurred into a vague feeling. You start judging the decision by the outcome — *resulting* — instead of by the thinking that produced it.
+## Common workflows
 
-**The fix.** Every stock-grill run ends by writing a **pre-registered decision journal**: the thesis, your confidence as a number, the variant perception, the pre-mortem, and the sell triggers — captured *before* the outcome is known. It locks the belief ex-ante so hindsight can't quietly rewrite it. ([template](./skills/stock-grill/references/decision-journal-template.md))
+You can write requests in normal language. Slash commands are useful for user-invoked skills such as `/midas`, but model-invoked skills can be selected automatically when your request is clear.
 
-### #3: Your sell discipline evaporated
+| What you want | Example prompt | Skill and result |
+|---|---|---|
+| A complete investment report | `Run a full analysis of CPALL.BK and produce the final BF-Report.` | `both-stock-analysis` → full research pipeline and HTML BF-Report |
+| A focused valuation | `Estimate the fair value of NVDA using DCF, relative valuation, and SOTP where applicable.` | `company-valuation` → blended fair value and sensitivity grid |
+| A Minervini-style setup review | `Run the Minervini SEPA process on AAPL.` | `minervini-sepa` → four-gate SEPA assessment and conditional setup |
+| Traceable source data | `Fetch reproducible financial facts for TU.BK and save a dated snapshot.` | `har-to-api` → sourced JSON snapshot that can be replayed |
+| A challenge to an existing report | `Stress-test this BF-Report before I make a decision.` | `stock-grill` → consistency check, five adversarial rounds, and decision journal |
 
-> "Close enough loses money."
->
-> Mark Minervini
+## What you get
 
-**The problem.** The plan was disciplined at entry. Then the stock falls and "hold and hope" feels easier than re-checking the thesis. The biggest leak in most portfolios is a rationalized hold.
+A full run builds an audit trail rather than one large, unexplained answer:
 
-**The fix.** stock-grill's final round forces you to **pre-commit sell triggers** — catalyst-fail, thesis-broken, valuation-stretched — with a review date, *before* you own the position. Drawdown ≠ a broken thesis, but you only know the difference if you wrote it down while you were still objective.
+1. **Sourced data snapshot** — a dated set of facts reused by the whole analysis.
+2. **Business narrative** — what the company does, why it may grow, and how the story should appear in the numbers.
+3. **Business drivers** — the variables that can move earnings, with sensitivity and timing.
+4. **Normalized earnings** — an earnings base adjusted for cycles and one-off effects.
+5. **Valuation** — DCF, relative valuation, SOTP where useful, blended fair value, and a sensitivity grid.
+6. **Context** — competitors with real earnings impact, earnings setup or recap, repeatable growth, dated catalysts, and technical timing.
+7. **Investment synthesis** — the key insight, bull/base/bear scenarios, thesis-builders, thesis-breakers, and a conditional plan.
+8. **BF-Report** — a self-contained, mobile-responsive HTML research document.
+9. **Adversarial review** — internal consistency checks and a deliberate attack on the thesis.
+10. **Decision journal** — beliefs, confidence, failure conditions, and review triggers recorded before the outcome is known.
 
-## How it's organized
-
-Three layers, all sharing one canonical vocabulary ([`CONTEXT.md`](./CONTEXT.md) — 24 terms):
-
-- **Router** — `/midas` points you to the right skill when you don't remember which to reach for.
-- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates eleven sub-skills into a full research report from a single ticker.
-- **Data layer** (`skills/har-to-api/`) — **Step 0 of the pipeline.** Pulls every fact once with provenance, dated snapshots and flagged fallbacks, so the whole run reads one set of numbers and `--use-snapshot` replays it exactly.
-- **Adversarial + technical** — `/stock-grill` attacks a finished thesis; `minervini-sepa` is the standalone SEPA trading-timing system.
+## How a full analysis works
 
 <p align="center">
   <img alt="The Midas panda selects a Minervini methodology figure from categorized shelves of investor thinking modules" src="assets/midas-investor-module-lab.png" width="760">
 </p>
 
-## Reference
+The full workflow selects different “thinking tools” for different jobs. `both-stock-analysis` coordinates them in this order:
 
-Grouped by role. **User-invoked** skills are typed by hand (`/midas`). **Model-invoked** skills are reached by the agent automatically when the task fits. Each line is a summary — open the `SKILL.md` for the full discipline.
+```text
+Step 0: data snapshot
+→ resolve market, exchange suffix, currency, and country risk
+→ business narrative
+→ business drivers
+→ earnings quality
+→ company valuation
+→ impact peers
+→ earnings setup/recap and growth catalysts
+→ technical timing
+→ investment synthesis
+→ BF-Report
+→ stock-grill
+```
 
-### Router
+The construction stage contains **eleven sub-skills**. The data layer runs before them, the orchestrator controls the sequence, and `stock-grill` attacks the completed result afterward. If you only need one part—such as valuation or earnings quality—you can run that skill without the full pipeline.
 
-**User-invoked**
+## Choose the right skill
 
-- **[midas](./skills/midas/SKILL.md)** — Which investment skill fits your situation. A router over the skills in this repo.
+| Your question | Use |
+|---|---|
+| “I do not know where to start.” | `/midas` |
+| “Give me the full picture and a finished report.” | `both-stock-analysis` |
+| “Fetch the facts once and show where they came from.” | `har-to-api` |
+| “Explain the business story behind the numbers.” | `business-narrative` |
+| “What actually moves this company’s earnings?” | `business-drivers` |
+| “Are reported earnings a reliable valuation base?” | `earnings-quality` |
+| “What is the company worth?” | `company-valuation` |
+| “Which competitors can materially affect earnings?” | `peer-impact` |
+| “What should I know before the next results?” | `earnings-preview` |
+| “What changed in the latest results?” | `earnings-recap` |
+| “Is growth repeatable, and what catalysts have dates?” | `growth-outlook` |
+| “What does the weekly and daily chart say about timing?” | `bf-tech-analysis` |
+| “Turn the research into one thesis and conditional plan.” | `investment-synthesis` |
+| “Render the research as a professional HTML document.” | `bf-report` |
+| “Try to break this finished thesis.” | `stock-grill` |
+| “Run the Minervini SEPA process.” | `minervini-sepa` |
 
-### Construction pipeline
+New to the terminology? **DCF** values expected cash flows; **SOTP** values business parts separately; a **sensitivity grid** shows how valuation changes when assumptions change; a **provenance tier** labels the quality or role of a data source; **Trend Template** and **VCP** are Minervini chart filters; and **risk geometry** compares the planned entry, stop, target, and potential loss.
 
-Builds the thesis and report from a ticker. Usually entered via `both-stock-analysis`, which chains the rest automatically.
+## Skill reference
 
-- **[both-stock-analysis](./skills/pipeline/both-stock-analysis/SKILL.md)** — Full equity research in the spirit of Damodaran; orchestrates the seven sub-skills into a filing-grade HTML report.
-- **[business-narrative](./skills/pipeline/business-narrative/SKILL.md)** — The story behind the numbers → story-to-numbers map.
-- **[business-drivers](./skills/pipeline/business-drivers/SKILL.md)** — Read the business first, then derive what moves its earnings → named drivers with a sensitivity number and a timing lag.
-- **[earnings-quality](./skills/pipeline/earnings-quality/SKILL.md)** — Normalise the earnings base Damodaran's way (average the margin over a cycle, not the earnings) → defensible base + growth-eligibility ruling.
-- **[company-valuation](./skills/pipeline/company-valuation/SKILL.md)** — DCF + relative + SOTP → blended fair value, sensitivity grid, candidate investment hooks.
-- **[earnings-preview](./skills/pipeline/earnings-preview/SKILL.md)** — Pre-earnings: consensus, beat/miss track record, positioning.
-- **[earnings-recap](./skills/pipeline/earnings-recap/SKILL.md)** — Post-earnings: actual vs estimate, reaction, what changed.
-- **[peer-impact](./skills/pipeline/peer-impact/SKILL.md)** — Competitors ranked by whether their actions move your earnings, not by how similar they look → worldwide search, three impact channels, and the names you dropped.
-- **[growth-outlook](./skills/pipeline/growth-outlook/SKILL.md)** — Growth split by source and graded for repeatability, plus a catalyst table where every row has a date and a way to verify it.
-- **[bf-tech-analysis](./skills/pipeline/bf-tech-analysis/SKILL.md)** — TradingView chart + top-down technical timing, entry zone, stop, target.
-- **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — Turn narrative + valuation + earnings into a thesis, scenarios, and a conditional plan.
-- **[bf-report](./skills/pipeline/bf-report/SKILL.md)** — The filing-grade HTML research-document renderer.
+The repository currently contains **16 skills**. Start with the router when you are uncertain; enter the full workflow for end-to-end work; reach a construction skill directly for one focused question.
 
-### Adversarial
+### Start here
 
-**Model-invoked**
+- **[midas](./skills/midas/SKILL.md)** — user-invoked router that selects the right investment workflow from a plain-language request.
 
-- **[stock-grill](./skills/stock-grill/SKILL.md)** — Adversarial stress-test of a thesis: pre-mortem → sensitivity attack → variant-perception check → gate audit → sell pre-commit. Outputs a pre-registered decision journal.
+### Data layer
 
-### Technical timing
+- **[har-to-api](./skills/har-to-api/SKILL.md)** — fetches financial facts with provenance, saves dated snapshots, and can derive a client from captured website traffic when a new source is needed.
 
-**Model-invoked**
+### Full workflow
 
-- **[minervini-sepa](./skills/minervini-sepa/SKILL.md)** — Specific Entry Point Analysis (SEPA): the 4-gate screen (Q33 fundamentals → Trend Template → VCP → risk geometry) with entry/stop/target/size.
+- **[both-stock-analysis](./skills/pipeline/both-stock-analysis/SKILL.md)** — coordinates the complete ticker-to-report workflow, including the eleven construction sub-skills and the final adversarial review.
 
-## Docs layout
+### Construction: eleven focused skills
 
-- [`CONTEXT.md`](./CONTEXT.md) — shared glossary; the canonical vocabulary and authoring single-source-of-truth (each skill inlines the terms it needs at runtime).
-- `docs/adr/` — methodology rationale, created lazily when a choice is hard to reverse.
-- Per-decision **decision journals** live in each stock's own analysis output, *not* in this repo.
+- **[business-narrative](./skills/pipeline/business-narrative/SKILL.md)** — turns company research into a story-to-numbers map.
+- **[business-drivers](./skills/pipeline/business-drivers/SKILL.md)** — identifies and quantifies the factors that move earnings.
+- **[earnings-quality](./skills/pipeline/earnings-quality/SKILL.md)** — normalizes the earnings base and tests whether reported growth is dependable.
+- **[company-valuation](./skills/pipeline/company-valuation/SKILL.md)** — combines DCF, relative valuation, and SOTP where appropriate, then shows sensitivity.
+- **[peer-impact](./skills/pipeline/peer-impact/SKILL.md)** — finds competitors whose actions can affect the company’s earnings through shared inputs, customers, or pricing.
+- **[earnings-recap](./skills/pipeline/earnings-recap/SKILL.md)** — compares reported results with expectations and explains what changed.
+- **[earnings-preview](./skills/pipeline/earnings-preview/SKILL.md)** — prepares for upcoming earnings using consensus, history, and positioning.
+- **[growth-outlook](./skills/pipeline/growth-outlook/SKILL.md)** — separates sources of growth, judges repeatability, and records dated catalysts.
+- **[bf-tech-analysis](./skills/pipeline/bf-tech-analysis/SKILL.md)** — reads weekly and daily charts for conditional timing, risk, and invalidation levels.
+- **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — joins narrative, valuation, earnings, and timing into scenarios and a conditional plan.
+- **[bf-report](./skills/pipeline/bf-report/SKILL.md)** — renders the completed research as a filing-style, self-contained HTML document.
+
+### Adversarial review
+
+- **[stock-grill](./skills/stock-grill/SKILL.md)** — checks a finished report for contradictions, attacks its assumptions across five rounds, and produces a pre-registered decision journal.
+
+### Standalone technical system
+
+- **[minervini-sepa](./skills/minervini-sepa/SKILL.md)** — applies the four-gate SEPA process: fundamentals, Trend Template, VCP setup, and risk geometry.
+
+## Data you can trace and replay
+
+The `har-to-api` data layer is Step 0 of a full analysis. It pulls data once so later stages do not silently use different prices or reporting periods.
+
+Its main rules are:
+
+- Each fetched fact records its **source, as-of date, URL, and provenance tier**.
+- Missing data stays missing. The system should not invent a number to complete a table.
+- A reserve source such as yfinance is marked `FALLBACK` with a reason.
+- If two providers disagree by more than **2%** on the same fact, the disagreement is reported instead of silently resolved.
+- Dated snapshots can be replayed, helping distinguish “the data changed” from “the analysis changed.”
+- Segment data should always be checked against the company’s primary filing.
+
+The included `stockanalysis` mapping has local-fixture coverage and six mapped routes for US and Thai listings. However, a real network path can change, and the live HTTP path plus provider profiles other than `stockanalysis` have documented verification limits. This repository-level smoke check is for users who want to validate the provider directly; it is not required just to open the installed skills. Obtain a checkout and run it in Bash (Git Bash or WSL on Windows):
+
+```bash
+git clone https://github.com/b9b4ymiN/midas.git
+cd midas
+bash skills/har-to-api/tests/smoke_live.sh TU bkk
+```
+
+Respect provider terms and rate limits, and cross-check decision-critical figures against primary filings. Replaying a saved snapshot reproduces the input data for an earlier analysis; fetching again from a live provider is a new capture and may return changed data.
+
+## Limits and responsible use
+
+- Midas improves research structure; it cannot remove uncertainty or guarantee an outcome.
+- Source availability, website formats, market data, and analyst estimates can change.
+- Valuation depends on assumptions. Read the sensitivity grid, not only the headline fair value.
+- Technical levels are conditional risk markers, not promises that a price will behave in a certain way.
+- Personas and named methodologies are tools for structured thinking, not exact simulations or endorsements by those investors.
+- The final report may contain errors or stale third-party data. Verify material facts against filings and official announcements.
+- Outputs are conditional plans and research questions, never instructions to buy, sell, or hold.
+
+<details>
+<summary><strong>Under the hood</strong></summary>
+
+### Repository layout
+
+```text
+skills/
+├── midas/                  router
+├── har-to-api/             traceable and replayable data layer
+├── pipeline/               orchestrator plus 11 construction skills
+├── stock-grill/            adversarial review
+└── minervini-sepa/         standalone SEPA system
+```
+
+Each skill is a folder with a required `SKILL.md` and optional `references/`, `scripts/`, `assets/`, `agents/`, or `tests/` directories. Skills are self-contained at runtime.
+
+The helper scripts use the Python 3.8+ standard library. `har-to-api` imports yfinance lazily only when it needs a flagged fallback. Shell regression tests cover the data layer and several analytical helpers; live provider behavior still needs the documented smoke checks.
+
+[`CONTEXT.md`](./CONTEXT.md) is the maintainer’s canonical authoring vocabulary. Installed skills do not depend on that root file; each skill carries the definitions it needs. Hard-to-reverse methodology decisions belong in `docs/adr/`. A per-stock decision journal belongs with that stock’s analysis output, not in this repository.
+
+The main deliverable is named `[TICKER]_BF-Report.html`: one self-contained file that the agent presents for download and that opens in a normal web browser. The dated data snapshot and decision journal stay with the stock's analysis output. `stock-grill` reads the rendered report; high-severity consistency errors should be repaired before the five reasoning rounds, while the grill findings and journal remain separate analysis artifacts unless the user asks for a revised report.
+
+</details>
+
+## License
+
+Midas is available under the [MIT License](LICENSE).
 
 ## Disclaimer
 
-Research and educational output only. **Not financial advice.** Nothing in this repo is a recommendation to buy, sell, or hold any security. Data from third-party sources (e.g. yfinance) is unofficial — cross-check against primary filings before any decision.
+**Research and educational output only. Not financial advice.** Nothing in this repository or its generated artifacts is a recommendation to buy, sell, or hold any security. Check important figures against primary filings and make decisions based on your own circumstances and risk limits.
