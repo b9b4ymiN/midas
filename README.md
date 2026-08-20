@@ -106,6 +106,7 @@ You can write requests in normal language. Slash commands are useful for user-in
 | A complete investment report | `Run a full analysis of CPALL.BK and produce the final BF-Report.` | `both-stock-analysis` → full research pipeline and HTML BF-Report |
 | A focused valuation | `Estimate the fair value of NVDA using DCF, relative valuation, and SOTP where applicable.` | `company-valuation` → blended fair value and sensitivity grid |
 | A Minervini-style setup review | `Run the Minervini SEPA process on AAPL.` | `minervini-sepa` → four-gate SEPA assessment and conditional setup |
+| A dealer-positioning / gamma read | `What does option flow say about NVDA right now?` | `option-flow` → sticky/slippery regime, call/put walls, and a stop-vs-noise-band check |
 | Traceable source data | `Fetch reproducible financial facts for TU.BK and save a dated snapshot.` | `har-to-api` → sourced JSON snapshot that can be replayed |
 | A challenge to an existing report | `Stress-test this BF-Report before I make a decision.` | `stock-grill` → consistency check, five adversarial rounds, and decision journal |
 
@@ -169,12 +170,13 @@ The construction stage contains **eleven sub-skills**. The data layer runs befor
 | “Render the research as a professional HTML document.” | `bf-report` |
 | “Try to break this finished thesis.” | `stock-grill` |
 | “Run the Minervini SEPA process.” | `minervini-sepa` |
+| “Is there a gamma squeeze?” / “where will it pin at expiry?” | `option-flow` |
 
-New to the terminology? **DCF** values expected cash flows; **SOTP** values business parts separately; a **sensitivity grid** shows how valuation changes when assumptions change; a **provenance tier** labels the quality or role of a data source; **Trend Template** and **VCP** are Minervini chart filters; and **risk geometry** compares the planned entry, stop, target, and potential loss.
+New to the terminology? **DCF** values expected cash flows; **SOTP** values business parts separately; a **sensitivity grid** shows how valuation changes when assumptions change; a **provenance tier** labels the quality or role of a data source; **Trend Template** and **VCP** are Minervini chart filters; **risk geometry** compares the planned entry, stop, target, and potential loss; and **GEX** (gamma exposure) is the mechanical hedging pressure sitting in a stock's option chain.
 
 ## Skill reference
 
-The repository currently contains **16 skills**. Start with the router when you are uncertain; enter the full workflow for end-to-end work; reach a construction skill directly for one focused question.
+The repository currently contains **17 skills**. Start with the router when you are uncertain; enter the full workflow for end-to-end work; reach a construction skill directly for one focused question.
 
 ### Start here
 
@@ -206,9 +208,10 @@ The repository currently contains **16 skills**. Start with the router when you 
 
 - **[stock-grill](./skills/stock-grill/SKILL.md)** — checks a finished report for contradictions, attacks its assumptions across five rounds, and produces a pre-registered decision journal.
 
-### Standalone technical system
+### Standalone technical systems
 
 - **[minervini-sepa](./skills/minervini-sepa/SKILL.md)** — applies the four-gate SEPA process: fundamentals, Trend Template, VCP setup, and risk geometry.
+- **[option-flow](./skills/option-flow/SKILL.md)** — reads dealer gamma exposure (GEX) from a US-listed option chain to judge whether the market is sticky or slippery, and whether a proposed stop clears the option-implied noise band. Refuses to output on a chain too thin to trust.
 
 ## Data you can trace and replay
 
@@ -254,12 +257,13 @@ skills/
 ├── har-to-api/             traceable and replayable data layer
 ├── pipeline/               orchestrator plus 11 construction skills
 ├── stock-grill/            adversarial review
-└── minervini-sepa/         standalone SEPA system
+├── minervini-sepa/         standalone SEPA system
+└── option-flow/            standalone dealer-positioning (GEX) read
 ```
 
 Each skill is a folder with a required `SKILL.md` and optional `references/`, `scripts/`, `assets/`, `agents/`, or `tests/` directories. Skills are self-contained at runtime.
 
-The helper scripts use the Python 3.8+ standard library. `har-to-api` imports yfinance lazily only when it needs a flagged fallback. Shell regression tests cover the data layer and several analytical helpers; live provider behavior still needs the documented smoke checks.
+The helper scripts use the Python 3.8+ standard library, with one exception: `option-flow`'s Black-Scholes math needs `numpy` and `scipy` (`yfinance` too, but only lazily, for its live-fetch path, same pattern as `har-to-api`'s fallback). Every other skill's scripts are stdlib-only. Shell regression tests cover the data layer and several analytical helpers; live provider behavior still needs the documented smoke checks.
 
 [`CONTEXT.md`](./CONTEXT.md) is the maintainer’s canonical authoring vocabulary. Installed skills do not depend on that root file; each skill carries the definitions it needs. Hard-to-reverse methodology decisions belong in `docs/adr/`. A per-stock decision journal belongs with that stock’s analysis output, not in this repository.
 

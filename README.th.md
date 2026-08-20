@@ -106,6 +106,7 @@ Run a full analysis of CPALL.BK and produce the final BF-Report.
 | รายงานการลงทุนแบบครบถ้วน | `Run a full analysis of CPALL.BK and produce the final BF-Report.` | `both-stock-analysis` → research pipeline ครบชุดและ BF-Report แบบ HTML |
 | การประเมินมูลค่าเฉพาะด้าน | `Estimate the fair value of NVDA using DCF, relative valuation, and SOTP where applicable.` | `company-valuation` → fair value แบบผสมและ sensitivity grid |
 | การทบทวน setup แบบ Minervini | `Run the Minervini SEPA process on AAPL.` | `minervini-sepa` → การประเมิน SEPA สี่ด่านและ setup แบบมีเงื่อนไข |
+| อ่านแรงกดดันจาก option dealer / gamma | `What does option flow say about NVDA right now?` | `option-flow` → regime แบบ sticky/slippery, call/put wall และเช็คว่า stop อยู่นอก noise band หรือไม่ |
 | ข้อมูลที่ย้อนดูแหล่งที่มาได้ | `Fetch reproducible financial facts for TU.BK and save a dated snapshot.` | `har-to-api` → JSON snapshot ที่มีแหล่งข้อมูลและเปิดซ้ำได้ |
 | ท้าทายรายงานที่มีอยู่ | `Stress-test this BF-Report before I make a decision.` | `stock-grill` → ตรวจความสอดคล้อง โจมตีห้ารอบ และ decision journal |
 
@@ -169,12 +170,13 @@ Step 0: data snapshot
 | “สร้างงานวิจัยเป็นเอกสาร HTML แบบมืออาชีพ” | `bf-report` |
 | “ลองทำลาย thesis ที่เสร็จแล้วนี้” | `stock-grill` |
 | “เรียกใช้กระบวนการ Minervini SEPA” | `minervini-sepa` |
+| “มี gamma squeeze ไหม” / “จะไปปักหมุดที่ไหนตอน expiry” | `option-flow` |
 
-หากยังไม่คุ้นกับคำศัพท์: **DCF** ประเมินมูลค่าจากกระแสเงินสดที่คาดหวัง; **SOTP** ประเมินส่วนต่างๆ ของธุรกิจแยกกัน; **sensitivity grid** แสดงว่ามูลค่าเปลี่ยนอย่างไรเมื่อสมมติฐานเปลี่ยน; **provenance tier** ระบุคุณภาพหรือบทบาทของแหล่งข้อมูล; **Trend Template** และ **VCP** คือตัวกรองกราฟของ Minervini; และ **risk geometry** เปรียบเทียบจุดเข้า stop target และผลขาดทุนที่เป็นไปได้
+หากยังไม่คุ้นกับคำศัพท์: **DCF** ประเมินมูลค่าจากกระแสเงินสดที่คาดหวัง; **SOTP** ประเมินส่วนต่างๆ ของธุรกิจแยกกัน; **sensitivity grid** แสดงว่ามูลค่าเปลี่ยนอย่างไรเมื่อสมมติฐานเปลี่ยน; **provenance tier** ระบุคุณภาพหรือบทบาทของแหล่งข้อมูล; **Trend Template** และ **VCP** คือตัวกรองกราฟของ Minervini; **risk geometry** เปรียบเทียบจุดเข้า stop target และผลขาดทุนที่เป็นไปได้; และ **GEX** (gamma exposure) คือแรงกดดันเชิงกลไกที่ dealer ต้อง hedge ซึ่งฝังอยู่ใน option chain ของหุ้น
 
 ## รายการอ้างอิงทักษะ
 
-ปัจจุบัน repository มี **16 skills** เริ่มที่ router เมื่อคุณไม่แน่ใจ ใช้ workflow แบบเต็มสำหรับงานตั้งแต่ต้นจนจบ หรือเข้าถึง construction skill โดยตรงเมื่อต้องการคำตอบเฉพาะด้านหนึ่ง
+ปัจจุบัน repository มี **17 skills** เริ่มที่ router เมื่อคุณไม่แน่ใจ ใช้ workflow แบบเต็มสำหรับงานตั้งแต่ต้นจนจบ หรือเข้าถึง construction skill โดยตรงเมื่อต้องการคำตอบเฉพาะด้านหนึ่ง
 
 ### เริ่มที่นี่
 
@@ -209,6 +211,7 @@ Step 0: data snapshot
 ### ระบบเทคนิคแบบ Standalone
 
 - **[minervini-sepa](./skills/minervini-sepa/SKILL.md)** — ใช้กระบวนการ SEPA สี่ด่าน: fundamentals, Trend Template, VCP setup และ risk geometry
+- **[option-flow](./skills/option-flow/SKILL.md)** — อ่านแรงกดดัน gamma ที่ dealer ต้อง hedge (GEX) จาก option chain ของหุ้นสหรัฐฯ เพื่อบอกว่าตลาดตอนนี้เป็น sticky หรือ slippery และ stop ที่วางไว้อยู่นอก noise band ที่ option บอกไว้หรือไม่ ปฏิเสธที่จะออกผลลัพธ์ถ้า chain บางเกินไปจนเชื่อถือไม่ได้
 
 ## ข้อมูลที่ติดตามและเปิดซ้ำได้
 
@@ -254,12 +257,13 @@ skills/
 ├── har-to-api/             traceable and replayable data layer
 ├── pipeline/               orchestrator plus 11 construction skills
 ├── stock-grill/            adversarial review
-└── minervini-sepa/         standalone SEPA system
+├── minervini-sepa/         standalone SEPA system
+└── option-flow/            standalone dealer-positioning (GEX) read
 ```
 
 แต่ละทักษะเป็น folder ที่มี `SKILL.md` ซึ่งจำเป็น และอาจมี directory `references/`, `scripts/`, `assets/`, `agents/` หรือ `tests/` แต่ละทักษะทำงานได้ด้วยตัวเองเมื่อติดตั้ง
 
-helper script ใช้ Python 3.8+ standard library ส่วน `har-to-api` จะ import yfinance แบบ lazy เฉพาะเมื่อต้องใช้ fallback ที่มีการทำเครื่องหมายไว้ Shell regression test ครอบคลุม data layer และ analytical helper หลายตัว แต่พฤติกรรมของ provider จริงยังต้องใช้ smoke check ตามที่บันทึกไว้
+helper script ใช้ Python 3.8+ standard library เป็นหลัก ยกเว้น `option-flow` ที่คำนวณ Black-Scholes จึงต้องใช้ `numpy` และ `scipy` (และ `yfinance` แบบ lazy เฉพาะ live-fetch path เหมือนรูปแบบ fallback ของ `har-to-api`) ทักษะอื่นทุกตัวใช้แต่ stdlib Shell regression test ครอบคลุม data layer และ analytical helper หลายตัว แต่พฤติกรรมของ provider จริงยังต้องใช้ smoke check ตามที่บันทึกไว้
 
 [`CONTEXT.md`](./CONTEXT.md) คือคำศัพท์มาตรฐานสำหรับการเขียนของ maintainer ทักษะที่ติดตั้งแล้วไม่พึ่งพา root file นี้ แต่ละทักษะมีคำจำกัดความที่ตัวเองต้องใช้ การตัดสินใจด้าน methodology ที่ย้อนกลับยากควรอยู่ใน `docs/adr/` ส่วน decision journal ของแต่ละหุ้นควรอยู่กับผลการวิเคราะห์หุ้นนั้น ไม่ใช่ใน repository นี้
 

@@ -13,7 +13,7 @@ The router over the **midas** investment skills — a self-contained pipeline fr
 The repo has three layers:
 - **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 8 sub-skills (`business-narrative` → `earnings-quality` → `company-valuation` → `earnings-preview`/`earnings-recap` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) to build a full thesis + report from a ticker.
 - **Adversarial** (`skills/stock-grill`) — attacks a finished thesis before you commit capital.
-- **Standalone technical** (`skills/minervini-sepa`) — the SEPA trading system, usable standalone or referenced by the technical-timing step.
+- **Standalone technical** (`skills/minervini-sepa`, `skills/option-flow`) — trade-timing tools usable on their own or as a follow-up check on the pipeline's technical-timing step.
 
 ## Skills (entry points)
 
@@ -29,6 +29,10 @@ The repo has three layers:
 **Use when:** you want a Specific Entry Point Analysis on a stock — the 4-gate screen (Q33 fundamentals → Trend Template → VCP → risk geometry) with entry/stop/target/size.
 **Not for:** fundamental valuation (use `company-valuation`) or a full report (use `both-stock-analysis`).
 
+### `option-flow` — dealer gamma exposure (GEX) read
+**Use when:** you want to know whether hedging flows will currently absorb or extend a move — dealer gamma exposure, call/put walls, gamma-flip level, and whether a proposed stop sits inside the stock's own option-implied noise band. US-listed names only; it refuses rather than guesses on a thin chain.
+**Not for:** predicting direction (it only answers sticky/slippery, never up/down) or non-US tickers (options liquidity is almost always too thin).
+
 ### Sub-skills (usually reached via `both-stock-analysis`, not directly)
 `business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
 
@@ -40,6 +44,7 @@ The repo has three layers:
 | Have a thesis/Synthesis, want to check before committing | `stock-grill` |
 | Already in a position, want a pre-mortem ("why would this drop 40%?") | `stock-grill` |
 | Want pure SEPA / trade timing on a stock | `minervini-sepa` |
+| "Is this a gamma squeeze?" / "where's the call wall / put wall?" / stop-width sanity check | `option-flow` |
 | Want just one slice (valuation, narrative, earnings, report) | the specific sub-skill |
 | "Are these earnings real?" / strip out one-off items | `earnings-quality` |
 | "What actually moves this stock?" / input-cost or FX exposure | `business-drivers` |

@@ -1,0 +1,785 @@
+{
+ "ticker": "VLO",
+ "spot": 347.95,
+ "as_of": "2026-08-18T10:35:00-04:00",
+ "source": "ChartExchange option chain, expiry 2026-08-21",
+ "note": "Known-answer fixture. Option prices are 2026-08-17 last trade against live 2026-08-18 spot -> IV is degraded by design; this is what the MED tier exists to catch.",
+ "chain": [
+  {
+   "strike": 390,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 6,
+   "implied_volatility": 0.6116447758238235,
+   "low_conf": false
+  },
+  {
+   "strike": 380,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 169,
+   "implied_volatility": 0.578634850465611,
+   "low_conf": false
+  },
+  {
+   "strike": 375,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 10,
+   "implied_volatility": 0.554407246413977,
+   "low_conf": false
+  },
+  {
+   "strike": 370,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 262,
+   "implied_volatility": 0.5285239528379165,
+   "low_conf": false
+  },
+  {
+   "strike": 365,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 142,
+   "implied_volatility": 0.5235746586841094,
+   "low_conf": false
+  },
+  {
+   "strike": 360,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 517,
+   "implied_volatility": 0.4982392104714029,
+   "low_conf": false
+  },
+  {
+   "strike": 355,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 353,
+   "implied_volatility": 0.5115046925448269,
+   "low_conf": false
+  },
+  {
+   "strike": 350,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 567,
+   "implied_volatility": 0.5047284151209637,
+   "low_conf": false
+  },
+  {
+   "strike": 345,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 456,
+   "implied_volatility": 0.5164574329682763,
+   "low_conf": false
+  },
+  {
+   "strike": 340,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 138,
+   "implied_volatility": 0.5415338101801673,
+   "low_conf": false
+  },
+  {
+   "strike": 335,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 129,
+   "implied_volatility": 0.5308097311450664,
+   "low_conf": false
+  },
+  {
+   "strike": 330,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 431,
+   "implied_volatility": 0.5251742475562693,
+   "low_conf": false
+  },
+  {
+   "strike": 327.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 113,
+   "implied_volatility": 0.5345827035395435,
+   "low_conf": false
+  },
+  {
+   "strike": 325,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 456,
+   "implied_volatility": 0.5494911109685819,
+   "low_conf": false
+  },
+  {
+   "strike": 322.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 296,
+   "implied_volatility": 0.5501816679215381,
+   "low_conf": false
+  },
+  {
+   "strike": 320,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 2256,
+   "implied_volatility": 0.5371035613278216,
+   "low_conf": false
+  },
+  {
+   "strike": 317.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 313,
+   "implied_volatility": 0.5817032371230282,
+   "low_conf": false
+  },
+  {
+   "strike": 315,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 82,
+   "implied_volatility": 0.5778144806967052,
+   "low_conf": false
+  },
+  {
+   "strike": 312.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 37,
+   "implied_volatility": 0.5934084408722167,
+   "low_conf": false
+  },
+  {
+   "strike": 310,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 659,
+   "implied_volatility": 0.6173324906691412,
+   "low_conf": false
+  },
+  {
+   "strike": 307.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 45,
+   "implied_volatility": 0.6299624834400764,
+   "low_conf": false
+  },
+  {
+   "strike": 305,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 221,
+   "implied_volatility": 0.8040229703440833,
+   "low_conf": false
+  },
+  {
+   "strike": 302.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 11,
+   "implied_volatility": 0.7439271125116208,
+   "low_conf": false
+  },
+  {
+   "strike": 300,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 653,
+   "implied_volatility": 0.7381091460851655,
+   "low_conf": false
+  },
+  {
+   "strike": 297.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 4,
+   "implied_volatility": 0.8422474358241189,
+   "low_conf": false
+  },
+  {
+   "strike": 295,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 32,
+   "implied_volatility": 0.8107904906966533,
+   "low_conf": false
+  },
+  {
+   "strike": 292.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 3,
+   "implied_volatility": 0.9486480247823313,
+   "low_conf": false
+  },
+  {
+   "strike": 290,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 436,
+   "implied_volatility": 0.8116667883579394,
+   "low_conf": true
+  },
+  {
+   "strike": 287.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 4,
+   "implied_volatility": 1.062423980528202,
+   "low_conf": false
+  },
+  {
+   "strike": 285,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 9,
+   "implied_volatility": 0.8806892762446492,
+   "low_conf": true
+  },
+  {
+   "strike": 282.5,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 6,
+   "implied_volatility": 1.1521985722159906,
+   "low_conf": false
+  },
+  {
+   "strike": 280,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 128,
+   "implied_volatility": 1.0191696612339942,
+   "low_conf": false
+  },
+  {
+   "strike": 275,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 11,
+   "implied_volatility": 1.0211425913452425,
+   "low_conf": true
+  },
+  {
+   "strike": 270,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 263,
+   "implied_volatility": 1.1850409349467168,
+   "low_conf": false
+  },
+  {
+   "strike": 265,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": 1.1652913492382186,
+   "low_conf": true
+  },
+  {
+   "strike": 260,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 143,
+   "implied_volatility": 1.2099357701976778,
+   "low_conf": true
+  },
+  {
+   "strike": 255,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 3,
+   "implied_volatility": 1.5199891112497372,
+   "low_conf": false
+  },
+  {
+   "strike": 250,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 112,
+   "implied_volatility": 1.3896678902122104,
+   "low_conf": true
+  },
+  {
+   "strike": 240,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 3,
+   "implied_volatility": 1.575715120250577,
+   "low_conf": false
+  },
+  {
+   "strike": 235,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": 1.899028442041562,
+   "low_conf": false
+  },
+  {
+   "strike": 230,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 13,
+   "implied_volatility": 1.7070738858561565,
+   "low_conf": true
+  },
+  {
+   "strike": 220,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 8,
+   "implied_volatility": 2.1979229988973605,
+   "low_conf": false
+  },
+  {
+   "strike": 210,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": 2.0052161626315645,
+   "low_conf": true
+  },
+  {
+   "strike": 200,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 2,
+   "implied_volatility": 2.34427625015382,
+   "low_conf": false
+  },
+  {
+   "strike": 190,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": 2.9797178190771754,
+   "low_conf": false
+  },
+  {
+   "strike": 185,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 436,
+   "implied_volatility": 2.524264170087542,
+   "low_conf": true
+  },
+  {
+   "strike": 170,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": null,
+   "low_conf": false
+  },
+  {
+   "strike": 165,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 1,
+   "implied_volatility": 2.9503178110835595,
+   "low_conf": true
+  },
+  {
+   "strike": 160,
+   "T": 0.00821917808219178,
+   "right": "call",
+   "open_interest": 5,
+   "implied_volatility": null,
+   "low_conf": false
+  },
+  {
+   "strike": 365,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 3,
+   "implied_volatility": 0.5235746586841094,
+   "low_conf": false
+  },
+  {
+   "strike": 360,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 43,
+   "implied_volatility": 0.4982392104714029,
+   "low_conf": false
+  },
+  {
+   "strike": 355,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 11,
+   "implied_volatility": 0.5115046925448269,
+   "low_conf": false
+  },
+  {
+   "strike": 350,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 95,
+   "implied_volatility": 0.5047284151209637,
+   "low_conf": false
+  },
+  {
+   "strike": 345,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 126,
+   "implied_volatility": 0.5164574329682763,
+   "low_conf": false
+  },
+  {
+   "strike": 340,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 101,
+   "implied_volatility": 0.5415338101801673,
+   "low_conf": false
+  },
+  {
+   "strike": 335,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 95,
+   "implied_volatility": 0.5308097311450664,
+   "low_conf": false
+  },
+  {
+   "strike": 330,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 322,
+   "implied_volatility": 0.5251742475562693,
+   "low_conf": false
+  },
+  {
+   "strike": 327.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 43,
+   "implied_volatility": 0.5345827035395435,
+   "low_conf": false
+  },
+  {
+   "strike": 325,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 247,
+   "implied_volatility": 0.5494911109685819,
+   "low_conf": false
+  },
+  {
+   "strike": 322.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 260,
+   "implied_volatility": 0.5501816679215381,
+   "low_conf": false
+  },
+  {
+   "strike": 320,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 197,
+   "implied_volatility": 0.5371035613278216,
+   "low_conf": false
+  },
+  {
+   "strike": 317.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 32,
+   "implied_volatility": 0.5817032371230282,
+   "low_conf": false
+  },
+  {
+   "strike": 315,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 271,
+   "implied_volatility": 0.5778144806967052,
+   "low_conf": false
+  },
+  {
+   "strike": 312.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 74,
+   "implied_volatility": 0.5934084408722167,
+   "low_conf": false
+  },
+  {
+   "strike": 310,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 277,
+   "implied_volatility": 0.6173324906691412,
+   "low_conf": false
+  },
+  {
+   "strike": 307.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 401,
+   "implied_volatility": 0.6299624834400764,
+   "low_conf": false
+  },
+  {
+   "strike": 305,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 105,
+   "implied_volatility": 0.8040229703440833,
+   "low_conf": false
+  },
+  {
+   "strike": 302.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 21,
+   "implied_volatility": 0.7439271125116208,
+   "low_conf": false
+  },
+  {
+   "strike": 300,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 179,
+   "implied_volatility": 0.7381091460851655,
+   "low_conf": false
+  },
+  {
+   "strike": 297.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 55,
+   "implied_volatility": 0.8422474358241189,
+   "low_conf": false
+  },
+  {
+   "strike": 295,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 131,
+   "implied_volatility": 0.8107904906966533,
+   "low_conf": false
+  },
+  {
+   "strike": 292.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 18,
+   "implied_volatility": 0.9486480247823313,
+   "low_conf": false
+  },
+  {
+   "strike": 290,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 478,
+   "implied_volatility": 0.8116667883579394,
+   "low_conf": true
+  },
+  {
+   "strike": 287.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 17,
+   "implied_volatility": 1.062423980528202,
+   "low_conf": false
+  },
+  {
+   "strike": 285,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 388,
+   "implied_volatility": 0.8806892762446492,
+   "low_conf": true
+  },
+  {
+   "strike": 282.5,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 11,
+   "implied_volatility": 1.1521985722159906,
+   "low_conf": false
+  },
+  {
+   "strike": 280,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 830,
+   "implied_volatility": 1.0191696612339942,
+   "low_conf": false
+  },
+  {
+   "strike": 275,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 267,
+   "implied_volatility": 1.0211425913452425,
+   "low_conf": true
+  },
+  {
+   "strike": 270,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 1073,
+   "implied_volatility": 1.1850409349467168,
+   "low_conf": false
+  },
+  {
+   "strike": 265,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 38,
+   "implied_volatility": 1.1652913492382186,
+   "low_conf": true
+  },
+  {
+   "strike": 260,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 479,
+   "implied_volatility": 1.2099357701976778,
+   "low_conf": true
+  },
+  {
+   "strike": 255,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 49,
+   "implied_volatility": 1.5199891112497372,
+   "low_conf": false
+  },
+  {
+   "strike": 250,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 516,
+   "implied_volatility": 1.3896678902122104,
+   "low_conf": true
+  },
+  {
+   "strike": 245,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 27,
+   "implied_volatility": 1.466916432486416,
+   "low_conf": true
+  },
+  {
+   "strike": 240,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 1084,
+   "implied_volatility": 1.575715120250577,
+   "low_conf": false
+  },
+  {
+   "strike": 235,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 13,
+   "implied_volatility": 1.899028442041562,
+   "low_conf": false
+  },
+  {
+   "strike": 230,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 95,
+   "implied_volatility": 1.7070738858561565,
+   "low_conf": true
+  },
+  {
+   "strike": 220,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 167,
+   "implied_volatility": 2.1979229988973605,
+   "low_conf": false
+  },
+  {
+   "strike": 210,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 412,
+   "implied_volatility": 2.0052161626315645,
+   "low_conf": true
+  },
+  {
+   "strike": 200,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 18,
+   "implied_volatility": 2.34427625015382,
+   "low_conf": false
+  },
+  {
+   "strike": 195,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 56,
+   "implied_volatility": 2.4431314415789522,
+   "low_conf": false
+  },
+  {
+   "strike": 190,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 17,
+   "implied_volatility": 2.9797178190771754,
+   "low_conf": false
+  },
+  {
+   "strike": 185,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 18,
+   "implied_volatility": 2.524264170087542,
+   "low_conf": true
+  },
+  {
+   "strike": 180,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 101,
+   "implied_volatility": 2.6264192663472015,
+   "low_conf": true
+  },
+  {
+   "strike": 165,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 204,
+   "implied_volatility": 2.9503178110835595,
+   "low_conf": true
+  },
+  {
+   "strike": 155,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 132,
+   "implied_volatility": null,
+   "low_conf": false
+  },
+  {
+   "strike": 150,
+   "T": 0.00821917808219178,
+   "right": "put",
+   "open_interest": 4,
+   "implied_volatility": null,
+   "low_conf": false
+  }
+ ]
+}
