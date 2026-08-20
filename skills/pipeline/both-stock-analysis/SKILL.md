@@ -8,8 +8,11 @@ description: >
   NVDA", "build an investment thesis", "should I invest in PTT", "research CPALL and write
   me a report", or any request that combines valuation + earnings + an investment plan + a
   written report.
-  This skill orchestrates seven sub-skills in sequence: business-narrative, company-valuation,
-  earnings-preview, earnings-recap, bf-tech-analysis, investment-synthesis, and bf-report. ALWAYS confirm
+  This skill orchestrates eleven construction sub-skills in sequence — business-narrative,
+  business-drivers, earnings-quality, company-valuation, peer-impact, earnings-recap,
+  earnings-preview, growth-outlook, bf-tech-analysis, investment-synthesis, and bf-report —
+  over one shared har-to-api data snapshot, and ends by handing the finished report to
+  stock-grill. ALWAYS confirm
   the market first (Thai / US / other)
   so the correct exchange suffix, currency, and country-risk parameters are used. Prefer
   this over running the individual finance skills separately whenever the user wants the
