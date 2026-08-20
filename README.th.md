@@ -14,6 +14,13 @@
 
 Midas คือชุดทักษะวิจัยการลงทุนสำหรับ AI agent ช่วยให้คุณเริ่มจาก ticker แล้วพัฒนาไปเป็นบทวิเคราะห์ที่มีแหล่งข้อมูล การประเมินมูลค่า แผนแบบมีเงื่อนไข และรายงาน HTML ที่สมบูรณ์ในไฟล์เดียว จากนั้นยังสามารถท้าทายผลงานนั้นก่อนที่คุณจะนำเงินจริงไปลงทุน
 
+Midas มี **เส้นทางวิจัยสองเส้นที่ตอบคนละคำถาม** คุณเลือกเส้นทางจากคำถามที่อยากรู้จริงๆ:
+
+- **“ตอนนี้หุ้นตัวนี้ควรมีมูลค่าเท่าไร”** → **เส้นประเมินมูลค่า** (`both-stock-analysis`) เชื่อมเรื่องราวของธุรกิจเข้ากับมูลค่าที่เหมาะสม ช่วงของสถานการณ์ และแผนเข้าซื้อ
+- **“บริษัทนี้จะโตทบต้นต่อไปได้อีกหลายปีไหม”** → **เส้นการเติบโตทบต้น** (`future-compounder`) ถามว่าเงินก้อนถัดไปที่บริษัทเอากลับไปลงทุนยังให้ผลตอบแทนดีอยู่หรือไม่ และจะทำแบบนั้นได้อีกนานแค่ไหน เส้นนี้ตั้งใจไม่ให้มูลค่าที่เหมาะสม ราคาเป้าหมาย หรือจังหวะเข้าซื้อ
+
+สองเส้นใช้ชั้นดึงข้อมูลเดียวกัน ตัวเลขจึงตรงกัน แต่ข้อสรุปแยกจากกันโดยตั้งใจ เพราะบริษัทหนึ่งอาจเป็นธุรกิจที่ทบต้นได้ดีแต่ราคาแพงเกินไป หรือราคาถูกแต่ไม่มีความสามารถในการทบต้นเลย
+
 คุณไม่จำเป็นต้องจำชื่อทักษะทั้งหมด เริ่มด้วย `/midas` อธิบายสิ่งที่ต้องการด้วยภาษาปกติ แล้วระบบจะชี้ไปยัง workflow ที่เหมาะสม
 
 > **เนื้อหาสำหรับการวิจัยและการศึกษาเท่านั้น ไม่ใช่คำแนะนำทางการเงิน** Midas ไม่ได้ตัดสินใจลงทุนแทนคุณและไม่รับประกันผลตอบแทน
@@ -104,6 +111,7 @@ Run a full analysis of CPALL.BK and produce the final BF-Report.
 | สิ่งที่คุณต้องการ | ตัวอย่าง prompt | ทักษะและผลลัพธ์ |
 |---|---|---|
 | รายงานการลงทุนแบบครบถ้วน | `Run a full analysis of CPALL.BK and produce the final BF-Report.` | `both-stock-analysis` → research pipeline ครบชุดและ BF-Report แบบ HTML |
+| คำตอบว่าโตทบต้นได้อีกนานแค่ไหน | `Can CPALL.BK keep compounding for the next ten years?` | `future-compounder` → หลักฐานเรื่องผลตอบแทน การลงทุนซ้ำ และระยะเวลา โดยแยกรายงาน “โอกาส” กับ “ความมั่นใจ” ออกจากกัน |
 | การประเมินมูลค่าเฉพาะด้าน | `Estimate the fair value of NVDA using DCF, relative valuation, and SOTP where applicable.` | `company-valuation` → fair value แบบผสมและ sensitivity grid |
 | การทบทวน setup แบบ Minervini | `Run the Minervini SEPA process on AAPL.` | `minervini-sepa` → การประเมิน SEPA สี่ด่านและ setup แบบมีเงื่อนไข |
 | อ่านแรงกดดันจาก option dealer / gamma | `What does option flow say about NVDA right now?` | `option-flow` → regime แบบ sticky/slippery, call/put wall และเช็คว่า stop อยู่นอก noise band หรือไม่ |
@@ -150,12 +158,39 @@ Step 0: data snapshot
 
 ขั้น construction มี **สิบเอ็ด sub-skills** โดย data layer ทำงานก่อน จากนั้น orchestrator ควบคุมลำดับ และ `stock-grill` โจมตีผลลัพธ์ที่เสร็จแล้วในภายหลัง หากต้องการเพียงบางส่วน เช่น valuation หรือ earnings quality คุณเรียกใช้ทักษะนั้นได้โดยไม่ต้องเดินทั้ง pipeline
 
+## การวิเคราะห์การเติบโตทบต้นทำงานอย่างไร
+
+เส้นการเติบโตทบต้นถามคนละคำถาม จึงเดินคนละลำดับ โดย `future-compounder` เป็นผู้ประสานงาน:
+
+```text
+Step 0: data snapshot (ทางเลือก ใช้ร่วมกับเส้นประเมินมูลค่า)
+→ business identity and market scope   ตกลงก่อนว่านี่คือธุรกิจอะไรกันแน่
+→ market and growth intelligence       การเติบโตมาจากไหน และใครเป็นคนได้กำไรไป
+→ business economic engine             หนึ่งหน่วยของธุรกิจนี้ทำเงินได้อย่างไร
+→ reinvestment and runway              เงินก้อนถัดไปได้ผลตอบแทนเท่าไร และทำซ้ำได้อีกนานแค่ไหน
+→ compounder grill                     อะไรต้องเป็นจริงเรื่องนี้ถึงจะเวิร์ค และอะไรจะทำให้พัง
+→ compounder BF-Report
+```
+
+แต่ละขั้นเป็น “ด่าน” ไม่ใช่แค่หัวข้อในรายงาน กล่าวคือ ต้องนิยามตลาดให้ถูกก่อน ข้อมูลตลาดถึงจะเชื่อถือได้ และต้องมีหลักฐานเรื่องตลาดก่อน จึงจะอ่านเศรษฐศาสตร์ภายในบริษัทได้ ถ้าหลักฐานที่เจอทีหลังขัดกับนิยามตอนต้น ระบบจะย้อนกลับไปตั้งกรอบใหม่ แทนที่จะเปลี่ยนนิยามเงียบๆ ระหว่างทาง
+
+ผลลัพธ์แยกสามเรื่องที่การให้คะแนนตัวเดียวมักกลบรวมกันไว้ คือ โอกาสทบต้นใหญ่แค่ไหน · หลักฐานหนักแน่นถึงระดับไหนแล้ว · และเรามั่นใจได้แค่ไหน บริษัทอายุน้อยจึงสามารถได้ “โอกาสสูง” พร้อมกับ “หลักฐานยังอ่อน” ได้อย่างถูกต้อง
+
+เส้นนี้ตั้งใจไม่รวม DCF มูลค่าที่เหมาะสม ราคาเป้าหมาย จังหวะเข้าซื้อ และขนาดพอร์ต หากต้องการเรื่องเหล่านี้ให้ใช้เส้นประเมินมูลค่า
+
 ## เลือกทักษะที่เหมาะสม
 
 | คำถามของคุณ | ใช้ |
 |---|---|
 | “ฉันไม่รู้ว่าจะเริ่มตรงไหน” | `/midas` |
 | “ขอภาพรวมทั้งหมดและรายงานที่เสร็จสมบูรณ์” | `both-stock-analysis` |
+| “บริษัทนี้จะโตทบต้นต่อได้อีกสิบปีไหม” | `future-compounder` |
+| “จริงๆ แล้วบริษัทนี้อยู่ในธุรกิจอะไรกันแน่” | `business-identity-scope` |
+| “ที่โตน่ะ มาจากตลาดโต แย่งส่วนแบ่ง หรือไปซื้อกิจการมา” | `market-growth-intelligence` |
+| “หนึ่งสาขาหรือลูกค้าหนึ่งคนทำเงินได้ยังไง” | `business-economic-engine` |
+| “เงินก้อนถัดไปที่เอากลับไปลงทุนได้ผลตอบแทนเท่าไร” | `reinvestment-runway` |
+| “ลองหาจุดที่เรื่องการทบต้นนี้จะพังให้หน่อย” | `compounder-grill` |
+| “เขียนงานวิจัยเรื่องการทบต้นออกมาเป็นเอกสาร” | `compounder-bf-report` |
 | “ดึงข้อมูลครั้งเดียวและแสดงว่าเอามาจากไหน” | `har-to-api` |
 | “อธิบายเรื่องราวของธุรกิจที่อยู่เบื้องหลังตัวเลข” | `business-narrative` |
 | “อะไรขับเคลื่อนกำไรของบริษัทนี้จริงๆ” | `business-drivers` |
@@ -176,7 +211,7 @@ Step 0: data snapshot
 
 ## รายการอ้างอิงทักษะ
 
-ปัจจุบัน repository มี **17 skills** เริ่มที่ router เมื่อคุณไม่แน่ใจ ใช้ workflow แบบเต็มสำหรับงานตั้งแต่ต้นจนจบ หรือเข้าถึง construction skill โดยตรงเมื่อต้องการคำตอบเฉพาะด้านหนึ่ง
+ปัจจุบัน repository มี **24 skills** เริ่มที่ router เมื่อคุณไม่แน่ใจ ใช้ orchestrator ตัวใดตัวหนึ่งในสองตัวสำหรับงานตั้งแต่ต้นจนจบ หรือเข้าถึง construction skill โดยตรงเมื่อต้องการคำตอบเฉพาะด้านหนึ่ง
 
 ### เริ่มที่นี่
 
@@ -189,6 +224,7 @@ Step 0: data snapshot
 ### Workflow แบบเต็ม
 
 - **[both-stock-analysis](./skills/pipeline/both-stock-analysis/SKILL.md)** — ประสานงาน workflow จาก ticker ไปถึงรายงานทั้งหมด รวม construction sub-skills สิบเอ็ดตัวและการทบทวนแบบ adversarial ขั้นสุดท้าย
+- **[future-compounder](./skills/compounder/future-compounder/SKILL.md)** — ประสานงานการตรวจสอบเรื่องการเติบโตทบต้นผ่าน sub-skills หกตัว แล้วรายงานสามเรื่องแยกกัน คือ โอกาสทบต้นใหญ่แค่ไหน หลักฐานหนักแน่นถึงระดับไหน และมั่นใจได้แค่ไหน
 
 ### Construction: ทักษะเฉพาะด้านสิบเอ็ดตัว
 
@@ -203,6 +239,15 @@ Step 0: data snapshot
 - **[bf-tech-analysis](./skills/pipeline/bf-tech-analysis/SKILL.md)** — อ่านกราฟรายสัปดาห์และรายวันเพื่อหาจังหวะ ความเสี่ยง และระดับ invalidation แบบมีเงื่อนไข
 - **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — รวม narrative, valuation, earnings และ timing เป็น scenario กับแผนแบบมีเงื่อนไข
 - **[bf-report](./skills/pipeline/bf-report/SKILL.md)** — สร้างงานวิจัยที่เสร็จแล้วเป็นเอกสาร HTML สมบูรณ์ในตัวเองสไตล์เอกสารยื่นตลาด
+
+### การเติบโตทบต้น: ทักษะเฉพาะด้านหกตัว
+
+- **[business-identity-scope](./skills/compounder/business-identity-scope/SKILL.md)** — ตกลงให้ชัดก่อนว่าบริษัททำธุรกิจอะไรจริงๆ ก่อนที่จะเชื่อตัวเลขขนาดตลาด รายชื่อคู่แข่ง หรือพื้นที่เติบโตใดๆ โดยจัดชั้นแต่ละสนามธุรกิจว่าพิสูจน์แล้ว กำลังก่อตัว เป็นเพียงทางเลือกไว้ก่อน หรือเป็นแค่เรื่องเล่า
+- **[market-growth-intelligence](./skills/compounder/market-growth-intelligence/SKILL.md)** — อธิบายการเติบโตจากมุมนอกบริษัท ทั้งความต้องการของหมวดสินค้า ใครเป็นคนได้กำไรไป การแย่งส่วนแบ่งเกิดจากอะไร และช่องทางใหม่ สาขาใหม่ หรือประเทศใหม่ เพิ่มยอดขายจริงหรือแค่ย้ายยอดขายเดิมไปมา
+- **[business-economic-engine](./skills/compounder/business-economic-engine/SKILL.md)** — ประกอบภาพว่าธุรกิจหนึ่งหน่วยทำเงินได้อย่างไร แล้วไล่ต่อไปจนถึงกระแสเงินสดและผลตอบแทนต่อผู้ถือหุ้นหนึ่งหุ้น
+- **[reinvestment-runway](./skills/compounder/reinvestment-runway/SKILL.md)** — วัดว่าเงินก้อนใหม่ได้ผลตอบแทนเท่าไร แทนที่จะดูค่าเฉลี่ยของเงินก้อนเก่า ประเมินว่ายังลงทุนเพิ่มได้อีกเท่าไร และงบดุลรับไหวหรือไม่
+- **[compounder-grill](./skills/compounder/compounder-grill/SKILL.md)** — ท้าทายข้อสรุปเรื่องการทบต้นด้วยสถิติฐานของบริษัทกลุ่มเดียวกัน ชุดทดสอบเพื่อหาจุดพัง และการตรวจแบบย้อนกลับที่เริ่มจากผลลัพธ์แล้วถอยกลับมาดูว่าโลกต้องเป็นแบบไหนถึงจะเป็นไปได้
+- **[compounder-bf-report](./skills/compounder/compounder-bf-report/SKILL.md)** — เขียนงานวิจัยออกมาโดยติดป้ายกำกับทุกข้อความว่าเป็นหลักฐานระดับใด ย้อนกลับไปหาแหล่งต้นทางได้ และคงข้อมูลที่ยังขาดไว้ให้เห็น
 
 ### การทบทวนแบบ Adversarial
 
@@ -241,6 +286,7 @@ bash skills/har-to-api/tests/smoke_live.sh TU bkk
 - Midas ช่วยปรับโครงสร้างงานวิจัย แต่ไม่สามารถกำจัดความไม่แน่นอนหรือรับประกันผลลัพธ์
 - ความพร้อมของแหล่งข้อมูล รูปแบบเว็บไซต์ ข้อมูลตลาด และประมาณการของนักวิเคราะห์สามารถเปลี่ยนแปลงได้
 - valuation ขึ้นอยู่กับสมมติฐาน ให้อ่าน sensitivity grid ไม่ใช่ดูเฉพาะ fair value หลัก
+- เส้นการเติบโตทบต้นตัดสินความทนทานของธุรกิจ ไม่ได้ตัดสินราคา บริษัทที่ผ่านเส้นนี้ยังอาจเป็นการลงทุนที่แย่ได้ถ้าราคาวันนี้แพงเกินไป ผลสรุปเรื่องการทบต้นจึงไม่ใช่สัญญาณให้เข้าซื้อด้วยตัวมันเอง
 - ระดับทางเทคนิคเป็นตัวกำหนดความเสี่ยงแบบมีเงื่อนไข ไม่ใช่คำรับรองว่าราคาจะเคลื่อนไหวตามที่คาด
 - persona และ methodology ที่มีชื่อเป็นเครื่องมือคิดอย่างมีโครงสร้าง ไม่ใช่การจำลองบุคคลเหล่านั้นอย่างแม่นยำหรือการรับรองจากบุคคลดังกล่าว
 - รายงานสุดท้ายอาจมีข้อผิดพลาดหรือข้อมูลจากบุคคลที่สามที่ล้าสมัย ตรวจสอบข้อเท็จจริงสำคัญกับ filing และประกาศทางการ
@@ -255,7 +301,8 @@ bash skills/har-to-api/tests/smoke_live.sh TU bkk
 skills/
 ├── midas/                  router
 ├── har-to-api/             traceable and replayable data layer
-├── pipeline/               orchestrator plus 11 construction skills
+├── pipeline/               valuation orchestrator plus 11 construction skills
+├── compounder/             compounding orchestrator plus 6 construction skills
 ├── stock-grill/            adversarial review
 ├── minervini-sepa/         standalone SEPA system
 └── option-flow/            standalone dealer-positioning (GEX) read
@@ -263,7 +310,7 @@ skills/
 
 แต่ละทักษะเป็น folder ที่มี `SKILL.md` ซึ่งจำเป็น และอาจมี directory `references/`, `scripts/`, `assets/`, `agents/` หรือ `tests/` แต่ละทักษะทำงานได้ด้วยตัวเองเมื่อติดตั้ง
 
-helper script ใช้ Python 3.8+ standard library เป็นหลัก ยกเว้น `option-flow` ที่คำนวณ Black-Scholes จึงต้องใช้ `numpy` และ `scipy` (และ `yfinance` แบบ lazy เฉพาะ live-fetch path เหมือนรูปแบบ fallback ของ `har-to-api`) ทักษะอื่นทุกตัวใช้แต่ stdlib Shell regression test ครอบคลุม data layer และ analytical helper หลายตัว แต่พฤติกรรมของ provider จริงยังต้องใช้ smoke check ตามที่บันทึกไว้
+helper script ใช้ Python 3.8+ standard library เป็นหลัก ยกเว้น `option-flow` ที่คำนวณ Black-Scholes จึงต้องใช้ `numpy` และ `scipy` (และ `yfinance` แบบ lazy เฉพาะ live-fetch path เหมือนรูปแบบ fallback ของ `har-to-api`) ทักษะอื่นทุกตัวใช้แต่ stdlib Shell regression test ครอบคลุม data layer และ analytical helper หลายตัว แต่พฤติกรรมของ provider จริงยังต้องใช้ smoke check ตามที่บันทึกไว้ ส่วนเส้นการเติบโตทบต้นไม่มี script ตอน runtime เลย เพราะเป็นการให้เหตุผลไม่ใช่การคำนวณ แต่คำสั่ง `python skills/compounder/tests/validate_skills.py` จะตรวจว่าทักษะทั้งเจ็ดตัวยังคงโครงสร้าง สัญญาเรื่องหลักฐาน และข้อสงวนสิทธิ์ที่บังคับไว้ครบ
 
 [`CONTEXT.md`](./CONTEXT.md) คือคำศัพท์มาตรฐานสำหรับการเขียนของ maintainer ทักษะที่ติดตั้งแล้วไม่พึ่งพา root file นี้ แต่ละทักษะมีคำจำกัดความที่ตัวเองต้องใช้ การตัดสินใจด้าน methodology ที่ย้อนกลับยากควรอยู่ใน `docs/adr/` ส่วน decision journal ของแต่ละหุ้นควรอยู่กับผลการวิเคราะห์หุ้นนั้น ไม่ใช่ใน repository นี้
 

@@ -8,18 +8,25 @@ disable-model-invocation: true
 
 _From ticker to decision — build the thesis, then try to break it._
 
-The router over the **midas** investment skills — a self-contained pipeline from construction to stress-test. You don't remember every skill, so ask here first.
+The router over the **midas** investment skills — self-contained pipelines from construction to stress-test. You don't remember every skill, so ask here first.
 
-The repo has three layers:
-- **Construction pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 8 sub-skills (`business-narrative` → `earnings-quality` → `company-valuation` → `earnings-preview`/`earnings-recap` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) to build a full thesis + report from a ticker.
+**Two research lines, two different questions.** *"What is it worth today?"* → the valuation line (`both-stock-analysis`, Damodaran-style). *"Can it keep compounding for years?"* → the compounding line (`future-compounder`, Mayer-style). They share the `har-to-api` data layer and nothing else; run one, or run both and compare, but do not merge their outputs into a single verdict.
+
+The repo has four layers:
+- **Valuation pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 11 construction sub-skills (`business-narrative` → `business-drivers` → `earnings-quality` → `company-valuation` → `peer-impact` → `earnings-recap`/`earnings-preview` → `growth-outlook` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) over one shared `har-to-api` snapshot, then hands the finished report to `stock-grill`.
+- **Compounding pipeline** (`skills/compounder/`) — `future-compounder` orchestrates 6 sub-skills (`business-identity-scope` → `market-growth-intelligence` → `business-economic-engine` → `reinvestment-runway` → `compounder-grill` → `compounder-bf-report`) to judge whether the next dollar of reinvested capital still earns well, and for how long.
 - **Adversarial** (`skills/stock-grill`) — attacks a finished thesis before you commit capital.
 - **Standalone technical** (`skills/minervini-sepa`, `skills/option-flow`) — trade-timing tools usable on their own or as a follow-up check on the pipeline's technical-timing step.
 
 ## Skills (entry points)
 
 ### `both-stock-analysis` — full analysis + report (the orchestrator)
-**Use when:** the user gives a ticker/company and wants the full picture — narrative + valuation + earnings + investment plan + a written HTML report. It chains the 7 sub-skills automatically.
+**Use when:** the user gives a ticker/company and wants the full picture — narrative + valuation + earnings + investment plan + a written HTML report. It chains the 11 construction sub-skills automatically and ends with the adversarial review.
 **Not for:** attacking a thesis you already have (use `stock-grill`), or a single slice like pure valuation (use `company-valuation` directly).
+
+### `future-compounder` — long-horizon compounding investigation (the second orchestrator)
+**Use when:** the question is durability rather than price — "is this a compounder", "can it still grow for another decade", "100-bagger candidate", "will reinvested capital keep earning". It chains the 6 sub-skills, gating the market frame before the market research and the market research before the internal economics, and reports Compounding Potential, Evidence Maturity, and Confidence as three separate verdicts.
+**Not for:** what the stock is worth or when to buy it — it produces no DCF, fair value, target price, position size, or entry timing (`both-stock-analysis` covers those). Also not a shortcut for a name you only want to trade.
 
 ### `stock-grill` — adversarial thesis stress-test
 **Use when:** you have a **BF-Report** (or a thesis / Investment Synthesis / SEPA verdict) and want to **attack it before committing capital**. Point it at the report file — R0 checks the document against itself, then R1-R5 attack the reasoning — pre-mortem, sensitivity attack, variant-perception check, gate audit, sell pre-commit.
@@ -33,14 +40,24 @@ The repo has three layers:
 **Use when:** you want to know whether hedging flows will currently absorb or extend a move — dealer gamma exposure, call/put walls, gamma-flip level, and whether a proposed stop sits inside the stock's own option-implied noise band. US-listed names only; it refuses rather than guesses on a thin chain.
 **Not for:** predicting direction (it only answers sticky/slippery, never up/down) or non-US tickers (options liquidity is almost always too thin).
 
-### Sub-skills (usually reached via `both-stock-analysis`, not directly)
-`business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report` — reach directly only when the user wants a single slice (e.g. just the valuation, just the narrative).
+### Sub-skills (usually reached via an orchestrator, not directly)
+Under `both-stock-analysis`: `business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report`.
+
+Under `future-compounder`: `business-identity-scope` · `market-growth-intelligence` · `business-economic-engine` · `reinvestment-runway` · `compounder-grill` · `compounder-bf-report`.
+
+Reach directly only when the user wants a single slice (e.g. just the valuation, just the unit economics).
 
 ## How to choose (when to use what)
 
 | Situation | Use |
 |---|---|
 | New stock, want full analysis + report | `both-stock-analysis` |
+| "What is it worth?" / "is it cheap here?" | `both-stock-analysis` (valuation line) |
+| "Can it keep compounding?" / "is this a 100-bagger?" / holding 3-10 years | `future-compounder` (compounding line) |
+| "What does the last dollar they reinvest actually earn?" | `reinvestment-runway` |
+| "Is that growth real, or a TAM story?" / share vs category vs M&A | `market-growth-intelligence` |
+| "What business is this company really in?" / the TAM looks inflated | `business-identity-scope` |
+| "How does one store / one customer actually make money?" | `business-economic-engine` |
 | Have a thesis/Synthesis, want to check before committing | `stock-grill` |
 | Already in a position, want a pre-mortem ("why would this drop 40%?") | `stock-grill` |
 | Want pure SEPA / trade timing on a stock | `minervini-sepa` |

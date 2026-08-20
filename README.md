@@ -14,6 +14,13 @@
 
 Midas is a collection of investment-research skills for AI agents. It helps you move from a ticker to a sourced thesis, a valuation, a conditional plan, and a self-contained HTML report. It can then challenge that work before you commit capital.
 
+Midas contains **two research lines that answer two different questions**, and you choose one by what you are actually asking:
+
+- **“What is this worth today?”** → the **valuation line** (`both-stock-analysis`), which bridges the business story to a fair value, a scenario range, and an entry plan.
+- **“Can this keep compounding for years?”** → the **compounding line** (`future-compounder`), which asks whether the next dollar the company reinvests still earns a good return, and for how long. It produces no fair value, target price, or entry timing by design.
+
+Both lines share the same data layer, so their facts agree. Their conclusions stay separate on purpose: a company can be a fine compounder at a bad price, or cheap and unable to compound.
+
 You do not need to remember all the skill names. Start with `/midas`, describe what you want in normal language, and it will point you to the right workflow.
 
 > **Research and educational output only. Not financial advice.** Midas does not make the final investment decision for you and does not promise returns.
@@ -104,6 +111,7 @@ You can write requests in normal language. Slash commands are useful for user-in
 | What you want | Example prompt | Skill and result |
 |---|---|---|
 | A complete investment report | `Run a full analysis of CPALL.BK and produce the final BF-Report.` | `both-stock-analysis` → full research pipeline and HTML BF-Report |
+| A long-horizon compounding verdict | `Can CPALL.BK keep compounding for the next ten years?` | `future-compounder` → evidence on returns, reinvestment, and duration, with potential and confidence reported separately |
 | A focused valuation | `Estimate the fair value of NVDA using DCF, relative valuation, and SOTP where applicable.` | `company-valuation` → blended fair value and sensitivity grid |
 | A Minervini-style setup review | `Run the Minervini SEPA process on AAPL.` | `minervini-sepa` → four-gate SEPA assessment and conditional setup |
 | A dealer-positioning / gamma read | `What does option flow say about NVDA right now?` | `option-flow` → sticky/slippery regime, call/put walls, and a stop-vs-noise-band check |
@@ -150,12 +158,39 @@ Step 0: data snapshot
 
 The construction stage contains **eleven sub-skills**. The data layer runs before them, the orchestrator controls the sequence, and `stock-grill` attacks the completed result afterward. If you only need one part—such as valuation or earnings quality—you can run that skill without the full pipeline.
 
+## How a compounding analysis works
+
+The compounding line asks a different question, so it uses a different order. `future-compounder` coordinates it:
+
+```text
+Step 0: data snapshot (optional, shared with the valuation line)
+→ business identity and market scope   what business is this, really?
+→ market and growth intelligence       where does growth come from, and who captures it?
+→ business economic engine             how does one unit of this business make money?
+→ reinvestment and runway              what does the next dollar earn, and for how long?
+→ compounder grill                     what would have to be true, and what would break it?
+→ compounder BF-Report
+```
+
+Each stage is a gate rather than a chapter. The market frame must hold before market research is trusted; market evidence must hold before internal economics are read; and if later evidence contradicts the original framing, the analysis is sent back rather than quietly redefined.
+
+The result separates three things a single rating would blur together: how large the compounding could be, how far the evidence actually reaches, and how confident the conclusion can be. A young company can legitimately score high on the first and low on the second.
+
+This line deliberately excludes DCF, fair value, target price, entry timing, and position sizing. Use the valuation line for those.
+
 ## Choose the right skill
 
 | Your question | Use |
 |---|---|
 | “I do not know where to start.” | `/midas` |
 | “Give me the full picture and a finished report.” | `both-stock-analysis` |
+| “Can this company keep compounding for a decade?” | `future-compounder` |
+| “What business is this company really in?” | `business-identity-scope` |
+| “Is that growth the market, or share, or acquisitions?” | `market-growth-intelligence` |
+| “How does one store or one customer actually make money?” | `business-economic-engine` |
+| “What does the next dollar they reinvest earn?” | `reinvestment-runway` |
+| “Try to break this compounding thesis.” | `compounder-grill` |
+| “Write the compounding research up as a document.” | `compounder-bf-report` |
 | “Fetch the facts once and show where they came from.” | `har-to-api` |
 | “Explain the business story behind the numbers.” | `business-narrative` |
 | “What actually moves this company’s earnings?” | `business-drivers` |
@@ -176,7 +211,7 @@ New to the terminology? **DCF** values expected cash flows; **SOTP** values busi
 
 ## Skill reference
 
-The repository currently contains **17 skills**. Start with the router when you are uncertain; enter the full workflow for end-to-end work; reach a construction skill directly for one focused question.
+The repository currently contains **24 skills**. Start with the router when you are uncertain; enter one of the two orchestrators for end-to-end work; reach a construction skill directly for one focused question.
 
 ### Start here
 
@@ -186,9 +221,10 @@ The repository currently contains **17 skills**. Start with the router when you 
 
 - **[har-to-api](./skills/har-to-api/SKILL.md)** — fetches financial facts with provenance, saves dated snapshots, and can derive a client from captured website traffic when a new source is needed.
 
-### Full workflow
+### Full workflows
 
 - **[both-stock-analysis](./skills/pipeline/both-stock-analysis/SKILL.md)** — coordinates the complete ticker-to-report workflow, including the eleven construction sub-skills and the final adversarial review.
+- **[future-compounder](./skills/compounder/future-compounder/SKILL.md)** — coordinates the compounding investigation across its six sub-skills, and reports how large the compounding could be, how mature the evidence is, and how confident the conclusion can be as three separate verdicts.
 
 ### Construction: eleven focused skills
 
@@ -203,6 +239,15 @@ The repository currently contains **17 skills**. Start with the router when you 
 - **[bf-tech-analysis](./skills/pipeline/bf-tech-analysis/SKILL.md)** — reads weekly and daily charts for conditional timing, risk, and invalidation levels.
 - **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — joins narrative, valuation, earnings, and timing into scenarios and a conditional plan.
 - **[bf-report](./skills/pipeline/bf-report/SKILL.md)** — renders the completed research as a filing-style, self-contained HTML document.
+
+### Compounding: six focused skills
+
+- **[business-identity-scope](./skills/compounder/business-identity-scope/SKILL.md)** — settles what business the company actually operates before any market size, competitor, or runway claim is trusted, labelling each arena as proven, emerging, an option, or narrative.
+- **[market-growth-intelligence](./skills/compounder/market-growth-intelligence/SKILL.md)** — explains growth from outside the company: category demand, who captures the profit, share gains and their cause, and whether new channels, stores, and countries add demand or move it around.
+- **[business-economic-engine](./skills/compounder/business-economic-engine/SKILL.md)** — rebuilds how one repeatable unit of the business makes money, and traces that through to cash flow and owner economics per share.
+- **[reinvestment-runway](./skills/compounder/reinvestment-runway/SKILL.md)** — measures what incremental capital earns rather than what past capital averaged, sizes how much more can be deployed, and tests whether the balance sheet can fund it.
+- **[compounder-grill](./skills/compounder/compounder-grill/SKILL.md)** — challenges the compounding thesis with the outside-view base rate, falsification tests, and a reverse check that starts from the outcome and backs out what the world would have to look like.
+- **[compounder-bf-report](./skills/compounder/compounder-bf-report/SKILL.md)** — writes the research up with every claim labelled by evidence type and traceable to an original source, and with the gaps left visible.
 
 ### Adversarial review
 
@@ -241,6 +286,7 @@ Respect provider terms and rate limits, and cross-check decision-critical figure
 - Midas improves research structure; it cannot remove uncertainty or guarantee an outcome.
 - Source availability, website formats, market data, and analyst estimates can change.
 - Valuation depends on assumptions. Read the sensitivity grid, not only the headline fair value.
+- The compounding line judges business durability, not price. A company can pass it and still be a poor investment at today's quote, so a compounding verdict is never an entry signal on its own.
 - Technical levels are conditional risk markers, not promises that a price will behave in a certain way.
 - Personas and named methodologies are tools for structured thinking, not exact simulations or endorsements by those investors.
 - The final report may contain errors or stale third-party data. Verify material facts against filings and official announcements.
@@ -255,7 +301,8 @@ Respect provider terms and rate limits, and cross-check decision-critical figure
 skills/
 ├── midas/                  router
 ├── har-to-api/             traceable and replayable data layer
-├── pipeline/               orchestrator plus 11 construction skills
+├── pipeline/               valuation orchestrator plus 11 construction skills
+├── compounder/             compounding orchestrator plus 6 construction skills
 ├── stock-grill/            adversarial review
 ├── minervini-sepa/         standalone SEPA system
 └── option-flow/            standalone dealer-positioning (GEX) read
@@ -263,7 +310,7 @@ skills/
 
 Each skill is a folder with a required `SKILL.md` and optional `references/`, `scripts/`, `assets/`, `agents/`, or `tests/` directories. Skills are self-contained at runtime.
 
-The helper scripts use the Python 3.8+ standard library, with one exception: `option-flow`'s Black-Scholes math needs `numpy` and `scipy` (`yfinance` too, but only lazily, for its live-fetch path, same pattern as `har-to-api`'s fallback). Every other skill's scripts are stdlib-only. Shell regression tests cover the data layer and several analytical helpers; live provider behavior still needs the documented smoke checks.
+The helper scripts use the Python 3.8+ standard library, with one exception: `option-flow`'s Black-Scholes math needs `numpy` and `scipy` (`yfinance` too, but only lazily, for its live-fetch path, same pattern as `har-to-api`'s fallback). Every other skill's scripts are stdlib-only. Shell regression tests cover the data layer and several analytical helpers; live provider behavior still needs the documented smoke checks. The compounding line carries no runtime scripts — it is reasoning, not computation — but `python skills/compounder/tests/validate_skills.py` checks that its seven skills still hold their structure, their evidence contracts, and the mandatory disclaimer.
 
 [`CONTEXT.md`](./CONTEXT.md) is the maintainer’s canonical authoring vocabulary. Installed skills do not depend on that root file; each skill carries the definitions it needs. Hard-to-reverse methodology decisions belong in `docs/adr/`. A per-stock decision journal belongs with that stock’s analysis output, not in this repository.
 

@@ -78,6 +78,54 @@ _Avoid_: safety margin, buffer
 Return on invested capital minus cost of capital — positive and growing means value creation; negative means value destruction. The test of whether the business genuinely creates value.
 _Avoid_: spread, return on capital, ROIC
 
+## Compounding (Mayer)
+
+Vocabulary of the compounding line (`skills/compounder/`). It answers durability, not price, so it deliberately shares no terms with Valuation above.
+
+**Future Compounding Economics**:
+The research decomposition the whole compounding line hangs on — Incremental Return × Reinvestment Capacity × Duration. A decomposition for structuring evidence, never a formula that outputs a value.
+_Avoid_: compounding formula, compounding score
+
+**Economic Unit**:
+The smallest repeatable thing whose economics reveal what incremental capital earns — one store, one cohort, one facility, one customer. A hybrid business may need more than one. Not a reporting segment, and not the corporate average.
+_Avoid_: unit economics, segment, business unit
+
+**Growth Architecture**:
+The internal chain from external driver → capital/input → unit output → volume/price/mix/capacity/geography/product/M&A → revenue → NOPAT → FCF. It is what the company does with growth; Growth Decomposition is where the growth came from.
+_Avoid_: growth model, growth bridge
+
+**Growth Decomposition (Layer 1)**:
+Splitting reported growth into category/geography momentum + market-share change + M&A, reconciled to operating drivers. Distinct from `growth-outlook`'s decomposition on the valuation line, which grades volume/price/expansion/acquisition/currency by repeatability for a forecast.
+_Avoid_: growth breakdown, revenue bridge
+
+**Arena class**:
+The evidence class of each business arena — PROVEN · EMERGING · OPTION · NARRATIVE. Market size can never upgrade an arena's class; only evidence can.
+_Avoid_: segment, opportunity, optionality
+
+**Metric Comparability Gate**:
+The check run before any multi-period trend, marking a series COMPARABLE, ADJUSTED_COMPARABLE, NOT_DIRECTLY_COMPARABLE, or UNRESOLVED, and stating whether demand evidence is sell-in or sell-through. Stops a redefined KPI from being read as a trend.
+_Avoid_: like-for-like, apples to apples
+
+**Net incrementality**:
+New demand a channel, store, or geography adds after subtracting what it took from existing ones, including halo and recapture. A new store that moves existing customers is not growth.
+_Avoid_: cannibalization, same-store growth
+
+**Evidence Ladder**:
+The five rungs evidence is ranked on — Story → Operating indicators → Unit economics → Corporate/per-share translation → Persistence. Determines Evidence Maturity.
+_Avoid_: evidence quality, confidence level
+
+**Potential / Evidence Maturity / Confidence**:
+Three verdicts reported separately and never collapsed into one score — how large the compounding could be · how far up the Evidence Ladder the proof reaches · how sure we are given counter-evidence and gaps. A young company can rate high Potential and low Evidence Maturity at the same time.
+_Avoid_: rating, conviction score, grade
+
+**Reverse Reality Check**:
+Starting from a 10x business outcome and backing out the market share, capital, funding, and dilution it would require, to see whether the required world is plausible. Stress, not prediction; 100x is optional.
+_Avoid_: reverse DCF, upside case, price target
+
+**SCOPE_CHALLENGE**:
+The signal a downstream skill raises when new evidence invalidates the Layer 0 business frame — it forces the frame to be redone rather than silently redefined mid-analysis.
+_Avoid_: scope creep, pivot
+
 ## Technical timing (SEPA)
 
 **SEPA**:
