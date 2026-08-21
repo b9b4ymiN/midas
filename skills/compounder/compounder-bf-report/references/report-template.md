@@ -3,7 +3,12 @@
 Use only decision-relevant sections, but preserve the causal order: **Scope → Market & Growth → Economics → Reinvestment → Falsification**. Do not turn frameworks into a checklist dump.
 
 ## 1. Executive Summary
-5–10 sentences: business frame, external growth system, economic engine, why compounding may persist, strongest evidence, strongest contradiction, Potential / Evidence Maturity / Confidence, and the most important unresolved item.
+5–10 sentences — **target 1,200–1,800 characters, hard cap 2,000**, excluding
+the verdict block. Cover: business frame, external growth system, economic
+engine, why compounding may persist, strongest evidence, strongest
+contradiction, Potential / Evidence Maturity / Confidence, and the most
+important unresolved item. If it will not fit, the finding is not yet sharp
+enough — the detail belongs in the body, not here.
 
 ## 2. Business Identity & Market Scope
 State the Layer 0 candidate definition, Proven/Emerging/Option arenas, main alternative frame, structural analogues with transfer limits, and any `SCOPE_CHALLENGE`.
@@ -61,7 +66,37 @@ State the relevant prior/reference class, company-specific evidence that updates
 Summarize material evidence from Story → Operating/Market → Unit Economics → Corporate/Per-share Translation → Persistence, then explain the Evidence Maturity label.
 
 ## 19. Counter-Thesis / Grill
-Strongest opposing interpretation, including category-tailwind illusion, profit-pool/value-migration risk, share-gain quality, channel cannibalization, international replication failure, marginal-return decay, scale failure, allocator failure, accounting distortion, governance concerns, and critical unknowns.
+The strongest opposing **interpretation** of evidence the reader has already
+seen — not a second pass through the evidence itself.
+
+Sections 3–15 established the facts. This section's job is to read those same
+facts the other way: category-tailwind illusion, profit-pool/value-migration
+risk, share-gain quality, channel cannibalization, international replication
+failure, marginal-return decay, scale failure, allocator failure, accounting
+distortion, governance concerns, and critical unknowns.
+
+**Do not re-state figures already presented.** Cite the section that carries
+them ("the flat ROCE in §12") and spend the words on what those figures mean
+if the bear is right. A counter-thesis that reads as a summary of the report
+has not done its work.
+
+**Repetition rule (applies to the whole document):** a figure restated in more
+than three *body* sections is being repeated rather than used. Give it one
+home and reference that section elsewhere.
+
+Two qualifications, both learned by getting this wrong on the GULF report:
+
+- **Count distinct figures, not substrings.** A naive search made `3.3%` look
+  like it appeared in five sections; three were `33.3%`, an unrelated number.
+  `55,000` matched installed capacity in MW, an annual payment in THB, and the
+  upper bound of an EBITDA range — three different quantities.
+- **The sources section and data-gap list do not count.** A citation and a
+  named open question are supposed to restate the figure they concern.
+
+What remains after those exclusions is usually smaller than it first looks.
+Check before cutting: a figure doing different work in each place — framing in
+§2, evidence in §7, a plausibility bound in §20 — is being *used*, not
+repeated.
 
 ## 20. Reverse Reality Check
 Show business requirements for a 10x case and optional 100x stress case: buyers/units/capacity, category size/share, revenue, margin, capital, funding, and dilution. This is a plausibility check, **not valuation or target price**.
@@ -84,3 +119,22 @@ Research and educational output only. Not financial advice. Conditional plans an
 ---
 
 _Research and educational output only. Not financial advice._
+
+
+---
+
+## Presentation conventions
+
+**Dates.** Pick one era and hold it for the whole document. A Thai-language
+report uses Buddhist Era throughout; the only exceptions are URLs and the
+titles of English-language sources, which are quoted verbatim. Mixing
+"21 ส.ค. 2026" in a masthead with พ.ศ. 2569 in the body reads as an error
+because it is one.
+
+**Print.** Apply `page-break-inside: avoid` to self-contained blocks —
+callouts, tables, verdict panels — never to whole sections. A 2,600-character
+section that refuses to break leaves most of a page empty.
+
+**Figures.** `font-variant-numeric: tabular-nums` wherever digits are compared
+down a column. Wide tables scroll inside their own container so the page body
+never scrolls sideways.

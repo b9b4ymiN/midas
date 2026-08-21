@@ -23,7 +23,20 @@ Read `references/pipeline-contract.md` before handoffs. Layer 0 precedes Layer 1
 
 ## Operating rules
 
-- Preserve one Evidence Ledger across the run.
+- **Write every pack to disk and validate it before the next layer runs.**
+  Create `run/<TICKER>-<YYYY-MM-DD>/` and serialize each pack there as
+  `<pack_name>.json` the moment its layer completes, then:
+
+  ```bash
+  python scripts/validate_pack.py run/<TICKER>-<DATE>/ --stage <pack_just_written>
+  ```
+
+  A non-zero exit stops the pipeline until the named fields are resolved.
+  Carrying packs only in working memory is how a required field goes missing
+  on a long run without anything noticing; the files also give the run an
+  audit trail and let it resume without starting over.
+- Preserve one Evidence Ledger across the run — appended, never replaced. Each
+  pack's `evidence_ledger` must contain every prior entry plus its own.
 - Validate each upstream DoD before downstream work.
 - Pass `UNRESOLVED` and thesis-critical **Data Gaps** forward; never silently fill them.
 - Short histories do not reject young companies. Keep Potential, Evidence Maturity, and Confidence separate.

@@ -13,7 +13,7 @@ Read `references/methodology-router.md` and `references/research-foundations.md`
 
 ## Required investigation
 
-1. Run the **Metric Comparability Gate** before any multi-period trend. Mark material series `COMPARABLE`, `ADJUSTED_COMPARABLE`, `NOT_DIRECTLY_COMPARABLE`, or `UNRESOLVED`; state the demand-evidence basis (for example sell-in vs **sell-through**, usage, bookings, or GMV) when channel inventory can distort demand.
+1. Run the **Metric Comparability Gate** before any multi-period trend. Mark material series `COMPARABLE`, `ADJUSTED_COMPARABLE`, `NOT_DIRECTLY_COMPARABLE`, or `UNRESOLVED`; state the demand-evidence basis (for example sell-in vs **sell-through**, usage, bookings, or GMV) when channel inventory can distort demand. Where the company reports a profit measure of its own definition ("core profit", "adjusted EBITDA"), also run the mandatory **Adjusted-to-Statutory Reconciliation** and record `adjusted_profit_reconciliation`; an unreconciled adjusted figure may not be used as a growth base.
 2. Diagnose **Demand & Category Evolution** using the economic demand unit appropriate to the business. Classify the regime as structural/cyclical tailwind, stable, headwind, or unresolved. Do not substitute consultant TAM for demand evidence.
 3. Build the **competitive system**: direct rivals, substitutes, entrants, relative growth/share, and the causal mechanism behind share gain/loss. A low share is not a runway thesis.
 4. When value capture is non-obvious, map **Industry Structure / Profit Pool / Value Migration** and identify who receives incremental economics as the market grows.
@@ -33,7 +33,7 @@ Produce `market_growth_pack` exactly as defined in `../future-compounder/referen
 
 ## DoD
 
-Complete only when the analysis explains category regime, value capture, share mechanism, strategic and operating growth sources, material channel/geographic/**Expansion Incrementality**, demand evidence basis including sell-in vs sell-through where relevant, execution trajectory, counter-evidence, and unresolved gaps without double counting.
+Complete only when the analysis explains category regime, value capture, share mechanism, the reconciliation of any company-defined profit measure to statutory profit, strategic and operating growth sources, material channel/geographic/**Expansion Incrementality**, demand evidence basis including sell-in vs sell-through where relevant, execution trajectory, counter-evidence, and unresolved gaps without double counting.
 
 **STOP:** Do not perform full unit-return/ROIIC analysis, per-share economics, capital allocation, final compounder verdict, valuation, or BF-report synthesis. Pass economic consequences to downstream skills.
 

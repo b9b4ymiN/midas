@@ -6,6 +6,11 @@
 
 Every pack MUST carry the same `evidence_ledger`, appended rather than replaced. Use `schema_version: future-compounder-v2.2` in serialized handoffs where a version field is available.
 
+Packs are serialized to `run/<TICKER>-<YYYY-MM-DD>/<pack_name>.json` as each
+layer completes, and checked with `future-compounder/scripts/validate_pack.py`
+before the next layer starts. The field lists below are what that script
+enforces — they are a gate, not a suggestion.
+
 ## Shared status semantics
 
 Use explicit states instead of fabricated precision:
@@ -57,7 +62,11 @@ Downstream research may emit `SCOPE_CHALLENGE` when new evidence changes the cus
 Required fields:
 - `scope_frame_used`
 - `scope_challenges`
-- `metric_comparability`
+- `metric_comparability`, including `adjusted_profit_reconciliation` whenever
+  the company promotes a profit measure of its own definition. States
+  `RECONCILED`, `PARTIALLY_RECONCILED`, or `UNRECONCILED`, the residual, and
+  the items accounted for. An `UNRECONCILED` adjusted figure may not be used
+  downstream as a growth base or as a ratio denominator.
 - `demand_evidence_basis`
 - `demand_category_evolution`
 - `industry_profit_pool`
@@ -91,6 +100,9 @@ Required fields:
 - `current_return_structure`
 - `intangible_capital`
 - `scale_economics`
+- `look_through_earnings`, `associate_cash_bridge`, and `return_bases` — required
+  when share of associate profit exceeds 25% of net profit or long-term
+  investments exceed 30% of total assets; `NOT_APPLICABLE` otherwise
 - `per_share_economics`
 - `economic_inflections`
 - `evidence_ledger`
