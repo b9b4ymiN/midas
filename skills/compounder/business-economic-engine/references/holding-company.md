@@ -8,14 +8,41 @@ Run this module when **either** condition holds on the latest reported period:
 |---|---|
 | Share of profit from associates / JVs ÷ net profit attributable to owners | > 25% |
 | Long-term investments (equity stakes) ÷ total assets | > 30% |
+| **Minority interest ÷ total group equity** | **> 20%** |
 
-Either alone is enough. Both together mean the consolidated statements
-describe a minority of the economics and the standard toolkit misreads the
-company by default.
+Any one alone is enough. The first two say the company's economics sit partly
+in businesses it does not consolidate; the third says the opposite — it
+consolidates businesses whose economics are partly somebody else's. Both
+directions break the same measures.
 
-*Calibrating case — GULF (SET), TTM to 2026-06-30:* equity income was 64.5% of
-net profit and long-term investments 53.2% of assets. Both conditions cleared
-by a wide margin, and all three distortions below were present at once.
+*Calibrating case for the first two — GULF (SET), TTM to 2026-06-30:* equity
+income was 64.5% of net profit and long-term investments 53.2% of assets. Both
+cleared by a wide margin, and all three distortions below were present at once.
+
+*Calibrating case for the third — Ping An (SHA:601318), TTM to 2026-06-30:*
+neither associate condition fired, because Ping An consolidates its major
+subsidiaries rather than equity-accounting them. Minority interest was
+**29.3% of group equity, up from 24.6% in 2021** — nearly a third of the
+consolidated capital belongs to outside shareholders, mostly in the listed
+bank. Return on equity reads 15.50% on the owners' base and 13.11% on the
+group base, and the gap widens every year. Without the third trigger the case
+would have passed through unflagged.
+
+Threshold evidence, measured live 2026-08-21 — the 20% line separates cleanly
+and is not a round number picked for looks:
+
+| Company | Minority ÷ group equity | Trigger |
+|---|---|---|
+| CPALL (SET) | 57.8% | fires |
+| Ping An (SHA) | 29.3% | fires |
+| TU (SET) | 13.9% | quiet |
+| GULF (SET) | 9.2% | quiet |
+| AAPL | none reported | quiet |
+
+CPALL is the sharpest case: it consolidates subsidiaries in which outside
+shareholders hold most of the equity, so **more than half of group equity is
+not the parent's**. Every unadjusted group-level per-share and return figure
+for that company describes a business the owner mostly does not own.
 
 ## Why this module exists
 

@@ -43,6 +43,57 @@ reported FY2026 Q4, which composes to `2026-12-31` — a date in the future,
 when the real TTM end was `2026-06-30`. AAPL's 52/53-week year ended
 `2026-06-27`, not on any quarter boundary at all.
 
+## Statement template
+
+`fetch.py` emits a `statement_template` fact on every run: `insurance`,
+`bank`, `utility`, or `standard`.
+
+A ratio can be arithmetically correct and economically meaningless. ROIC on an
+insurer divides by liabilities that are the company's *raw material*, not its
+financing — Ping An's 6.29% answers no question anyone has. P/FCF of 1.36x
+does not mean cheap when the operating cash flow is mostly policyholder money
+the company must hand back.
+
+Detection is a lookup rather than a guess, because the provider stamps the
+template it rendered into its own field names. Verified live 2026-08-21:
+
+| Issuer | Suffix | Marker fields | Template |
+|---|---|---|---|
+| Ping An (SHA:601318) | `Ins` ×9 | policyLoans, reinsuranceRecoverable, separateAccountAssets | insurance |
+| Ping An Bank (SHE:000001) | `Bank` ×12 | grossLoans, totalDeposits | bank |
+| GULF (BKK) | `Uti` ×18 | — | utility |
+| TU (BKK), AAPL | none | — | standard |
+
+For `insurance` and `bank` the run also warns, naming every fact whose meaning
+does not survive the template — 29 of them on Ping An, 13 on Ping An Bank —
+and naming what to use instead: new business value and margin, contractual
+service margin, embedded value and solvency ratios for a life insurer; net
+interest margin, cost/income, NPL and CET1 for a bank; and for both, return on
+equity computed on equity **attributable to owners**.
+
+The facts are labelled, never dropped. Removing them silently would be making
+the reader's judgement for them, which is the habit this layer exists to break.
+
+## Equity: whose equity?
+
+Two facts, easily confused, and the confusion is expensive:
+
+| Fact | Contains | Use for |
+|---|---|---|
+| `equity_ttm` | Total group equity, **including** minority interest | Group-level leverage |
+| `common_equity_ttm` | Equity **attributable to owners** | ROE, book value per share, price/book |
+
+On Ping An these read 1,454,080 and 1,028,084 CNY million — **41% apart**,
+because minorities are 29.3% of group equity and rising from 24.6% in 2021.
+`equity_ttm` reads like "the equity" and is the one a report reaches for, which
+produces a per-share figure that belongs to somebody else.
+
+The provider makes the same mistake: its own `pb_ratio` is computed on group
+equity, giving 0.638x on Ping An where price to *owners'* book is 0.90x.
+
+**Rule:** any per-share metric, any ROE, and any price-to-book uses
+`common_equity_*`. Check the gap between the two before quoting either.
+
 ## Alias groups
 
 Top level of a profile, optional:

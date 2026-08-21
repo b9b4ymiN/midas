@@ -101,8 +101,16 @@ Required fields:
 - `intangible_capital`
 - `scale_economics`
 - `look_through_earnings`, `associate_cash_bridge`, and `return_bases` — required
-  when share of associate profit exceeds 25% of net profit or long-term
-  investments exceed 30% of total assets; `NOT_APPLICABLE` otherwise
+  when share of associate profit exceeds 25% of net profit, long-term
+  investments exceed 30% of total assets, or minority interest exceeds 20%
+  of total equity; `NOT_APPLICABLE` otherwise
+- `sector_return_metrics` — required when the company is an insurer or a bank
+  (`statement_template` of `insurance`/`bank`, or policy liabilities / a
+  deposit-funded loan book on the balance sheet). Carries the replacement
+  measures — NBV, CSM movement, embedded value and solvency for a life
+  insurer; NIM, cost/income, NPL and CET1 for a bank — each valued or
+  `UNRESOLVED`. ROIC, ROCE, FCF, P/FCF and EV/EBITDA may not carry a return
+  or valuation conclusion for these models. `NOT_APPLICABLE` otherwise
 - `per_share_economics`
 - `economic_inflections`
 - `evidence_ledger`

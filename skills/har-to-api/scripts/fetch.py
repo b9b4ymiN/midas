@@ -97,6 +97,68 @@ def _is_segment_total(key: str) -> bool:
     return k in SEGMENT_TOTAL_NAMES or k.endswith("_total")
 
 
+# ---------------------------------------------------------------------------
+# Statement template
+#
+# A ratio can be arithmetically correct and economically meaningless. ROIC on
+# an insurer divides by liabilities that are its raw material, not its
+# financing; Ping An's 6.29% answers no question anyone has. P/FCF of 1.36x
+# does not mean cheap when the cash flow is mostly policyholder money.
+#
+# The provider settles this for us: it renders each issuer on a statement
+# template and stamps the template into its own field names. Detection is a
+# lookup, not a guess. Verified live 2026-08-21 — Ping An `Ins` x9, Ping An
+# Bank `Bank` x12, GULF `Uti` x18, TU and AAPL unsuffixed.
+#
+# Facts are labelled, never dropped: removing them silently would be making
+# the reader's judgement for them, which is the habit this layer exists to
+# break.
+# ---------------------------------------------------------------------------
+TEMPLATE_SUFFIX_RE = re.compile(r"(Ins|Bank|Uti)$")
+TEMPLATE_BY_SUFFIX = {"Ins": "insurance", "Bank": "bank", "Uti": "utility"}
+TEMPLATE_MARKERS = {
+    "insurance": ("policyLoans", "reinsuranceRecoverable", "separateAccountAssets",
+                  "totalInvestment"),
+    "bank": ("grossLoans", "totalDeposits", "loansReceivableNet"),
+}
+# Ratio families whose economic meaning does not survive the template.
+NOT_MEANINGFUL = {
+    "insurance": ("roic", "roce", "pfcf", "fcf", "ev_ebitda", "ev_ebit",
+                  "debt_ebitda", "net_debt", "current_ratio", "quick_ratio",
+                  "asset_turnover", "working_capital", "total_debt", "net_cash"),
+    "bank": ("roic", "roce", "pfcf", "fcf", "ev_ebitda", "ev_ebit",
+             "debt_ebitda", "net_debt", "current_ratio", "quick_ratio",
+             "asset_turnover", "working_capital", "total_debt", "net_cash"),
+}
+INSTEAD_USE = {
+    "insurance": "new business value and its margin, contractual service margin (CSM), "
+                 "embedded value, solvency ratios, and return on equity computed on "
+                 "equity ATTRIBUTABLE to owners",
+    "bank": "net interest margin, cost/income, non-performing loan ratio, CET1, and "
+            "return on equity computed on equity ATTRIBUTABLE to owners",
+}
+
+
+def detect_statement_template(doc: Any) -> Optional[str]:
+    """Which statement template did the provider render this issuer on?"""
+    fd = json_path(doc, "nodes[2].data.financialData")
+    if not isinstance(fd, dict):
+        return None
+    keys = list(fd.keys())
+    counts: Dict[str, int] = {}
+    for k in keys:
+        m = TEMPLATE_SUFFIX_RE.search(k)
+        if m:
+            counts[m.group(1)] = counts.get(m.group(1), 0) + 1
+    if counts:
+        suffix = max(counts, key=lambda s: counts[s])
+        return TEMPLATE_BY_SUFFIX[suffix]
+    for template, markers in TEMPLATE_MARKERS.items():
+        if sum(1 for m in markers if m in keys) >= 2:
+            return template
+    return "standard"
+
+
 def reconcile_segments(
     seg_rec: Dict[str, Any], revenue: Optional[float]
 ) -> Dict[str, Any]:
@@ -547,6 +609,9 @@ def run(args: argparse.Namespace) -> int:
     per_provider: Dict[str, Dict[str, Dict[str, Any]]] = {}
     warnings: List[str] = []
     failures: List[Dict[str, str]] = []
+    statement_template: Optional[str] = None
+    template_url: Optional[str] = None
+    template_as_of: Optional[str] = None
 
     order = args.providers.split(",") if args.providers else list(profiles.keys())
 
@@ -598,6 +663,11 @@ def run(args: argparse.Namespace) -> int:
                 )
             route_as_of[route.get("id")] = as_of
 
+            if statement_template is None:
+                statement_template = detect_statement_template(doc)
+                if statement_template:
+                    template_url, template_as_of = url, as_of
+
             for fact, path in fact_map.items():
                 if wanted is not None and fact not in wanted:
                     continue
@@ -646,6 +716,28 @@ def run(args: argparse.Namespace) -> int:
                 # disagreement between it and the primary is never compared.
                 per_provider.setdefault("yfinance", {})[k] = v
                 warnings.append(f"{k}: using FALLBACK (yfinance) — {reason}")
+
+    # ---- statement template ------------------------------------------------
+    if statement_template:
+        facts["statement_template"] = make_fact(
+            statement_template, "stockanalysis", "primary",
+            template_url or "", template_as_of,
+        )
+        families = NOT_MEANINGFUL.get(statement_template)
+        if families:
+            flagged = sorted(
+                f for f in facts
+                if f != "statement_template" and any(fam in f for fam in families)
+            )
+            if flagged:
+                warnings.append(
+                    f"statement_template={statement_template}: the following facts are "
+                    f"arithmetically correct but economically meaningless for this "
+                    f"business model and must not be used as return or valuation "
+                    f"measures — {', '.join(flagged)}. Use instead: "
+                    f"{INSTEAD_USE[statement_template]}. They are returned, not dropped; "
+                    f"deciding for you is not this layer's job."
+                )
 
     # ---- segment reconciliation -------------------------------------------
     for seg_name in [k for k in facts if SEGMENT_FACT_RE.search(k)]:
