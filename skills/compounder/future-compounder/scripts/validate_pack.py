@@ -80,10 +80,13 @@ REQUIRED: Dict[str, List[str]] = {
 }
 
 # Fields required only when a trigger fires, checked against the pack itself.
+# Field names may be dotted: the contract nests the reconciliation inside
+# metric_comparability, so a top-level-only lookup reports it missing when it
+# is present and correct.
 CONDITIONAL: Dict[str, List[Tuple[str, List[str], str]]] = {
     "market_growth_pack": [(
-        "metric_comparability.adjusted_profit_reconciliation",
-        ["adjusted_profit_reconciliation"],
+        "adjusted profit reconciliation",
+        ["metric_comparability.adjusted_profit_reconciliation"],
         "the company promotes a profit measure of its own definition",
     )],
     "economic_engine_pack": [(
@@ -100,6 +103,16 @@ VERDICTS = {
     "evidence_maturity": {"Early", "Developing", "Established", "Deep"},
     "confidence": {"Low", "Medium", "High"},
 }
+
+
+def _dig(pack: Dict[str, Any], dotted: str) -> Any:
+    """Resolve a possibly-dotted field path. Returns None when any hop misses."""
+    cur: Any = pack
+    for part in dotted.split("."):
+        if not isinstance(cur, dict) or part not in cur:
+            return None
+        cur = cur[part]
+    return cur
 
 
 def _empty(v: Any) -> bool:
@@ -142,7 +155,7 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
 
     # Conditional requirements.
     for label, fields, why in CONDITIONAL.get(pack_name, []):
-        absent = [f for f in fields if f not in pack or _empty(pack[f])]
+        absent = [f for f in fields if _empty(_dig(pack, f))]
         if absent and len(absent) == len(fields):
             warns.append(
                 f"{label}: {', '.join(fields)} absent. Required when {why}; "

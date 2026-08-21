@@ -84,8 +84,17 @@ SEGMENT_MSG = (
 # carries no eliminations line, so it overstates) — hence the tighter bound.
 SEGMENT_RECON_PCT = 5.0
 SEGMENT_RECON_PCT_NO_TOTAL = 2.0
-# `total`, `revenue_total`, `segment_total` — the summary row, not a segment.
-SEGMENT_TOTAL_RE = re.compile(r"(^|_)total(_|$)", re.I)
+# The summary row, not a segment. Matched narrowly on purpose: a pattern like
+# `(^|_)total(_|$)` also swallows `total_asset_management_revenue`, which is
+# the *name of one of Ping An's segments*. Doing so drops a real segment from
+# the sum and then divides by it — on 601318 that produced a +1481% "gap".
+SEGMENT_TOTAL_NAMES = {"total", "revenue_total", "total_revenue",
+                       "segment_total", "revenues_total", "grand_total"}
+
+
+def _is_segment_total(key: str) -> bool:
+    k = key.strip().lower()
+    return k in SEGMENT_TOTAL_NAMES or k.endswith("_total")
 
 
 def reconcile_segments(
@@ -109,16 +118,23 @@ def reconcile_segments(
     def num(v: Any) -> bool:
         return isinstance(v, (int, float)) and not isinstance(v, bool)
 
-    parts, declared = [], None
+    parts, declared, declared_key = [], None, None
     for k, v in val.items():
         if k == "datekey" or not num(v):
             continue
-        if SEGMENT_TOTAL_RE.search(k):
-            declared = float(v)
+        if _is_segment_total(k):
+            declared, declared_key = float(v), k
         else:
             parts.append(v)
     if not parts:
         return {}
+
+    # Sanity check on the name match: a total cannot be smaller than the
+    # largest single part. If it is, the key was a segment that merely reads
+    # like a total — put it back rather than dividing by it.
+    if declared is not None and declared < max(parts):
+        parts.append(declared)
+        declared, declared_key = None, None
 
     out: Dict[str, Any] = {"segment_sum": float(sum(parts))}
     target, basis, limit = declared, "declared total", SEGMENT_RECON_PCT
