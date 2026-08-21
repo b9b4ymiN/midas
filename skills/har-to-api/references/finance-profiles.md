@@ -84,6 +84,43 @@ peer selection or driver analysis depends on it. `fetch.py` attaches
 `segment_source` and `cross_check_required` to every segment fact so the
 obligation travels with the number.
 
+### The gap is now a number, not a reminder
+
+A standing note to "cross-check against the filing" never said how far off the
+figures already were, so nobody found out without doing the arithmetic by
+hand. Every segment fact now also carries:
+
+| Field | Meaning |
+|---|---|
+| `segment_sum` | The parts, summed. Rows matching `(^\|_)total(_\|$)` are excluded — they are the provider's own summary row, and summing one in doubles the figure. |
+| `segment_declared_total` | The provider's total when the payload has one, else `null`. |
+| `segment_vs_revenue_delta_pct` | Parts vs the declared total when there is one, otherwise vs `revenue_ttm`. |
+
+Past threshold this raises a warning. Two thresholds, because the two cases
+support different checks: **±5%** when the payload declares its own total (the
+parts can be verified against it directly, so only a real mismatch matters),
+**±2%** when it does not (the only check available is against revenue, and a
+material gap there means parts are missing).
+
+Verified live on 2026-08-21:
+
+| Ticker | Parts | Declared total | Delta | Warns |
+|---|---|---|---|---|
+| TU.BK | 135,439,918,000 | 135,439,918,000 | 0.00% | no |
+| AAPL | 466,823,000,000 | 466,823,000,000 | 0.00% | no |
+| MSFT | 331,839,000,000 | 331,839,000,000 | 0.00% | no |
+| GULF.BK | 149,340,000,000 | *none* | **+4.81%** | yes |
+
+GULF is the case that motivated this. Its breakdown carries no eliminations
+line and no declared total, so the parts overstate revenue by 4.81% with
+nothing in the payload to reconcile against — the mix cannot be presented as
+complete without the filing. Its FY2025 column is worse, summing roughly 24%
+*below* reported revenue.
+
+Before the total rows were excluded, TU and AAPL both read as exactly +100%
+off. Two unrelated issuers landing on the same round number is the shape of a
+bug in the checker, not a finding about the data.
+
 
 ## Rate limiting
 

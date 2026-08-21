@@ -76,12 +76,32 @@ def fetch(url: str, auth_header: Optional[str], token: Optional[str]) -> Any:
         sys.exit(2)
 
 
+# devalue reserves negative integers in *reference position* as sentinels.
+# A genuinely negative datum (a negative cash flow, say) lives in the flat
+# array and is reached through a positive index, so mapping these cannot
+# swallow real data.
+DEVALUE_SENTINELS: Dict[int, Any] = {
+    -1: None,              # undefined
+    -2: None,              # hole in a sparse array
+    -3: float("nan"),
+    -4: float("inf"),
+    -5: float("-inf"),
+    -6: -0.0,
+}
+
+
 def resolve_sveltekit(doc: Any) -> Any:
     """Rebuild SvelteKit's deduplicated __data.json into plain JSON.
 
     Wire format: each node is {"type":"data","data":[...]} where element 0 is
     the root and every object/array value is an integer index into that same
     flat list. Without this, every path you read is an integer.
+
+    Negative integers are not indices — devalue reserves them as sentinels
+    (see DEVALUE_SENTINELS). Returning them raw is how an *undefined* field
+    becomes the plausible-looking number -1 in a fact record, which is
+    precisely the silent invention this layer exists to prevent. They are
+    resolved to Python values here so a missing field reads as missing.
     """
     if not isinstance(doc, dict) or doc.get("type") != "data":
         return doc
@@ -97,7 +117,11 @@ def resolve_sveltekit(doc: Any) -> Any:
         flat = node["data"]
 
         def hydrate(idx: Any, seen: Tuple[int, ...] = ()) -> Any:
-            if not isinstance(idx, int) or idx < 0 or idx >= len(flat):
+            if not isinstance(idx, int) or isinstance(idx, bool):
+                return idx
+            if idx in DEVALUE_SENTINELS:
+                return DEVALUE_SENTINELS[idx]
+            if idx < 0 or idx >= len(flat):
                 return idx
             if idx in seen:  # cycle guard
                 return None
