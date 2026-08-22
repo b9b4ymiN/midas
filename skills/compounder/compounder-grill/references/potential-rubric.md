@@ -64,6 +64,23 @@ Growth counts as positive evidence only where the incremental return clears the 
 
 **4. Reinvestment and Duration high together is a claim, not a reading.** The forces that let a business scale quickly tend to shorten how long it stays on top; capital-light and fast-scaling usually means fast-fading, while capital-heavy and slow usually means durable. Rating both legs high requires an explicit account of why this company escapes the trade-off. Absent one, lower whichever leg has the thinner evidence.
 
+## The life-cycle stage as a Duration prior
+
+`economic_engine_pack.life_cycle_stage` carries the stage read from the signs of the three cash flow sections. Use it when rating Duration, and read it as a prior rather than a verdict.
+
+Returns do not fade at a uniform rate across stages: five years out, mature and declining firms remained roughly seven points apart on return on net operating assets. A given return therefore means different things depending on where the company sits, and the stage is measured rather than argued.
+
+| Stage | What it implies for Duration | What it does not imply |
+|---|---|---|
+| **Mature** | The signature of a business funding its own investment and returning the surplus — the normal home of a self-funding compounder | Not a downgrade. Most large compounders read Mature |
+| **Growth** | Still drawing outside capital; duration untested through a full cycle | Not a discount — Evidence Maturity carries the shortness of history, not Potential |
+| **Shake-out** | Transitional. Ask what changed and whether the reinvestment leg is closing | Not decline; it is also the reading of a company mid-transition |
+| **Introduction / Decline** | Operating cash flow is negative, so the corporate ratios are void | Force the unit-economics path per Guard B rather than grading on a meaningless denominator |
+
+**A stage transition is evidence.** A company that has just moved stages has changed how its expansion is funded, and that shows up here before it shows up in a narrative. Where the stage moved and the Layer 0 frame did not, the movement is a finding about the engine, not a reason to redefine the business.
+
+**Never let the stage set the label.** It informs one leg and gates measure validity. Reading Potential off the stage would be exactly the sector-label error the framework exists to avoid.
+
 ## Worked examples
 
 Both are drawn from completed runs and can be checked against the packs.

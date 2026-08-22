@@ -55,6 +55,7 @@ REQUIRED: Dict[str, List[str]] = {
     "economic_engine_pack": [
         "company_context", "business_model", "economic_units", "unit_economics",
         "micro_to_corporate_bridge", "economic_drivers", "growth_architecture",
+        "life_cycle_stage",
         "current_return_structure", "intangible_capital", "scale_economics",
         "per_share_economics", "economic_inflections", "evidence_ledger",
         "data_gaps", "unresolved_questions",
@@ -123,6 +124,10 @@ LEG_RATINGS: Dict[str, set] = {
     },
 }
 
+LIFE_CYCLE_STAGES = {
+    "Introduction", "Growth", "Mature", "Shake-out", "Decline", "UNRESOLVED",
+}
+
 COMPOUNDER_CLASSES = {
     "Proven Compounder", "Emerging Candidate",
     "Great Business, Narrow Runway", "Not a Compounder",
@@ -167,6 +172,25 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
             f"present but empty: {', '.join(sorted(empty))} — an unanswered field is "
             f"'UNRESOLVED' with a reason, never blank"
         )
+
+    if pack_name == "economic_engine_pack":
+        lc = pack.get("life_cycle_stage")
+        if isinstance(lc, dict):
+            st = lc.get("stage")
+            if isinstance(st, str) and st.strip() and st.strip() not in LIFE_CYCLE_STAGES:
+                errors.append(
+                    f"life_cycle_stage.stage='{st}' is not one of "
+                    f"{sorted(LIFE_CYCLE_STAGES)}"
+                )
+            raw = lc.get("raw_stage")
+            if (isinstance(raw, str) and isinstance(st, str)
+                    and raw.strip() and st.strip() and raw.strip() != st.strip()
+                    and _empty(lc.get("divergence_note"))):
+                errors.append(
+                    f"life_cycle_stage: adjusted '{st}' and raw '{raw}' differ but "
+                    f"divergence_note is empty — the difference is a finding about "
+                    f"treasury activity, not a rounding detail"
+                )
 
     ver = pack.get("schema_version")
     if ver and ver != SCHEMA_VERSION:

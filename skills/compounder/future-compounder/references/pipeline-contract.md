@@ -97,6 +97,10 @@ Required fields:
 - `micro_to_corporate_bridge`
 - `economic_drivers`
 - `growth_architecture`
+- `life_cycle_stage` — the Dickinson cash-flow-pattern reading, classified on
+  investing cash flow excluding securities flows, with the unadjusted
+  classification beside it and a note wherever the two differ. `UNRESOLVED`
+  where a cash flow section is unavailable; never inferred from sector or age.
 - `current_return_structure`
 - `intangible_capital`
 - `scale_economics`

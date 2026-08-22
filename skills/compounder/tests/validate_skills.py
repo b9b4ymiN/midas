@@ -6,7 +6,7 @@ EXPECTED = {
     'future-compounder': ['SKILL.md','references/pipeline-contract.md'],
     'business-identity-scope': ['SKILL.md','references/methodology-map.md','references/market-scope-classification.md'],
     'market-growth-intelligence': ['SKILL.md','references/methodology-router.md','references/research-foundations.md','references/growth-decomposition.md'],
-    'business-economic-engine': ['SKILL.md','references/economic-unit-guide.md','references/evidence-ledger.md'],
+    'business-economic-engine': ['SKILL.md','references/economic-unit-guide.md','references/evidence-ledger.md','references/life-cycle-stage.md'],
     'reinvestment-runway': ['SKILL.md','references/reinvestment-methods.md','references/runway-methods.md','references/emerging-compounder.md'],
     'compounder-grill': ['SKILL.md','references/falsification-tests.md','references/potential-rubric.md','references/confidence-rubric.md','references/hurdle-rates.md','references/reverse-reality-check.md'],
     'compounder-bf-report': ['SKILL.md','references/report-template.md','references/citation-standard.md'],
