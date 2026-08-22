@@ -35,13 +35,27 @@ Also rate each leg separately — incremental return, reinvestment capacity, dur
 
 Never combine these into one primary score. Never derive Confidence from Evidence Maturity or from Potential.
 
+## Every verdict carries a review date
+
+Kill and upgrade conditions say **what** would change the verdict. `review_schedule` says **when to look** — without it a verdict silently claims to be true forever, and the reader has no way to know whether the one in front of them is still live.
+
+Set all of it, in `review_schedule`:
+
+- `as_of` — the evidence cutoff this verdict rests on.
+- `next_review` — at most twelve months later, with `next_review_event` naming the filing or result that makes that the right date, and `settles` naming which conditions that event can actually resolve.
+- `cadence_basis` — one sentence, and the reason must be the fastest-moving evidence in the **binding leg**. A thesis bound by an annual capital budget is reviewed annually; one bound by monthly share data is not.
+- `watch_triggers` — the events that would force an earlier look, each with what is observable and how long the question may stay open.
+- `expires_on` — after this date the verdict may be read as history but may not carry a decision.
+
+The design is borrowed from credit-rating surveillance, not invented here: a scheduled review at least annually whether or not there is news, plus event-driven watches with a bounded window. Do not set a cadence longer than the evidence that binds the verdict.
+
 ## Thesis pack
 
-Produce the thesis pack exactly as defined in the pipeline contract, including supporting/counter evidence, critical unknowns, and Kill Conditions.
+Produce the thesis pack exactly as defined in the pipeline contract, including supporting/counter evidence, critical unknowns, Kill Conditions, upgrade conditions, and the review schedule.
 
 ## DoD
 
-The thesis must answer: whether the category/share/channel/geographic growth thesis survives adversarial review; what must be true for exceptional compounding; what outside view challenges it; how mature the evidence is; whether per-share/scale/funding/repeatability economics support the engine; whether the reverse reality check is plausible; and what one or two developments would most seriously break the thesis. A **bull-only** conclusion fails DoD.
+The thesis must answer: whether the category/share/channel/geographic growth thesis survives adversarial review; what must be true for exceptional compounding; what outside view challenges it; how mature the evidence is; whether per-share/scale/funding/repeatability economics support the engine; whether the reverse reality check is plausible; what one or two developments would most seriously break the thesis; and when the verdict must be looked at again. A **bull-only** conclusion fails DoD, and so does a verdict with no review date.
 
 **STOP:** Do not perform broad new research unless a critical contradiction cannot be adjudicated from existing packs. Do not perform valuation or write the BF report.
 

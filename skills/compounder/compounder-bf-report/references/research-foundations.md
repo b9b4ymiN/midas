@@ -152,8 +152,87 @@ Each foundation below records:
 
 ---
 
+## Writing and disclosure standards
+
+The report template's shape and sentence rules are not this package's inventions.
+Both come from published standards written to solve the same problem: a document
+that is technically complete and useless to the person it was written for.
+
+### U.S. Securities and Exchange Commission — *A Plain English Handbook: How to Create Clear SEC Disclosure Documents*
+- **Issuer:** SEC Office of Investor Education and Assistance; preface by Warren E. Buffett
+- **Publication date:** August 1998
+- **URL:** https://www.sec.gov/pdf/handbook.pdf
+- **Concept used:** The six plain-English principles behind Rule 421(d) — active
+  voice, short sentences, everyday concrete words, tabular presentation of
+  complex information, no legal or highly technical jargon, no multiple
+  negatives — plus two the handbook argues for directly: write to one identified
+  reader, and define a term in context at first use rather than in a glossary.
+  Buffett's preface supplies the reader standard this template adopts: he writes
+  the Berkshire annual report imagining his sisters, intelligent but not versed
+  in accounting or finance.
+- **Source role:** **Writing standard / reader definition**.
+- **Limitation:** Written for prospectuses and proxy statements, whose content is
+  prescribed by regulation. It governs how this report is written, never what
+  evidence it must contain — plain language may not become plain omission, and
+  simplifying a sentence may never simplify a claim's certainty class.
+
+### Plain Language Action and Information Network (PLAIN) — *Federal Plain Language Guidelines*
+- **Issuer:** PLAIN, U.S. federal interagency group; published under the Plain Writing Act of 2010
+- **Publication date:** March 2011, Revision 1 May 2011
+- **URL:** https://www.plainlanguage.gov/guidelines/
+- **Concept used:** Question headings, and the organising rule behind them:
+  "Question Headings are the most useful type of heading, but only if you know
+  what questions your audience would ask." Also organise material in the order
+  the reader would ask about it, address one person rather than a group, and
+  keep the structure to three levels or fewer.
+- **Source role:** **Document-structure standard**.
+- **Limitation:** Aimed at regulations and public-facing government content,
+  where the reader's questions are procedural and knowable in advance. The seven
+  questions in the template are this package's claim about what an owner-investor
+  asks; the guideline supports the *form*, not that specific list.
+
+---
+
+## Verdict surveillance
+
+A verdict that never expires is a verdict nobody can act on twice. The review
+schedule is modelled on credit-rating surveillance, which solved the same problem
+long ago and made the solution a regulatory obligation.
+
+### Regulation (EC) No 1060/2009 on credit rating agencies — Article 8(5)
+- **Issuer:** European Parliament and Council
+- **Publication date:** 16 September 2009 (as amended)
+- **URL:** https://eur-lex.europa.eu/eli/reg/2009/1060/oj/eng
+- **Concept used:** A rating must be monitored on an ongoing basis and reviewed
+  **at least annually**, whether or not anything has happened. The annual floor
+  and the continuous-monitoring duty are complementary: the calendar review is
+  the backstop, not the whole obligation. This is the origin of the twelve-month
+  cap on `review_schedule.next_review`.
+- **Source role:** **Review-cadence floor**.
+- **Limitation:** A regulatory minimum for a regulated activity, not a claim that
+  twelve months is the right interval for any particular business. The cadence
+  is set by the fastest-moving evidence in the binding leg; the regulation only
+  fixes the outer bound.
+
+### S&P Global Ratings — *General Criteria: Use of CreditWatch and Outlooks*
+- **Issuer:** S&P Global Ratings
+- **Publication date:** 14 September 2009, updated in later criteria releases
+- **URL:** https://www.spglobal.com/ratings/en/regulatory/article/-/view/sourceId/5612636
+- **Concept used:** Two separable mechanisms — an **outlook**, the expected
+  direction over an intermediate term of roughly six months to two years, and a
+  **watch**, an event-driven review opened by an unanticipated development and
+  normally resolved within about 90 days. `expires_on` inherits the outlook
+  horizon; `watch_triggers` and their `resolve_within_days` inherit the watch.
+- **Source role:** **Event-driven review design**.
+- **Limitation:** Credit ratings measure default risk on a defined instrument
+  with contractual dates; a compounding verdict has neither. The mechanism
+  transfers; the calibration must be argued from the company's own evidence
+  cadence, and the horizons here are borrowed as defaults, not as findings.
+
+---
+
 ## Usage rule
 
-**Mayer sets the destination. Akre clarifies the reinvestment machine. Damodaran improves measurement, especially marginal and young-company economics. Mauboussin/Callahan add ROIC, allocation, base-rate, and duration discipline. Motilal provides research-structure precedent. Empirical studies are used to challenge favored narratives.**
+**Mayer sets the destination. Akre clarifies the reinvestment machine. Damodaran improves measurement, especially marginal and young-company economics. Mauboussin/Callahan add ROIC, allocation, base-rate, and duration discipline. Motilal provides research-structure precedent. Empirical studies are used to challenge favored narratives. The SEC and PLAIN standards govern how the finished document is written, and rating-surveillance practice governs when its verdict must be revisited.**
 
 If a foundation conflicts with company-specific primary evidence or newer robust empirical work, record the contradiction rather than forcing the evidence to fit the framework.

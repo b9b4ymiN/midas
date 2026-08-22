@@ -19,6 +19,7 @@ stdlib only, no install.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import os
 import sys
@@ -77,6 +78,7 @@ REQUIRED: Dict[str, List[str]] = {
         "financial_resilience_view", "base_rate_context", "evidence_ladder",
         "reverse_reality_check", "supporting_evidence", "counter_evidence",
         "critical_unknowns", "kill_conditions", "upgrade_conditions",
+        "review_schedule",
         "leg_ratings", "binding_leg", "hurdle_used", "durable_growth",
         "compounding_potential", "potential_qualifier", "compounder_class",
         "evidence_maturity", "confidence", "evidence_ledger",
@@ -138,6 +140,13 @@ COMPOUNDER_CLASSES = {
     "Great Business, Narrow Runway", "Not a Compounder",
 }
 
+# Review cadence, borrowed from credit-rating surveillance: a scheduled review at
+# least annually whether or not there is news, an outlook horizon of at most two
+# years, and event-driven watches resolved inside about 90 days.
+MAX_REVIEW_DAYS = 366
+MAX_EXPIRY_DAYS = 731
+MAX_WATCH_DAYS = 90
+
 
 def _dig(pack: Dict[str, Any], dotted: str) -> Any:
     """Resolve a possibly-dotted field path. Returns None when any hop misses."""
@@ -157,6 +166,118 @@ def _empty(v: Any) -> bool:
     if isinstance(v, (list, dict, tuple, set)):
         return len(v) == 0
     return False
+
+
+def _date(value: Any) -> _dt.date | None:
+    """Parse an ISO YYYY-MM-DD date. Returns None for anything else."""
+    if not isinstance(value, str):
+        return None
+    try:
+        return _dt.date.fromisoformat(value.strip())
+    except ValueError:
+        return None
+
+
+def check_review_schedule(pack: Dict[str, Any]) -> Tuple[List[str], List[str]]:
+    """A verdict with no review date claims to be true forever.
+
+    Kill and upgrade conditions say what would change the verdict; without a
+    date nothing says when to look, so nobody ever does. The cadence rules come
+    from rating surveillance — see references/pipeline-contract.md.
+    """
+    errors: List[str] = []
+    warns: List[str] = []
+
+    rs = pack.get("review_schedule")
+    if rs is None:
+        return errors, warns  # absence is already reported by the required check
+    if not isinstance(rs, dict):
+        return ["review_schedule must be an object, not a bare date or sentence"], []
+
+    as_of = _date(rs.get("as_of"))
+    nxt = _date(rs.get("next_review"))
+    exp = _date(rs.get("expires_on"))
+
+    for field, parsed in (("as_of", as_of), ("next_review", nxt), ("expires_on", exp)):
+        if parsed is None:
+            errors.append(
+                f"review_schedule.{field}={rs.get(field)!r} is not an ISO "
+                f"YYYY-MM-DD date"
+            )
+
+    if as_of and nxt:
+        delta = (nxt - as_of).days
+        if delta <= 0:
+            errors.append(
+                f"review_schedule.next_review is not after as_of "
+                f"({rs.get('next_review')} vs {rs.get('as_of')})"
+            )
+        elif delta > MAX_REVIEW_DAYS:
+            errors.append(
+                f"review_schedule.next_review is {delta} days after as_of — the "
+                f"floor is a review at least annually ({MAX_REVIEW_DAYS} days), "
+                f"whether or not there is news"
+            )
+
+    if as_of and exp:
+        delta = (exp - as_of).days
+        if delta > MAX_EXPIRY_DAYS:
+            errors.append(
+                f"review_schedule.expires_on is {delta} days after as_of — a "
+                f"verdict may not outlive a two-year outlook horizon "
+                f"({MAX_EXPIRY_DAYS} days)"
+            )
+    if nxt and exp and exp < nxt:
+        errors.append(
+            "review_schedule.expires_on falls before next_review — the verdict "
+            "would be stale before it is next looked at"
+        )
+
+    for field, why in (
+        ("next_review_event", "a calendar date with no filing behind it is a guess"),
+        ("settles", "a scheduled review that settles no condition is a diary entry"),
+        ("cadence_basis", "the interval must be justified by the fastest-moving "
+                          "evidence in the binding leg"),
+    ):
+        if _empty(rs.get(field)):
+            errors.append(f"review_schedule.{field} is missing — {why}")
+
+    triggers = rs.get("watch_triggers")
+    if _empty(triggers):
+        errors.append(
+            "review_schedule.watch_triggers is empty — the scheduled review is "
+            "the backstop, not the whole obligation; name at least one event "
+            "that would force an earlier look"
+        )
+    elif not isinstance(triggers, list):
+        errors.append("review_schedule.watch_triggers must be a list of entries")
+    else:
+        for i, t in enumerate(triggers):
+            if not isinstance(t, dict):
+                errors.append(
+                    f"review_schedule.watch_triggers[{i}] is free text — it needs "
+                    f"what it watches, what is observable, and a closing window"
+                )
+                continue
+            for field in ("watches", "observable"):
+                if _empty(t.get(field)):
+                    errors.append(
+                        f"review_schedule.watch_triggers[{i}].{field} is missing"
+                    )
+            days = t.get("resolve_within_days")
+            if not isinstance(days, (int, float)):
+                errors.append(
+                    f"review_schedule.watch_triggers[{i}].resolve_within_days is "
+                    f"missing — an open question with no closing date is how a "
+                    f"thesis drifts"
+                )
+            elif days > MAX_WATCH_DAYS:
+                warns.append(
+                    f"review_schedule.watch_triggers[{i}].resolve_within_days="
+                    f"{days} exceeds the {MAX_WATCH_DAYS}-day watch convention"
+                )
+
+    return errors, warns
 
 
 def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]]:
@@ -329,6 +450,10 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
                 "required rate, the horizon and the three comparisons as fields, "
                 "so a bare verdict word cannot stand in for them"
             )
+
+        rs_errors, rs_warns = check_review_schedule(pack)
+        errors.extend(rs_errors)
+        warns.extend(rs_warns)
 
         cls = pack.get("compounder_class")
         if isinstance(cls, str) and cls.strip() and cls.strip() not in COMPOUNDER_CLASSES:

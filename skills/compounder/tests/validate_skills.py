@@ -109,10 +109,49 @@ if contract.exists():
         'business_identity_pack','market_growth_pack','metric_comparability','growth_decomposition',
         'growth_architecture','per_share_economics','intangible_capital',
         'scale_economics','capital_allocation','financial_resilience',
-        'base_rate_context','evidence_ladder','reverse_reality_check'
+        'base_rate_context','evidence_ladder','reverse_reality_check','review_schedule'
     ]:
         if field not in ct:
             errors.append(f'pipeline-contract: missing V2 field {field}')
+
+
+# V3 report contract: the report is an article for one reader, and every verdict
+# carries a review date. Both are enforced as terms so a rewrite cannot drop them.
+v3_checks = {
+ 'compounder-bf-report/SKILL.md':[
+    'plain words','review schedule','question','appendix'
+ ],
+ 'compounder-bf-report/references/report-template.md':[
+    'question','appendix','plain words','review schedule','as_of','next_review',
+    'expires_on','watch_triggers','self-check'
+ ],
+ 'compounder-bf-report/references/citation-standard.md':[
+    'marker','Appendix A'
+ ],
+ 'compounder-grill/SKILL.md':[
+    'review_schedule','next_review','watch_triggers','expires_on','binding leg'
+ ],
+ 'future-compounder/SKILL.md':[
+    'review schedule'
+ ],
+}
+for rel, terms in v3_checks.items():
+    pp=ROOT/rel
+    if pp.exists():
+        tt=pp.read_text(encoding='utf-8')
+        for term in terms:
+            if term.lower() not in tt.lower():
+                errors.append(f'{rel}: missing V3 report/review term {term}')
+    else:
+        errors.append(f'MISSING {rel}')
+
+# The inline bracketed evidence tag is banned in body text from v3; the template
+# and the citation standard may only name it to forbid it.
+tmpl=ROOT/'compounder-bf-report/references/report-template.md'
+if tmpl.exists():
+    tt=tmpl.read_text(encoding='utf-8')
+    if 'never in the body' not in tt.lower():
+        errors.append('report-template: evidence markers must be banned from body text')
 
 
 # Repo rule (AGENTS.md): every skill touching investing carries the standing disclaimer.

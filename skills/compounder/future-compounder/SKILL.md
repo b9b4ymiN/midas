@@ -73,12 +73,15 @@ Verify explicitly:
 9. Where is the evidence on the Evidence Ladder?
 10. Was counter-evidence actively sought and are Kill Conditions explicit?
 11. Does the **reverse** 10x business-reality check avoid impossible share, margin, capital, funding, or dilution assumptions?
+12. Does the verdict carry a review date, the event that settles it, and what would force an earlier look?
 
 If a thesis-critical answer remains unknown, preserve `UNRESOLVED`, reduce certainty, and surface the next evidence needed.
 
 ## Final DoD
 
-A full run requires Layer 0 scope, Layer 1 external growth, Return × Reinvestment × Duration, per-share translation, financeability, outside view, evidence maturity, counter-thesis, reverse reality, and traceable gaps.
+A full run requires Layer 0 scope, Layer 1 external growth, Return × Reinvestment × Duration, per-share translation, financeability, outside view, evidence maturity, counter-thesis, reverse reality, traceable gaps, and a review schedule that gives the verdict an expiry.
+
+The report is a reader-facing article, not an analyst note: headings are the reader's questions, technical terms are explained in plain words at first use, evidence markers sit in the margin rather than inside sentences, and the proving work lives in an appendix.
 
 **STOP:** The master orchestrates and validates. It does not redo specialist research, valuation, or holding analysis.
 

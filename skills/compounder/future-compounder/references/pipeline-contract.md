@@ -207,6 +207,7 @@ Required fields:
 - `critical_unknowns`
 - `kill_conditions`
 - `upgrade_conditions`
+- `review_schedule`
 - `leg_ratings`
 - `binding_leg`
 - `hurdle_used`
@@ -270,6 +271,58 @@ rather than silently comparing nominal against real.
 Each entry must be observable in a future filing or result — a metric, a direction,
 and a threshold — not a hoped-for change of narrative. A thesis with only downside
 triggers cannot be re-rated upward on evidence and will drift.
+
+`review_schedule` gives the verdict an expiry and a next look. Kill and upgrade
+conditions say *what* would change the verdict; nothing said *when to check*, so a
+verdict silently claimed to be true forever. The design is taken from credit-rating
+surveillance, which solved this long ago: a scheduled review at least annually
+whether or not there is news, plus event-driven watches with a bounded resolution
+window.
+
+```
+"review_schedule": {
+  "as_of": "2026-08-21",
+  "next_review": "2027-02-25",
+  "next_review_event": "FY2026 full-year results — the first filing reporting a
+                        complete year of capex against operating cash flow",
+  "settles": ["capex share of operating cash flow (kill 4, upgrade 1)",
+              "FY2026 incremental return (kill 2)"],
+  "cadence_basis": "annual: the binding leg is reinvestment capacity, which only
+                    moves when the annual capital budget is disclosed",
+  "expires_on": "2027-08-21",
+  "watch_triggers": [
+    {
+      "watches": "loss of a top-five carrier contract (kill 3)",
+      "observable": "8-K, carrier press release, or a step-change in US
+                     insurance unit volumes",
+      "resolve_within_days": 90
+    }
+  ]
+}
+```
+
+Rules the validator enforces:
+
+- `as_of`, `next_review` and `expires_on` are ISO `YYYY-MM-DD` dates, in that
+  order. `as_of` is the evidence cutoff the verdict rests on — the same date the
+  report prints in its masthead.
+- **`next_review` is at most twelve months after `as_of`.** The floor is the one
+  the EU credit-rating regulation sets for the same reason: a review that happens
+  only when someone remembers is not a review.
+- `expires_on` is at most twenty-four months after `as_of`, the outer edge of a
+  rating outlook horizon. Past it the verdict may be read as history but may not
+  carry a decision until the analysis is re-run.
+- `next_review_event` names the filing or result that makes the date the right
+  one. A bare calendar date with no event behind it is a guess.
+- `settles` names which kill or upgrade conditions that scheduled review can
+  actually resolve. A review that settles nothing is a diary entry.
+- `cadence_basis` states why this interval, in one sentence, and the reason must
+  be the **fastest-moving evidence in the binding leg**. A thesis bound by an
+  annual capital budget is reviewed annually; one bound by monthly share data is
+  not.
+- `watch_triggers` carries the event-driven half: at least one entry, each with
+  `watches`, `observable`, and `resolve_within_days`. A window beyond 90 days is
+  warned about — an open question with no closing date is how a thesis drifts.
 
 `reverse_reality_check` carries the comparison as data, not a bare label. A word
 on its own says nothing about how far away the path is, which is the only thing

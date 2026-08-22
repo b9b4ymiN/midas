@@ -1,18 +1,43 @@
 # BF Citation and Claim Standard
 
-## Inline claim labels
+## Where the claim label goes
 
-Recommended forms:
+Every material claim carries its certainty class. In v2 the class was written
+inline, in brackets, inside the sentence. That kept traceability and cost
+readability: a Thai paragraph with three bracketed tags in it is unreadable at
+the speed anyone actually reads.
 
-- `Revenue grew 18% YoY. [FACT: FY2026 filing, p.42]`
-- `Estimated mature-store payback is ~2.6 years. [DERIVED: store capex + mature EBITDA; see Evidence E-017/E-021]`
-- `Management targets 300 openings in two years. [MANAGEMENT_CLAIM: Q2 FY2026 call]`
-- `We infer density should lower delivery cost if orders/zone rise. [INFERENCE: Evidence E-044–E-047]`
+From v3 the class travels as a **marker**, and the evidence itself lives in
+Appendix A.
+
+**In the body** — a superscript class letter plus the entry id:
+
+- `รายได้โต 18% เทียบปีก่อน` `F031`
+- `ระยะเวลาคืนทุนของสาขาที่เปิดเต็มปีแล้วอยู่ราว 2.6 ปี` `D017`
+- `ผู้บริหารตั้งเป้าเปิดเพิ่ม 300 สาขาใน 2 ปี` `M009`
+
+Class letters: **F** fact · **D** derived · **M** management claim ·
+**E** estimate or assumption · **I** inference · **X** market expectation ·
+**U** unverified. Each class gets a colour that reads in both light and dark
+themes, and the masthead carries the legend.
+
+**In Appendix A** — the entry the marker points to:
+
+| id | class | claim | source | locator | date | inputs / calculation |
+|---|---|---|---|---|---|---|
+| F031 | FACT | Revenue +18% YoY | FY2026 annual filing | p.42 | 2026-03-28 | — |
+| D017 | DERIVED | Mature-store payback ≈ 2.6 years | store capex + mature store EBITDA | E-017, E-021 | 2026-08-21 | 4.1m ÷ 1.58m |
+| M009 | MANAGEMENT_CLAIM | 300 openings in two years | Q2 FY2026 earnings call | 14:20 | 2026-05-09 | — |
+
+**The exception.** Where the certainty class is the point the sentence is making,
+write it out instead of marking it: "ตัวเลขนี้เป็นเป้าหมายที่ผู้บริหารพูดในการ
+ประชุมนักวิเคราะห์ ยังไม่เคยปรากฏในงบการเงิน". A sentence that explains its own
+uncertainty beats any tag, and this is the case that matters most.
 
 ## Rules
 
-1. Major claims get nearby evidence references.
-2. Derived figures cite inputs and calculation logic.
+1. Major claims get an evidence marker; the marker resolves to a full entry.
+2. Derived figures cite inputs and calculation logic in their appendix entry.
 3. Management claims are never rewritten as facts.
 4. Estimates state methodology and sensitivity when decision-relevant.
 5. Conflicting sources are shown rather than silently reconciled.
@@ -31,11 +56,15 @@ Recommended forms:
    the company's return comes from stakes rather than operations. A bridge was
    added; the discrepancy became the most useful paragraph in the section.
 6. Primary sources outrank summaries where both cover the same factual claim.
-7. Dates matter: show the point-in-time cutoff for historical validation.
+7. Dates matter: show the point-in-time cutoff for historical validation, and
+   carry it into the report's as-of date so the reader knows how old the
+   verdict is.
+8. No bracketed inline tag survives into the finished body. The marker form and
+   the written-out exception above are the only two permitted shapes.
 
 ## Source notes
 
-The final sources section should include source title, issuer/publisher, date, locator/URL where appropriate, evidence role, and claim IDs used.
+Appendix C should include source title, issuer/publisher, date, locator/URL where appropriate, evidence role, and claim ids used.
 
 ## Methodology provenance
 
