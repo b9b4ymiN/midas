@@ -102,10 +102,44 @@ repeated.
 Show business requirements for a 10x case and optional 100x stress case: buyers/units/capacity, category size/share, revenue, margin, capital, funding, and dilution. This is a plausibility check, **not valuation or target price**.
 
 ## 21. Potential / Evidence Maturity / Confidence
-Report the three dimensions separately and justify each.
 
-## 22. Kill Conditions
-Observable developments that invalidate or materially weaken the thesis.
+Report the three dimensions separately and justify each. This section carries a
+**verdict panel**, not three words in a paragraph — the executive summary's
+character cap exists to keep the summary readable, and the panel is where the
+grading is shown in full.
+
+The panel must contain:
+
+| Element | From the thesis pack |
+|---|---|
+| The three axis labels | `compounding_potential` (with `potential_qualifier`), `evidence_maturity`, `confidence` |
+| A row per leg | `leg_ratings` — incremental return, reinvestment capacity, duration, per-share translation, financial resilience, capital allocation |
+| The binding leg, marked | `binding_leg` |
+| The categorical reading | `compounder_class` |
+| The growth figure the label was read from | `durable_growth`, with its window |
+| The two hurdle lines used | `hurdle_used`, with the basis |
+
+**A bare label is not a verdict.** Where the legs diverge, the qualifier and the
+binding leg are the most decision-relevant things on the page: a reader who sees
+only "Strong" cannot tell a business whose returns are excellent but whose
+runway is closing from one where every leg is strong. Show the divergence.
+
+Where `compounder_class` is `Great Business, Narrow Runway`, say what that means
+in plain words — high returns on capital the business cannot absorb, so the
+compounding is limited by opportunity rather than by quality.
+
+## 22. Kill Conditions and Upgrade Conditions
+
+Both directions, in one section, from `kill_conditions` and `upgrade_conditions`.
+
+Kill conditions are observable developments that invalidate or materially weaken
+the thesis. Upgrade conditions are their counterpart: what would have to be
+observed for the verdict to be raised. Each entry on either side names a metric,
+a direction, and a threshold, so the next reporting period can settle it.
+
+A section with only kill conditions fails the template. A thesis that can only be
+downgraded on evidence will drift downward with time regardless of what the
+business does.
 
 ## 23. Data Gaps & Next Evidence
 Decision-relevant missing data and the source/event that could resolve each gap.

@@ -4,7 +4,7 @@
 
 `company_request` → `business_identity_pack` → `market_growth_pack` → `economic_engine_pack` → `reinvestment_runway_pack` → `compounder_thesis_pack` → `bf_report`
 
-Every pack MUST carry the same `evidence_ledger`, appended rather than replaced. Use `schema_version: future-compounder-v2.2` in serialized handoffs where a version field is available.
+Each pack MUST carry **every entry from the preceding packs plus the entries its own layer produced**. The ledger only ever grows; an entry is never removed or rewritten, and the entry count may not fall between layers. Each entry carries `origin_layer` naming the pack that first recorded it, so the audit trail shows which layer produced which evidence. Copying an identical ledger into all five packs satisfies the letter of "same ledger" and destroys that trail — it is not compliant. Use `schema_version: future-compounder-v2.2` in serialized handoffs where a version field is available.
 
 Packs are serialized to `run/<TICKER>-<YYYY-MM-DD>/<pack_name>.json` as each
 layer completes, and checked with `future-compounder/scripts/validate_pack.py`
@@ -164,12 +164,54 @@ Required fields:
 - `counter_evidence`
 - `critical_unknowns`
 - `kill_conditions`
+- `upgrade_conditions`
+- `leg_ratings`
+- `binding_leg`
+- `hurdle_used`
+- `durable_growth`
 - `compounding_potential`
+- `potential_qualifier`
+- `compounder_class`
 - `evidence_maturity`
 - `confidence`
 - `evidence_ledger`
 
-Gate: the thesis pack must include an inside view, outside-view/base-rate challenge, evidence maturity explanation, reverse business-reality check, and counter-thesis. A bull-only pack fails.
+`leg_ratings` rates each leg on its own, so a divergence cannot hide inside a single
+label. Five legs take the Potential vocabulary (`Exceptional`/`Strong`/`Moderate`/
+`Weak`/`Broken`/`UNRESOLVED`); capital allocation keeps the vocabulary already
+defined for it:
+
+```
+"leg_ratings": {
+  "incremental_return":     "Strong",
+  "reinvestment_capacity":  "Moderate",
+  "duration":               "Strong",
+  "per_share_translation":  "Strong",
+  "financial_resilience":   "Strong",
+  "capital_allocation":     "VALUE_CREATING | MIXED | VALUE_DESTRUCTIVE | UNRESOLVED"
+},
+"binding_leg": "reinvestment_capacity",
+"potential_qualifier": "runway-capped",
+"compounder_class": "Proven Compounder | Emerging Candidate
+                     | Great Business, Narrow Runway | Not a Compounder"
+```
+
+`hurdle_used` records the two lines the verdict was judged against and their basis,
+so the grading can be reconstructed: `{"value_destruction": 0.075, "attractive":
+0.15, "basis": "..."}`. `durable_growth` carries the growth figure the label was read
+from, with its window and its components.
+
+`upgrade_conditions` is the counterpart of `kill_conditions` and is equally required.
+Each entry must be observable in a future filing or result — a metric, a direction,
+and a threshold — not a hoped-for change of narrative. A thesis with only downside
+triggers cannot be re-rated upward on evidence and will drift.
+
+`compounder_class` is a categorical reading that survives changes in the label.
+`Great Business, Narrow Runway` is the case of high returns on capital the business
+cannot absorb — excellent economics, limited compounding — and must not be recorded
+as `Proven Compounder`.
+
+Gate: the thesis pack must include an inside view, outside-view/base-rate challenge, evidence maturity explanation, reverse business-reality check, and counter-thesis. A bull-only pack fails. A pack whose `compounding_potential` exceeds `Moderate` while any leg in `leg_ratings` is `UNRESOLVED` fails.
 
 ## `bf_report`
 

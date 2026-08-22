@@ -74,7 +74,9 @@ REQUIRED: Dict[str, List[str]] = {
         "duration_view", "per_share_view", "scale_economics_view",
         "financial_resilience_view", "base_rate_context", "evidence_ladder",
         "reverse_reality_check", "supporting_evidence", "counter_evidence",
-        "critical_unknowns", "kill_conditions", "compounding_potential",
+        "critical_unknowns", "kill_conditions", "upgrade_conditions",
+        "leg_ratings", "binding_leg", "hurdle_used", "durable_growth",
+        "compounding_potential", "potential_qualifier", "compounder_class",
         "evidence_maturity", "confidence", "evidence_ledger",
     ],
 }
@@ -102,6 +104,28 @@ VERDICTS = {
     "compounding_potential": {"Exceptional", "Strong", "Moderate", "Weak", "Broken"},
     "evidence_maturity": {"Early", "Developing", "Established", "Deep"},
     "confidence": {"Low", "Medium", "High"},
+}
+
+# Potential ranks low to high; used for the UNRESOLVED cap in rule 3 of the rubric.
+POTENTIAL_RANK = {"Broken": 0, "Weak": 1, "Moderate": 2, "Strong": 3, "Exceptional": 4}
+
+# Per-leg ratings. Five legs share the Potential vocabulary; capital allocation
+# keeps the vocabulary capital-allocation.md already defines for it.
+LEG_VALUES = set(VERDICTS["compounding_potential"]) | {"UNRESOLVED"}
+LEG_RATINGS: Dict[str, set] = {
+    "incremental_return": LEG_VALUES,
+    "reinvestment_capacity": LEG_VALUES,
+    "duration": LEG_VALUES,
+    "per_share_translation": LEG_VALUES,
+    "financial_resilience": LEG_VALUES,
+    "capital_allocation": {
+        "VALUE_CREATING", "MIXED", "VALUE_DESTRUCTIVE", "UNRESOLVED",
+    },
+}
+
+COMPOUNDER_CLASSES = {
+    "Proven Compounder", "Emerging Candidate",
+    "Great Business, Narrow Runway", "Not a Compounder",
 }
 
 
@@ -182,6 +206,65 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
                 "confidence are reported separately and never collapsed"
             )
 
+        cls = pack.get("compounder_class")
+        if isinstance(cls, str) and cls.strip() and cls.strip() not in COMPOUNDER_CLASSES:
+            errors.append(
+                f"compounder_class='{cls}' is not one of {sorted(COMPOUNDER_CLASSES)}"
+            )
+
+        legs = pack.get("leg_ratings")
+        if legs is not None and not isinstance(legs, dict):
+            errors.append("leg_ratings must be an object keyed by leg name")
+        elif isinstance(legs, dict):
+            for leg, allowed in LEG_RATINGS.items():
+                if leg not in legs:
+                    errors.append(f"leg_ratings.{leg} is missing — every leg is rated")
+                    continue
+                v = legs[leg]
+                if not isinstance(v, str) or v.strip() not in allowed:
+                    errors.append(
+                        f"leg_ratings.{leg}='{v}' is not one of {sorted(allowed)}"
+                    )
+
+            # Rubric rule 3: an unresolved thesis-critical leg caps Potential.
+            unresolved = sorted(
+                leg for leg, v in legs.items()
+                if isinstance(v, str) and v.strip() == "UNRESOLVED"
+            )
+            potential = pack.get("compounding_potential")
+            if unresolved and isinstance(potential, str):
+                rank = POTENTIAL_RANK.get(potential.strip())
+                if rank is not None and rank > POTENTIAL_RANK["Moderate"]:
+                    errors.append(
+                        f"compounding_potential='{potential}' while "
+                        f"{', '.join(unresolved)} is UNRESOLVED — an unmeasured "
+                        f"thesis-critical leg caps Potential at Moderate"
+                    )
+
+            # Rubric rule 2: the weakest leg governs, so binding_leg must name a
+            # leg that is actually rated lowest. Naming a stronger leg misreports
+            # what constrains the verdict — the emptiness of these fields is
+            # already caught by the required-field check above.
+            ranked = {
+                leg: POTENTIAL_RANK[v.strip()] for leg, v in legs.items()
+                if leg != "capital_allocation"
+                and isinstance(v, str) and v.strip() in POTENTIAL_RANK
+            }
+            binding = pack.get("binding_leg")
+            if ranked and isinstance(binding, str) and binding.strip():
+                weakest = min(ranked.values())
+                lowest = sorted(leg for leg, r in ranked.items() if r == weakest)
+                if binding.strip() not in ranked:
+                    warns.append(
+                        f"binding_leg='{binding}' is not a rated leg "
+                        f"{sorted(ranked)}"
+                    )
+                elif ranked[binding.strip()] > weakest:
+                    errors.append(
+                        f"binding_leg='{binding}' is rated above the weakest leg "
+                        f"({', '.join(lowest)}) — the weakest leg governs"
+                    )
+
     return errors, warns
 
 
@@ -214,6 +297,42 @@ def run_dir(path: str, stage: str | None) -> int:
             rc = 1
             continue
         rc |= report(found[pack_name])
+    rc |= check_ledger_growth(found, target)
+    return rc
+
+
+def check_ledger_growth(found: Dict[str, str], target: List[str]) -> int:
+    """The evidence ledger accumulates across layers; it may never shrink.
+
+    A ledger that never grows is the other failure: the same entries copied into
+    every pack satisfy a naive size check while losing which layer found what.
+    """
+    sizes: List[Tuple[str, int]] = []
+    for pack_name in target:
+        if pack_name not in found:
+            continue
+        try:
+            _, pack = load(found[pack_name])
+        except (OSError, json.JSONDecodeError):
+            continue  # already reported by report()
+        ledger = pack.get("evidence_ledger")
+        if isinstance(ledger, list):
+            sizes.append((pack_name, len(ledger)))
+
+    rc = 0
+    for (prev_name, prev_n), (name, n) in zip(sizes, sizes[1:]):
+        if n < prev_n:
+            print(f"[FAIL]    evidence_ledger shrank: {prev_name} had {prev_n} "
+                  f"entries, {name} has {n}")
+            print("           the ledger is appended across the run, never replaced")
+            rc = 1
+
+    if len(sizes) >= 3 and len({n for _, n in sizes}) == 1:
+        print(f"[WARN]    evidence_ledger is {sizes[0][1]} entries in all "
+              f"{len(sizes)} packs")
+        print("           identical ledgers suggest one ledger copied to every pack; "
+              "each layer should add what it found, and every entry carries "
+              "origin_layer")
     return rc
 
 
