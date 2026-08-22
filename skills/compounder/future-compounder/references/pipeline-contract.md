@@ -127,6 +127,7 @@ Gate: the pack must explain the economic unit, causal growth bridge, corporate t
 
 Required fields:
 - `historical_reinvestment`
+- `mandatory_measures`
 - `incremental_return`
 - `capital_allocation`
 - `acquisition_economics`
@@ -142,6 +143,43 @@ Required fields:
 - `evidence_ledger`
 - `counter_evidence`
 - `data_gaps`
+
+`mandatory_measures` carries the four numbers as data rather than prose, so the
+basis of a verdict can be checked rather than taken on trust:
+
+```
+"mandatory_measures": {
+  "path": "standard | emerging_bridge | sector_specific",
+  "window_years": 4,
+  "basis": "(net capex + change in working capital) / NOPAT",
+  "reinvestment_rate": {
+    "cumulative": 0.326,
+    "annual": {"FY2022": 0.312, "FY2023": 0.390, "FY2024": 0.362, "FY2025": 0.251}
+  },
+  "incremental_return": 0.32,
+  "growth_from_new_investment": 0.099,
+  "growth_from_rising_returns": 0.007,
+  "pricing_power_tiers_passed": 2
+}
+```
+
+On the `standard` path the window must be **at least three years** and the annual
+series is required — a cumulative figure alone conceals the trend, which is
+usually the more decision-relevant number. Free cash flow may never be named as
+the denominator of the reinvestment rate; it is already net of the capital spend
+being measured.
+
+`emerging_bridge` is the path for a company with less than three years of history
+or immature returns. It carries the bridge inputs instead of a measured series and
+is not penalised for the short window — short history lowers Evidence Maturity,
+never Potential.
+
+`sector_specific` is the path where the standard measures do not apply at all.
+For a bank or insurer the pair becomes return on equity attributable to owners
+multiplied by the retention ratio, bounded by the regulatory capital or solvency
+position; for a life insurer the movement in contractual service margin and the
+operating return on embedded value stand in for the reinvestment leg. State which
+substitution was made.
 
 Gate: Return, reinvestment amount, allocator behavior, financeability, and Duration must each be resolved to the level evidence permits. A large market TAM cannot substitute for financeable runway.
 
@@ -209,6 +247,31 @@ from, with its window and its components.
 Each entry must be observable in a future filing or result — a metric, a direction,
 and a threshold — not a hoped-for change of narrative. A thesis with only downside
 triggers cannot be re-rated upward on evidence and will drift.
+
+`reverse_reality_check` carries the comparison as data, not a bare label. A word
+on its own says nothing about how far away the path is, which is the only thing
+the check exists to establish:
+
+```
+"reverse_reality_check": {
+  "anchor": "operational — revenue, units, customers, capacity or share",
+  "anchor_basis": "what the multiple was applied to, and its current value",
+  "horizon_years": 10,
+  "horizon_justification": "tied to the Duration evidence, not adopted by habit",
+  "required_cagr": 0.26,
+  "comparisons": {
+    "achieved": 0.132,
+    "engine_can_fund": 0.099,
+    "reference_class": "100x needed ~20-26%/yr for 17-25 years"
+  },
+  "what_is_supported": "3-4x over the same horizon follows from durable growth",
+  "state": "PLAUSIBLE | STRETCHED | IMPLAUSIBLE | UNRESOLVED"
+}
+```
+
+A market-capitalisation anchor is optional and secondary; where used it states its
+multiple assumption on the same line and never appears without the operational
+path beside it.
 
 `compounder_class` is a categorical reading that survives changes in the label.
 `Great Business, Narrow Runway` is the case of high returns on capital the business

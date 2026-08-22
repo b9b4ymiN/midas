@@ -61,7 +61,8 @@ REQUIRED: Dict[str, List[str]] = {
         "data_gaps", "unresolved_questions",
     ],
     "reinvestment_runway_pack": [
-        "historical_reinvestment", "incremental_return", "capital_allocation",
+        "historical_reinvestment", "mandatory_measures",
+        "incremental_return", "capital_allocation",
         "acquisition_economics", "reinvestment_capacity", "opportunity_set",
         "runway", "duration", "moat_outcomes", "capital_constraints",
         "financial_resilience", "emerging_indicators", "evidence_maturity",
@@ -124,6 +125,10 @@ LEG_RATINGS: Dict[str, set] = {
     },
 }
 
+MEASURE_PATHS = {"standard", "emerging_bridge", "sector_specific"}
+REVERSE_STATES = {"PLAUSIBLE", "STRETCHED", "IMPLAUSIBLE", "UNRESOLVED"}
+MIN_WINDOW_YEARS = 3
+
 LIFE_CYCLE_STAGES = {
     "Introduction", "Growth", "Mature", "Shake-out", "Decline", "UNRESOLVED",
 }
@@ -172,6 +177,61 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
             f"present but empty: {', '.join(sorted(empty))} — an unanswered field is "
             f"'UNRESOLVED' with a reason, never blank"
         )
+
+    if pack_name == "reinvestment_runway_pack":
+        mm = pack.get("mandatory_measures")
+        if mm is not None and not isinstance(mm, dict):
+            errors.append("mandatory_measures must be an object")
+        elif isinstance(mm, dict):
+            path = mm.get("path")
+            if not isinstance(path, str) or path.strip() not in MEASURE_PATHS:
+                errors.append(
+                    f"mandatory_measures.path='{path}' is not one of "
+                    f"{sorted(MEASURE_PATHS)}"
+                )
+                path = None
+            else:
+                path = path.strip()
+
+            basis = mm.get("basis")
+            if _empty(basis):
+                errors.append(
+                    "mandatory_measures.basis is empty — the denominator must be "
+                    "stated so the figure can be checked"
+                )
+            elif isinstance(basis, str) and "free cash flow" in basis.lower():
+                errors.append(
+                    "mandatory_measures.basis names free cash flow — it is already "
+                    "net of the capital spend being measured and may never be the "
+                    "denominator of the reinvestment rate"
+                )
+
+            if path == "standard":
+                yrs = mm.get("window_years")
+                if not isinstance(yrs, (int, float)):
+                    errors.append(
+                        "mandatory_measures.window_years is required on the "
+                        "standard path"
+                    )
+                elif yrs < MIN_WINDOW_YEARS:
+                    errors.append(
+                        f"mandatory_measures.window_years={yrs} is below the "
+                        f"{MIN_WINDOW_YEARS}-year floor. If the company has no "
+                        f"longer history, use path 'emerging_bridge' — a short "
+                        f"record lowers Evidence Maturity, never Potential"
+                    )
+                rr = mm.get("reinvestment_rate")
+                if not isinstance(rr, dict):
+                    errors.append(
+                        "mandatory_measures.reinvestment_rate must carry both a "
+                        "cumulative figure and an annual series"
+                    )
+                elif _empty(rr.get("annual")):
+                    errors.append(
+                        "mandatory_measures.reinvestment_rate.annual is empty — a "
+                        "cumulative figure without its annual series conceals the "
+                        "trend, which is usually the more decision-relevant number"
+                    )
 
     if pack_name == "economic_engine_pack":
         lc = pack.get("life_cycle_stage")
@@ -228,6 +288,30 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
             errors.append(
                 "a combined score is present — potential, evidence maturity and "
                 "confidence are reported separately and never collapsed"
+            )
+
+        rrc = pack.get("reverse_reality_check")
+        if isinstance(rrc, dict):
+            for f, why in (
+                ("required_cagr", "the rate the path demands is the point of the check"),
+                ("horizon_years", "a multiple without a horizon is two different claims"),
+                ("comparisons", "the required rate means nothing uncompared"),
+            ):
+                if _empty(rrc.get(f)):
+                    errors.append(
+                        f"reverse_reality_check.{f} is missing — {why}"
+                    )
+            st = rrc.get("state")
+            if isinstance(st, str) and st.strip() and st.strip() not in REVERSE_STATES:
+                errors.append(
+                    f"reverse_reality_check.state='{st}' is not one of "
+                    f"{sorted(REVERSE_STATES)}"
+                )
+        elif isinstance(rrc, str):
+            warns.append(
+                "reverse_reality_check is free text — the contract expects the "
+                "required rate, the horizon and the three comparisons as fields, "
+                "so a bare verdict word cannot stand in for them"
             )
 
         cls = pack.get("compounder_class")

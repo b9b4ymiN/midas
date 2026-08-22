@@ -38,9 +38,21 @@ Each guard exists because the rubric was run against real companies and produced
 
 ### Guard A — measurement window
 
-Use cumulative figures over **at least four years** for both numerator and denominator, and report the annual series alongside. Where history is shorter, mark `PARTIALLY_RESOLVED` and cap Potential at Moderate.
+Use cumulative figures over **at least three years** for both numerator and denominator, and report the annual series alongside. Three is the practitioner floor for filtering capex lumpiness, working-capital seasonality and one-off tax effects; three to five years is the normal range.
 
-*Why:* a single year of unusually heavy investment produces a reinvestment rate near 100% that no company sustains. One year is a decision; four years is a policy.
+*Why:* a single year of unusually heavy investment produces a reinvestment rate near 100% that no company sustains. One year is a decision; three years is a policy.
+
+**This guard targets a measurement failure, not a young company.** The two cases are different and must not be conflated:
+
+| Situation | Ruling |
+|---|---|
+| Three or more years of history exist but a shorter window was used | Measurement error. Recompute on the full window. Nothing is capped — the number was simply wrong |
+| Fewer than three years of history, or the company sits in the Introduction or Growth stage with immature returns | Route to the **Emerging Compounder** path. Cap **Evidence Maturity**, never Potential |
+| That path cannot be built either — no unit or cohort economics at all | Incremental return is `UNRESOLVED`; rule 3 then caps Potential at Moderate |
+
+**Never treat length of history as an admission ticket.** A short record lowers Evidence Maturity; it does not lower Compounding Potential. This is not a preference — it is the framework's stated principle, and requiring a long return history is listed among its explicit anti-patterns. The reason is empirical: the companies that produced 100-fold returns had median sales around USD 170m and median market capitalisation around USD 500m at the point of purchase. They were small and proven, not old. A rule that grades on age would reject most of the reference class.
+
+The substitute for missing history is not a longer wait but a different measurement. For a young company the most recent trailing twelve months carries more information than an older annual report, and where returns cannot be observed directly they are built forward: target mature margin anchored to comparables, capital intensity from a sales-to-capital ratio or capital per economic unit, and the implied return derived from the two. Every input in that bridge is tagged by evidence class, so the uncertainty is visible rather than hidden inside a projected return — which is what separates valuing a young company from merely pricing it.
 
 ### Guard B — the denominator must mean something
 
@@ -63,6 +75,28 @@ Growth counts as positive evidence only where the incremental return clears the 
 **3. An unresolved thesis-critical axis caps Potential at Moderate.** Most often this is the incremental return. Awarding Strong while the axis the framework calls decisive is unknown means guessing the answer and then grading the guess. If it cannot be measured, say so and accept the cap.
 
 **4. Reinvestment and Duration high together is a claim, not a reading.** The forces that let a business scale quickly tend to shorten how long it stays on top; capital-light and fast-scaling usually means fast-fading, while capital-heavy and slow usually means durable. Rating both legs high requires an explicit account of why this company escapes the trade-off. Absent one, lower whichever leg has the thinner evidence.
+
+## Banks and insurers
+
+The durable-growth formula above is built on NOPAT over invested capital, and both are barred for a financial institution: its liabilities are the raw material of the business, not the funding of it, so putting them in a denominator produces a number that is arithmetically correct and answers nothing. The bands still apply — the pair that feeds them is substituted.
+
+| | Standard business | Bank | Life insurer |
+|---|---|---|---|
+| What incremental capital earns | Δ NOPAT / Δ invested capital | Return on equity **attributable to owners** | Operating return on embedded value |
+| How much can go back in | (net capex + working capital) / NOPAT | Retention ratio — earnings kept rather than paid out | Movement in contractual service margin |
+| What binds it | The opportunity set | Regulatory capital, CET1 | The solvency position |
+
+Durable growth for a bank is therefore **return on owners' equity × retention ratio**, the standard sustainable-growth identity, and it is capped by what the capital position will support: a bank can post a high return and still be unable to grow its book, and the constraint belongs in the reinvestment leg rather than being ignored.
+
+For a life insurer the reinvestment leg turns on whether stored profit is growing. A flat contractual service margin alongside rising reported profit means the company is releasing profit already earned rather than writing new business worth having — the tank is being drained, not filled. Read the CSM as a movement, never a level, and treat a level CSM as a reinvestment leg near zero regardless of the headline growth rate.
+
+Three rulings hold for both:
+
+1. **State the equity basis on every figure.** Return on equity attributable to owners, not group equity, wherever minorities are material — the two can differ by tens of percent.
+2. **The hurdle comparison moves to cost of equity**, not cost of capital, because the return being measured is an equity return.
+3. **A missing embedded value for a life insurer is a thesis-critical gap.** Mark it `UNRESOLVED` and accept the Moderate cap under rule 3 rather than substituting book value and proceeding.
+
+Record the substitution in `mandatory_measures` with `path: "sector_specific"`, naming which pair was used. A verdict whose measurement basis is not on the record cannot be reconstructed.
 
 ## The life-cycle stage as a Duration prior
 

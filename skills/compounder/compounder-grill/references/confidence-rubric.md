@@ -36,7 +36,7 @@ The mapping is judgemental. Where the three inputs disagree, **the lowest govern
 
 - A cross-provider conflict on a figure the verdict depends on, unresolved.
 - A binding leg whose only support is a management statement not yet visible in reported results.
-- An incremental return computed on a window shorter than four years, or on a denominator that failed Guard B in `potential-rubric.md`.
+- An incremental return computed on a window shorter than three years where a longer one was available, or on a denominator that failed Guard B in `potential-rubric.md`. A genuinely short history is not a Confidence penalty by itself — it is carried by Evidence Maturity, and Confidence turns on how well the emerging-compounder bridge is evidenced.
 - A promoted non-GAAP profit measure that could not be reconciled to the statutory figure, where that measure feeds the growth base.
 
 ## What Confidence is not

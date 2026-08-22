@@ -18,7 +18,7 @@ Compute all four on every run and report them together. These are not options.
 Reinvestment Rate  = (net capex + increase in working capital) / NOPAT
                      where net capex = capital expenditure − depreciation & amortisation
 
-Incremental Return = Δ NOPAT / Δ invested capital          (window ≥ 4 years)
+Incremental Return = Δ NOPAT / Δ invested capital          (window ≥ 3 years; 3–5 normal)
 
 Growth from new investment = Reinvestment Rate × Incremental Return
 
@@ -93,6 +93,19 @@ The mandatory `Δ NOPAT / Δ invested capital` above is the default. The followi
 - post-acquisition incremental NOPAT/FCF relative to full deal/follow-on capital
 
 Use rolling/multi-year windows to reduce noise and avoid single-period denominator artifacts; a single year of unusually heavy or light investment is not a reinvestment policy. Explain distortions from acquisitions, impairments, leases, working capital, intangibles, and ramp periods.
+
+### When the history is genuinely too short
+
+Fewer than three years of history, or a company in the Introduction or Growth stage whose returns have not matured, is **not** a case for reporting a weak number or withholding a verdict. It is a case for a different measurement, and `emerging-compounder.md` defines it. Run that bridge and treat it as the primary path rather than one option among several:
+
+`ΔRevenue / sales-to-capital` becomes the route to the reinvestment figure, combined with a target mature margin anchored to observed cohorts or comparable firms, from which the implied return follows. Each input carries its evidence class, so the uncertainty stays visible instead of being buried inside a single projected return.
+
+Two cautions specific to young companies, both from the same source as the bridge:
+
+- **Recent beats long.** For a company changing quickly, an older annual report is stale in a way that no averaging repairs. Trailing twelve months is the better input, and a longer window is not automatically a better one.
+- **Some operating expense is capital expense.** Customer acquisition, brand building and R&D at a scaling company buy future growth. Where these are material the company is reinvesting far more than the capex line shows, and the reinvestment rate computed from reported capex understates it. Use the upstream intangible-capital diagnosis before concluding that a young company does not reinvest.
+
+The result feeds Evidence Maturity, never a Potential penalty. Short history lowers what has been demonstrated; it does not lower what the economics can support.
 
 ## 3. Scale direction
 
