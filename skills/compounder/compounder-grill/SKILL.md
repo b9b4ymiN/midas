@@ -9,7 +9,7 @@ description: Use when a compounding thesis exists and must survive attack before
 
 Turn all upstream evidence—including `market_growth_pack`—into a falsifiable compounder thesis. The job is not to reward attractive narratives; it is to determine what the evidence permits us to believe after both inside-view and **base rate** challenge.
 
-Read `references/falsification-tests.md`, `references/base-rates.md`, `references/evidence-ladder.md`, and `references/reverse-reality-check.md`.
+Read `references/falsification-tests.md`, `references/base-rates.md`, `references/evidence-ladder.md`, `references/hurdle-rates.md`, `references/potential-rubric.md`, `references/confidence-rubric.md`, and `references/reverse-reality-check.md`.
 
 ## Required synthesis
 
@@ -27,11 +27,13 @@ Then:
 ## Required classifications
 
 Report separately:
-- **Compounding Potential:** Exceptional / Strong / Moderate / Weak / Broken
-- **Evidence Maturity:** Early / Developing / Established / Deep
-- **Confidence:** Low / Medium / High
+- **Compounding Potential:** Exceptional / Strong / Moderate / Weak / Broken — assign with `references/potential-rubric.md`, whose three guards and four rules are mandatory, not advisory. Where the leg ratings diverge by more than one band the label carries a qualifier naming the binding leg.
+- **Evidence Maturity:** Early / Developing / Established / Deep — assign with `references/evidence-ladder.md`
+- **Confidence:** Low / Medium / High — assign with `references/confidence-rubric.md`
 
-Never combine these into one primary score.
+Also rate each leg separately — incremental return, reinvestment capacity, duration, per-share translation, financial resilience, capital allocation — and name the binding one. A single label that conceals a divergence between legs fails DoD.
+
+Never combine these into one primary score. Never derive Confidence from Evidence Maturity or from Potential.
 
 ## Thesis pack
 
