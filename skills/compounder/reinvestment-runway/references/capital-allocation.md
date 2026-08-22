@@ -56,6 +56,18 @@ A repurchase is economically helpful only if:
 
 Record **net diluted-share change**, not buyback headlines alone. If pricing discipline cannot be assessed without a valuation skill, state that limit rather than making a valuation conclusion.
 
+Three rules govern how a repurchase reaches the verdict:
+
+1. **A repurchase is not reinvestment.** It never enters the numerator of the reinvestment rate. It is a return of capital and belongs in the per-share translation.
+2. **Sustained repurchases alongside falling capital expenditure are negative evidence on Duration.** A company earning a high incremental return that chooses to buy its own shares instead of deploying capital is telling you what it could not find. Read the two series together; either alone says little.
+3. **Split per-share growth into its two sources, always.** State how much came from the business and how much from a shrinking share count. The second has a ceiling, depends on the price paid, and cannot be extrapolated the way the first can. A company whose per-share compounding was earned operationally while the share count *rose* is a different proposition from one whose per-share growth arrives only after buybacks begin, even when the headline rate matches.
+
+## Cash accumulation
+
+Cash generated and neither reinvested nor returned is an allocation outcome and is assessed here, not as part of the reinvestment rate. Report the balance, its trend, and its size relative to the operating capital base.
+
+A large and growing balance alongside a high incremental return is a specific finding: nothing financial constrains investment, so the constraint is the supply of attractive projects. Say that explicitly rather than reporting the balance as a strength. Where the balance has also been excluded from invested capital to compute returns, this section is where the drag must be recorded — see the count-it-once rule in `reinvestment-methods.md`.
+
 ## Output interpretation
 
 Classify allocation behavior as **VALUE_CREATING / MIXED / VALUE_DESTRUCTIVE / UNRESOLVED**, with evidence and major exceptions. This classification is not a numeric score and does not replace the separate core-engine analysis.
