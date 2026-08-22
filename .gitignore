@@ -7,9 +7,9 @@ node_modules/
 *-workspace/
 .eval/
 evals/
-# Tool-generated plans and specs. Do NOT widen this to `docs/` — AGENTS.md
-# sends methodology ADRs to docs/adr/, and a bare `docs/` silently swallows them.
-docs/superpowers/
+# Docs, plans and specs stay local on purpose — this is a skills repo, and the
+# writing that surrounds the work is not part of what ships.
+docs/
 
 # Local install lock (machine-specific, not source of truth)
 skills-lock.json
