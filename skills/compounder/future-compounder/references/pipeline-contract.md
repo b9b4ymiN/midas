@@ -240,8 +240,31 @@ defined for it:
 
 `hurdle_used` records the two lines the verdict was judged against and their basis,
 so the grading can be reconstructed: `{"value_destruction": 0.075, "attractive":
-0.15, "basis": "..."}`. `durable_growth` carries the growth figure the label was read
-from, with its window and its components.
+0.15, "basis": "..."}`.
+
+`durable_growth` carries the growth figure the label was read from, with its window
+and its components — **and both a nominal and a real figure**:
+
+```
+"durable_growth": {
+  "nominal": 0.099,
+  "real": 0.074,
+  "inflation_basis": {
+    "rate": 0.025,
+    "source": "revenue-weighted across countries of operation: 82% US, 18% international",
+    "as_of": "2026"
+  },
+  "window": "...", "components": {...}
+}
+```
+
+The band table is built on **real** growth rates, so the comparison must be made on
+the real figure. Comparing a nominal growth rate against a real base rate flatters
+every company by the rate of inflation — two to three points against a median near
+4.5%, enough to move a verdict two bands. Deflate by the inflation of the countries
+the company **operates in**, revenue-weighted, and record the rate used. Where the
+rate cannot be established, say so and mark the comparison `PARTIALLY_RESOLVED`
+rather than silently comparing nominal against real.
 
 `upgrade_conditions` is the counterpart of `kill_conditions` and is equally required.
 Each entry must be observable in a future filing or result — a metric, a direction,

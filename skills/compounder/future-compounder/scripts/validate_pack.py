@@ -290,6 +290,22 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
                 "confidence are reported separately and never collapsed"
             )
 
+        dg = pack.get("durable_growth")
+        if isinstance(dg, dict):
+            if _empty(dg.get("real")) and not isinstance(dg.get("real"), (int, float)):
+                errors.append(
+                    "durable_growth.real is missing — the band table is built on "
+                    "real rates, so a nominal figure compared against it flatters "
+                    "the company by the rate of inflation"
+                )
+            ib = dg.get("inflation_basis")
+            if not isinstance(ib, dict) or _empty(ib.get("source")):
+                errors.append(
+                    "durable_growth.inflation_basis must name the rate used and "
+                    "where it came from — the countries the company operates in, "
+                    "revenue-weighted"
+                )
+
         rrc = pack.get("reverse_reality_check")
         if isinstance(rrc, dict):
             for f, why in (

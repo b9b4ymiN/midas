@@ -20,17 +20,37 @@ Buybacks are excluded deliberately. They raise per-share figures, they have a ce
 
 ## The bands
 
-| Label | Durable growth | Must also hold |
+Bands are **positions within the company's own size class**, not fixed numbers. A given growth rate means something entirely different at different scale: over ten years, 10% earnings growth was achieved by 43% of companies with sales under USD 325m but only 24% of companies around USD 5bn. One cut-off applied to both would call a coin-flip outcome exceptional for the first and an uncommon one for the second.
+
+| Label | Position in the size class | Must also hold |
 |---|---|---|
-| **Exceptional** | above 10% | incremental return ≥ 15% · no decay signature in the return series · evidence at Ladder level 4 or above · **and growth ≥ 1.5× the company's own category growth** |
-| **Strong** | 6–10% | incremental return ≥ 15% · reinvestment runway still open, though its edge is visible |
-| **Moderate** | 3–6% | return between the two hurdle lines · **or** a thesis-critical axis still `UNRESOLVED` |
-| **Weak** | below 3% | return below the value-destruction line · **or** capital can be neither reinvested nor returned |
+| **Exceptional** | **top 10%** | incremental return ≥ 15% · no decay signature in the return series · evidence at Ladder level 4 or above · **and growth ≥ 1.5× the company's own category growth** |
+| **Strong** | **top 25%** | incremental return ≥ 15% · reinvestment runway still open, though its edge is visible |
+| **Moderate** | **above the median** | return between the two hurdle lines · **or** a thesis-critical axis still `UNRESOLVED` |
+| **Weak** | **below the median** | return below the value-destruction line · **or** capital can be neither reinvested nor returned |
 | **Broken** | negative | incremental capital destroys value |
+
+### The reference table
+
+Ten-year real net income CAGR, by size class. Source: Credit Suisse HOLT, top 1,000 global companies by market capitalisation, 1950–2014, inflation-adjusted, including companies that have since died.
+
+| Annual sales | Median | Top 25% | Top 10% |
+|---|---|---|---|
+| Under USD 325m | **8.3%** | **16.2%** | **25.9%** |
+| USD 325m – 2bn | **5.5%** | **10.8%** | **17.1%** |
+| Over USD 2bn | **4.5%** | **10.0%** | **16.4%** |
+
+The mid and large classes converge in the upper tail while separating at the median — sustaining a high rate is roughly as rare at USD 1bn as at USD 20bn, but the typical outcome is meaningfully worse for the larger firm. The sharp break is small versus everything else.
+
+### Two adjustments before comparing
+
+**Deflate first.** These base rates are real, in 2014 dollars. Durable growth as computed upstream is nominal. Comparing them directly flatters every company by the rate of inflation — two to three points, against a median near 4.5%, which is enough to move a verdict two bands. Subtract the inflation rate of the countries the company operates in, revenue-weighted, and record the figure used.
+
+**Read the comparison as slightly demanding.** The base rate is reported net income growth, which includes acquisitions and the per-share effect of buybacks. Durable growth excludes both by construction. An acquisitive company will therefore score below its own reported history, and that is the intended behaviour — growth bought with acquisitions is not the same claim as growth the engine funds. Do not adjust the bands to compensate; note it where it matters.
 
 **The category comparison** distinguishes a company compounding because it is winning from one carried by its market. A utility growing 8% durably where its category grows 3% is a rarer machine than a technology company growing 10% where its category grows 25% — the second is losing ground. Read category growth from `market_growth_pack.demand_category_evolution` and `growth_decomposition.strategic.category_momentum`; both are produced by the Layer 1 gate and need no separate research.
 
-> **Calibration note.** The 3% / 6% / 10% cut-offs are **inferred, not published.** They were set so that Exceptional stays rare against the observed base rate for extreme compounding — Mayer's 100-baggers required roughly 20–26% per year sustained for 17–25 years, so a 10% floor is already far below that bar and should not be loosened. Attempts to retrieve the empirical growth-rate distributions that would replace these numbers were unsuccessful. Treat them as the most challengeable part of this file and change them here, in one place, when better evidence arrives.
+> **What remains uncertain.** The reference class is global listed companies of a given size, not companies matched on business model or life-cycle stage. Stage-conditional distributions would be a better reference class; the published source for them could not be accessed, and inventing them was rejected in favour of leaving this coarser. The size split is real and published; treat the three-class grouping as the deliberate simplification it is.
 
 ## Three guards
 
@@ -114,6 +134,30 @@ Returns do not fade at a uniform rate across stages: five years out, mature and 
 **A stage transition is evidence.** A company that has just moved stages has changed how its expansion is funded, and that shows up here before it shows up in a narrative. Where the stage moved and the Layer 0 frame did not, the movement is a finding about the engine, not a reason to redefine the business.
 
 **Never let the stage set the label.** It informs one leg and gates measure validity. Reading Potential off the stage would be exactly the sector-label error the framework exists to avoid.
+
+## How fast returns fade
+
+The Duration leg asks how long an excess return survives. That has a measured answer, and it differs by sector rather than being a matter of argument.
+
+```
+expected return in four years = sector mean + r × (current return − sector mean)
+```
+
+`r` is the four-year correlation of returns on capital within the sector, measured on global companies 1983–2015:
+
+| Sector | r | Sector | r |
+|---|---|---|---|
+| Consumer Staples | **0.78** | Telecommunications | 0.55 |
+| Consumer Discretionary | 0.67 | Information Technology | 0.50 |
+| Health Care | 0.64 | Financials | 0.43 |
+| Industrials | 0.62 | Materials | 0.41 |
+| Utilities | 0.57 | Energy | **0.35** |
+
+Consumer-facing sectors sit at the top; commodity-exposed sectors at the bottom. As a rule of thumb across the whole sample, **about half of an excess return is gone after five years**.
+
+**How to use it.** Compute where the fade rule puts the company's return in four years, then ask what the thesis requires. A Duration rating of Strong or better is a claim that this company will fade more slowly than its sector, and that claim needs a named mechanism — permitted assets, switching costs, two-sided liquidity, regulatory position — not an assertion that the returns have been good so far. A company in Energy claiming durable excess returns is arguing against an r of 0.35, and should be made to say why.
+
+**It is a prior, not a forecast.** The coefficient describes what happens on average to a large group of companies that started with similar excess returns; individual companies sit across a distribution, some widening their advantage. The point is to establish what the company is arguing against, not to settle the question. Where the sector's own r is volatile — Energy's standard deviation is 0.12 against Consumer Staples' 0.04 — say so, because the prior itself is less firm there.
 
 ## Worked examples
 
