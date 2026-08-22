@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-docs/
 .codegraph/
 
 # Scratch / working dirs (per-skill workspaces, eval runs)
@@ -8,6 +7,9 @@ docs/
 *-workspace/
 .eval/
 evals/
+# Tool-generated plans and specs. Do NOT widen this to `docs/` — AGENTS.md
+# sends methodology ADRs to docs/adr/, and a bare `docs/` silently swallows them.
+docs/superpowers/
 
 # Local install lock (machine-specific, not source of truth)
 skills-lock.json
@@ -25,4 +27,12 @@ nul
 # Python
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Run data and local research artifacts: pack runs, report sources, source PDFs.
+# Large, machine-local, and often not ours to redistribute.
 .data/
