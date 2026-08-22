@@ -14,8 +14,8 @@ Read `references/reinvestment-methods.md`, `references/runway-methods.md`, `refe
 ## Required investigation
 
 1. Reconstruct where retained cash and external capital have been deployed: organic investment, working capital, R&D/CAC, acquisitions, debt, **buybacks**, dividends, cash, SBC, and equity issuance.
-2. Estimate incremental/marginal returns using the best unit/cohort/corporate evidence; distinguish them from average historical ROIC and respect **economic lags**.
-3. Evaluate **capital allocation** behavior: actual vs stated priorities, acquisition-cohort returns, net dilution/buyback effects, leverage, incentives, governance, and related parties where material.
+2. Estimate incremental/marginal returns using the best unit/cohort/corporate evidence; distinguish them from average historical ROIC and respect **economic lags**. When `economic_engine_pack` carries dual `return_bases`, carry both forward — an incremental return quoted on one basis and compared with a cost of capital on the other is meaningless.
+3. Evaluate **capital allocation** behavior: actual vs stated priorities, acquisition-cohort returns, net dilution/buyback effects, leverage, incentives, governance, and related parties where material. Purchases of listed minority stakes are capital allocation decisions and are judged here, using `look_through_earnings` and `associate_cash_bridge` from upstream rather than recomputing them.
 4. Test **repeatability**. For a **product-cycle** business, require evidence across generations rather than treating one hit launch as a reusable reinvestment unit.
 5. Reconcile `market_growth_pack` category/share/channel/geographic evidence with unit returns and capital needs. Map the reinvestment opportunity set from external growth runway, penetration, economic capacity, realistic share, scale economics, and constraints—not headline TAM.
 6. Analyze Duration/CAP through moat outcomes and identify mechanisms that could cause return decay.

@@ -8,7 +8,7 @@ EXPECTED = {
     'market-growth-intelligence': ['SKILL.md','references/methodology-router.md','references/research-foundations.md','references/growth-decomposition.md'],
     'business-economic-engine': ['SKILL.md','references/economic-unit-guide.md','references/evidence-ledger.md'],
     'reinvestment-runway': ['SKILL.md','references/reinvestment-methods.md','references/runway-methods.md','references/emerging-compounder.md'],
-    'compounder-grill': ['SKILL.md','references/falsification-tests.md'],
+    'compounder-grill': ['SKILL.md','references/falsification-tests.md','references/potential-rubric.md','references/confidence-rubric.md','references/hurdle-rates.md','references/reverse-reality-check.md'],
     'compounder-bf-report': ['SKILL.md','references/report-template.md','references/citation-standard.md'],
 }
 errors=[]

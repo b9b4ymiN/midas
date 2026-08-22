@@ -1,5 +1,51 @@
 # CHANGELOG
 
+## v2.1 — devalue sentinels no longer leak into fact records
+
+Found while running the `future-compounder` pipeline on GULF.BK (SET),
+2026-08-21.
+
+### Fixed
+
+**An *undefined* field hydrated to the number `-1` and would have been
+recorded as a value.**
+
+SvelteKit serialises `__data.json` with devalue, which reserves negative
+integers in reference position as sentinels — `-1` undefined, `-2` sparse
+hole, `-3` NaN, `-4`/`-5` ±Infinity, `-6` negative zero. `resolve_sveltekit`
+treated every negative as "not an index" and returned it verbatim:
+
+```python
+if not isinstance(idx, int) or idx < 0 or idx >= len(flat):
+    return idx        # -1 comes straight back out
+```
+
+So a fact path landing on an undefined field produced `-1` rather than `None`,
+`fetch.py` skipped its "not present" branch, and `make_fact()` wrote **-1 as
+the measurement**. That is exactly the silent invention rule 1 ("Missing stays
+missing") exists to prevent, and nothing in the output would have flagged it.
+
+*How it surfaced:* the `/financials/balance-sheet/` and
+`/financials/cash-flow-statement/` routes serve `sections: -1` — they use a
+`financialData` + `map` layout instead of the `sections` layout the income
+statement uses. Reading `sections` there returns undefined by design.
+
+*Why it had not bitten yet:* the only route with fact paths filled in was
+`/financials/`, whose paths never touch an undefined field. Luck, not design.
+
+Negative sentinels are now mapped through `DEVALUE_SENTINELS` in
+`discover.py`. A genuinely negative datum is unaffected: devalue stores real
+values in the flat array behind a *positive* index, so nothing reachable as
+data can be mistaken for a sentinel. `tests/test_sveltekit_sentinels.py`
+asserts both directions — GULF's negative free cash flow (−3,839,181,000) and
+capex (−25,472,084,000) must survive intact.
+
+`fetch.py` additionally drops non-finite floats (from `-3`/`-4`/`-5`) with a
+warning rather than writing `NaN`/`Infinity` into a fact record or snapshot,
+neither of which is valid strict JSON nor a measurement.
+
+---
+
 ## v2 — finance/research hardening
 
 Driven by using v1 against stockanalysis.com, finviz, valueinvesting.io and

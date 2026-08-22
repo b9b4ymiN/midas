@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import re
 import sys
@@ -77,6 +78,141 @@ SEGMENT_MSG = (
     "(absent entirely for some issuers) — cross-check the mix against the "
     "filing / IR release before using it for peer selection or driver work"
 )
+# A breakdown that declares its own total can be checked against it directly,
+# so only a real mismatch matters. Without one the sole available check is
+# against revenue, and any material gap means parts are missing (GULF's mix
+# carries no eliminations line, so it overstates) — hence the tighter bound.
+SEGMENT_RECON_PCT = 5.0
+SEGMENT_RECON_PCT_NO_TOTAL = 2.0
+# The summary row, not a segment. Matched narrowly on purpose: a pattern like
+# `(^|_)total(_|$)` also swallows `total_asset_management_revenue`, which is
+# the *name of one of Ping An's segments*. Doing so drops a real segment from
+# the sum and then divides by it — on 601318 that produced a +1481% "gap".
+SEGMENT_TOTAL_NAMES = {"total", "revenue_total", "total_revenue",
+                       "segment_total", "revenues_total", "grand_total"}
+
+
+def _is_segment_total(key: str) -> bool:
+    k = key.strip().lower()
+    return k in SEGMENT_TOTAL_NAMES or k.endswith("_total")
+
+
+# ---------------------------------------------------------------------------
+# Statement template
+#
+# A ratio can be arithmetically correct and economically meaningless. ROIC on
+# an insurer divides by liabilities that are its raw material, not its
+# financing; Ping An's 6.29% answers no question anyone has. P/FCF of 1.36x
+# does not mean cheap when the cash flow is mostly policyholder money.
+#
+# The provider settles this for us: it renders each issuer on a statement
+# template and stamps the template into its own field names. Detection is a
+# lookup, not a guess. Verified live 2026-08-21 — Ping An `Ins` x9, Ping An
+# Bank `Bank` x12, GULF `Uti` x18, TU and AAPL unsuffixed.
+#
+# Facts are labelled, never dropped: removing them silently would be making
+# the reader's judgement for them, which is the habit this layer exists to
+# break.
+# ---------------------------------------------------------------------------
+TEMPLATE_SUFFIX_RE = re.compile(r"(Ins|Bank|Uti)$")
+TEMPLATE_BY_SUFFIX = {"Ins": "insurance", "Bank": "bank", "Uti": "utility"}
+TEMPLATE_MARKERS = {
+    "insurance": ("policyLoans", "reinsuranceRecoverable", "separateAccountAssets",
+                  "totalInvestment"),
+    "bank": ("grossLoans", "totalDeposits", "loansReceivableNet"),
+}
+# Ratio families whose economic meaning does not survive the template.
+NOT_MEANINGFUL = {
+    "insurance": ("roic", "roce", "pfcf", "fcf", "ev_ebitda", "ev_ebit",
+                  "debt_ebitda", "net_debt", "current_ratio", "quick_ratio",
+                  "asset_turnover", "working_capital", "total_debt", "net_cash"),
+    "bank": ("roic", "roce", "pfcf", "fcf", "ev_ebitda", "ev_ebit",
+             "debt_ebitda", "net_debt", "current_ratio", "quick_ratio",
+             "asset_turnover", "working_capital", "total_debt", "net_cash"),
+}
+INSTEAD_USE = {
+    "insurance": "new business value and its margin, contractual service margin (CSM), "
+                 "embedded value, solvency ratios, and return on equity computed on "
+                 "equity ATTRIBUTABLE to owners",
+    "bank": "net interest margin, cost/income, non-performing loan ratio, CET1, and "
+            "return on equity computed on equity ATTRIBUTABLE to owners",
+}
+
+
+def detect_statement_template(doc: Any) -> Optional[str]:
+    """Which statement template did the provider render this issuer on?"""
+    fd = json_path(doc, "nodes[2].data.financialData")
+    if not isinstance(fd, dict):
+        return None
+    keys = list(fd.keys())
+    counts: Dict[str, int] = {}
+    for k in keys:
+        m = TEMPLATE_SUFFIX_RE.search(k)
+        if m:
+            counts[m.group(1)] = counts.get(m.group(1), 0) + 1
+    if counts:
+        suffix = max(counts, key=lambda s: counts[s])
+        return TEMPLATE_BY_SUFFIX[suffix]
+    for template, markers in TEMPLATE_MARKERS.items():
+        if sum(1 for m in markers if m in keys) >= 2:
+            return template
+    return "standard"
+
+
+def reconcile_segments(
+    seg_rec: Dict[str, Any], revenue: Optional[float]
+) -> Dict[str, Any]:
+    """Sum a segment breakdown and check it against whatever total exists.
+
+    The standing `cross_check_required` note tells the reader to go and check.
+    It does not say how far off the numbers already are, so nobody finds out
+    without doing the arithmetic by hand. On GULF.BK (2026-08-21) the TTM
+    segments summed 4.8% above revenue — invisible in the output.
+
+    Keys matching SEGMENT_TOTAL_RE are the provider's own summary row and are
+    excluded from the parts sum; summing them in doubles the total, which is
+    what made TU and AAPL both read as exactly +100% before this existed.
+    """
+    val = seg_rec.get("value")
+    if not isinstance(val, dict):
+        return {}
+
+    def num(v: Any) -> bool:
+        return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+    parts, declared, declared_key = [], None, None
+    for k, v in val.items():
+        if k == "datekey" or not num(v):
+            continue
+        if _is_segment_total(k):
+            declared, declared_key = float(v), k
+        else:
+            parts.append(v)
+    if not parts:
+        return {}
+
+    # Sanity check on the name match: a total cannot be smaller than the
+    # largest single part. If it is, the key was a segment that merely reads
+    # like a total — put it back rather than dividing by it.
+    if declared is not None and declared < max(parts):
+        parts.append(declared)
+        declared, declared_key = None, None
+
+    out: Dict[str, Any] = {"segment_sum": float(sum(parts))}
+    target, basis, limit = declared, "declared total", SEGMENT_RECON_PCT
+    if target is None:
+        target, basis, limit = revenue, "revenue_ttm", SEGMENT_RECON_PCT_NO_TOTAL
+        out["segment_declared_total"] = None
+    else:
+        out["segment_declared_total"] = declared
+
+    if not num(target) or not target:
+        return out
+    out["segment_vs_revenue_delta_pct"] = round(
+        (out["segment_sum"] - target) / abs(target) * 100.0, 2
+    )
+    out["_recon"] = (basis, float(target), limit)
+    return out
 
 
 def _utcnow() -> str:
@@ -219,6 +355,15 @@ def json_path(doc: Any, path: str) -> Any:
     return cur
 
 
+# Composing a period end from fiscal year + fiscal quarter looks tempting and
+# is wrong: fiscal labels are not calendar quarters. On 2026-08-21,
+# MSFT's balance sheet reported fiscalYear 2026 / Q4 — composing that gives
+# 2026-12-31, a date in the future, when the real TTM end was 2026-06-30.
+# AAPL's 52/53-week year lands on 2026-06-27, not any quarter end at all.
+# So routes borrow the date from a sibling route that publishes a real one
+# (see `as_of_from_route`) rather than deriving it.
+
+
 # --- Fact record ------------------------------------------------------------
 
 def make_fact(
@@ -233,9 +378,14 @@ def make_fact(
         "value": value,
         "source": source,
         "tier": tier,           # "primary" | "FALLBACK"
-        "as_of": as_of or _today(),
+        "as_of": as_of,
         "url": url,
     }
+    # An unknown reporting date is not today's date. Defaulting to the run
+    # date silently asserts the figure is current, which for a balance sheet
+    # is exactly the claim a reader must not be handed for free.
+    if as_of is None:
+        f["as_of_status"] = "UNRESOLVED"
     if unit:
         f["unit"] = unit
     return f
@@ -264,12 +414,38 @@ def load_profiles(directory: str) -> Dict[str, Dict[str, Any]]:
 def build_url(route: Dict[str, Any], ticker: str, market: Optional[str]) -> str:
     """Fill the route template. Unfilled placeholders are an error, not a
     silently broken URL."""
+    venue = (market or "").lower()
     url = route["url_template"]
+    # Some providers address a venue-less listing through a different path
+    # shape entirely (stockanalysis: /quote/{market}/{symbol}/ vs US
+    # /stocks/{symbol}/). Substituting "" into {market} builds a URL that
+    # still returns 200 with a *different* page, so every fact path misses
+    # and the run degrades to fallback without ever saying the URL was wrong.
+    if not venue and "{market}" in url:
+        # A suffixed ticker (GULF.BK, 7203.T) names a non-US venue. Falling
+        # back to the venue-less template there would fetch a *different*
+        # listing that happens to share the symbol, return 200, and miss
+        # every fact path — degrading to fallback without ever saying why.
+        if "." in ticker:
+            raise FetchError(
+                "parse",
+                f"'{ticker}' names a non-US venue but --market was not given; "
+                f"route {route.get('id')} needs it (e.g. --market bkk). Refusing "
+                f"to fetch the US listing for '{ticker.split('.')[0]}' instead.",
+            )
+        if route.get("url_template_no_market"):
+            url = route["url_template_no_market"]
+        else:
+            raise FetchError(
+                "parse",
+                f"route {route.get('id')} has a {{market}} segment and the profile "
+                f"gives no venue-less template; pass --market",
+            )
     symbol = ticker.split(".")[0]
     subs = {
         "symbol": symbol,
         "ticker": ticker,
-        "market": (market or "").lower(),
+        "market": venue,
     }
     for k, v in subs.items():
         url = url.replace("{" + k + "}", v)
@@ -319,6 +495,9 @@ def yfinance_fallback(ticker: str, wanted: List[str]) -> Dict[str, Dict[str, Any
                 out[fact] = make_fact(
                     info[key], "yfinance", "FALLBACK",
                     f"yfinance:{ticker}.info[{key}]",
+                    # yfinance .info is a live snapshot: the run date really
+                    # is its as-of, unlike a statement route's period end.
+                    as_of=_today(),
                 )
                 break
     return out
@@ -326,23 +505,58 @@ def yfinance_fallback(ticker: str, wanted: List[str]) -> Dict[str, Dict[str, Any
 
 # --- Conflict check ---------------------------------------------------------
 
-def check_conflicts(per_provider: Dict[str, Dict[str, Dict[str, Any]]]) -> List[str]:
+def build_alias_index(profiles: Dict[str, Dict[str, Any]]) -> Dict[str, str]:
+    """fact name -> comparison group, merged across every profile.
+
+    Providers name the same measurement differently — stockanalysis says
+    `pe_ratio`, yfinance says `trailing_pe`. Grouping on the literal key means
+    those two are never compared, so a 41% disagreement (GULF, 2026-08-21:
+    25.27 vs 35.61) passes without a word. Aliases give the comparison
+    something to key on.
+    """
+    index: Dict[str, str] = {}
+    for prof in profiles.values():
+        for group, members in (prof.get("fact_aliases") or {}).items():
+            for name in members:
+                index[name] = group
+    return index
+
+
+def check_conflicts(
+    per_provider: Dict[str, Dict[str, Dict[str, Any]]],
+    aliases: Optional[Dict[str, str]] = None,
+) -> List[str]:
     """Compare the same fact across providers. Report, never resolve."""
     warnings: List[str] = []
+    aliases = aliases or {}
     names: Dict[str, List[Tuple[str, Any]]] = {}
+    labels: Dict[str, List[str]] = {}
     for provider, facts in per_provider.items():
         for fact, rec in facts.items():
-            names.setdefault(fact, []).append((provider, rec.get("value")))
-    for fact, pairs in names.items():
-        nums = [(p, v) for p, v in pairs if isinstance(v, (int, float)) and v not in (0, None)]
+            group = aliases.get(fact, fact)
+            names.setdefault(group, []).append((provider, rec.get("value"), fact))
+            labels.setdefault(group, []).append(fact)
+    for group, triples in names.items():
+        nums = [(p, v, n) for p, v, n in triples
+                if isinstance(v, (int, float)) and not isinstance(v, bool) and v not in (0, None)]
         if len(nums) < 2:
             continue
-        base_p, base_v = nums[0]
-        for other_p, other_v in nums[1:]:
+        base_p, base_v, base_n = nums[0]
+        for other_p, other_v, other_n in nums[1:]:
+            # Cross-provider only. Two facts from the same provider in one
+            # alias group are the same measurement at different dates
+            # (total_debt vs total_debt_fy0), not a disagreement — flagging
+            # those is noise that teaches the reader to skip these warnings.
+            if other_p == base_p:
+                continue
             delta = abs(other_v - base_v) / abs(base_v) * 100.0
             if delta > CONFLICT_PCT:
+                # Name both original facts when an alias joined them — the
+                # reader has to be able to find them in the output.
+                lhs = f"{base_p}.{base_n}" if base_n != group else base_p
+                rhs = f"{other_p}.{other_n}" if other_n != group else other_p
                 warnings.append(
-                    f"{fact}: {base_p}={base_v} vs {other_p}={other_v} "
+                    f"{group}: {lhs}={base_v} vs {rhs}={other_v} "
                     f"({delta:.1f}% apart, threshold {CONFLICT_PCT}%) — do not "
                     f"pick one silently; state both or find the definition gap"
                 )
@@ -395,6 +609,9 @@ def run(args: argparse.Namespace) -> int:
     per_provider: Dict[str, Dict[str, Dict[str, Any]]] = {}
     warnings: List[str] = []
     failures: List[Dict[str, str]] = []
+    statement_template: Optional[str] = None
+    template_url: Optional[str] = None
+    template_as_of: Optional[str] = None
 
     order = args.providers.split(",") if args.providers else list(profiles.keys())
 
@@ -405,6 +622,9 @@ def run(args: argparse.Namespace) -> int:
             continue
         tier = prof.get("tier", "primary")
         got: Dict[str, Dict[str, Any]] = {}
+        # period end per route, so a route whose newest column is labelled
+        # "TTM" can borrow the real date from a sibling that publishes one
+        route_as_of: Dict[str, Optional[str]] = {}
 
         for route in prof.get("routes", []):
             fact_map = route.get("facts") or {}
@@ -434,6 +654,19 @@ def run(args: argparse.Namespace) -> int:
                 v = json_path(doc, route["as_of_path"])
                 if isinstance(v, str):
                     as_of = v
+            if as_of is None and route.get("as_of_from_route"):
+                as_of = route_as_of.get(route["as_of_from_route"])
+            if as_of is None and (route.get("as_of_path") or route.get("as_of_from_route")):
+                warnings.append(
+                    f"{pname}/{route.get('id')}: no reporting period end available — facts from "
+                    f"this route are marked as_of UNRESOLVED rather than dated to the run"
+                )
+            route_as_of[route.get("id")] = as_of
+
+            if statement_template is None:
+                statement_template = detect_statement_template(doc)
+                if statement_template:
+                    template_url, template_as_of = url, as_of
 
             for fact, path in fact_map.items():
                 if wanted is not None and fact not in wanted:
@@ -441,6 +674,15 @@ def run(args: argparse.Namespace) -> int:
                 val = json_path(doc, path)
                 if val is None:
                     warnings.append(f"{pname}: '{fact}' not present at path '{path}' — left absent")
+                    continue
+                # NaN/±Inf can only arrive from a devalue sentinel, i.e. the
+                # provider said "no value here". Keep it out of fact records
+                # and snapshots — a non-finite float is not valid strict JSON
+                # and is not a measurement either.
+                if isinstance(val, float) and not math.isfinite(val):
+                    warnings.append(
+                        f"{pname}: '{fact}' resolved to a non-finite value at path '{path}' — left absent"
+                    )
                     continue
                 rec = make_fact(val, pname, tier, url, as_of,
                                 (prof.get("units") or {}).get(fact))
@@ -469,9 +711,61 @@ def run(args: argparse.Namespace) -> int:
                 )
                 v["reason"] = reason
                 facts[k] = v
+                # Also register it as a provider result, otherwise the
+                # fallback source is invisible to check_conflicts and a
+                # disagreement between it and the primary is never compared.
+                per_provider.setdefault("yfinance", {})[k] = v
                 warnings.append(f"{k}: using FALLBACK (yfinance) — {reason}")
 
-    warnings.extend(check_conflicts(per_provider))
+    # ---- statement template ------------------------------------------------
+    if statement_template:
+        facts["statement_template"] = make_fact(
+            statement_template, "stockanalysis", "primary",
+            template_url or "", template_as_of,
+        )
+        families = NOT_MEANINGFUL.get(statement_template)
+        if families:
+            flagged = sorted(
+                f for f in facts
+                if f != "statement_template" and any(fam in f for fam in families)
+            )
+            if flagged:
+                warnings.append(
+                    f"statement_template={statement_template}: the following facts are "
+                    f"arithmetically correct but economically meaningless for this "
+                    f"business model and must not be used as return or valuation "
+                    f"measures — {', '.join(flagged)}. Use instead: "
+                    f"{INSTEAD_USE[statement_template]}. They are returned, not dropped; "
+                    f"deciding for you is not this layer's job."
+                )
+
+    # ---- segment reconciliation -------------------------------------------
+    for seg_name in [k for k in facts if SEGMENT_FACT_RE.search(k)]:
+        seg_rec = facts[seg_name]
+        if not isinstance(seg_rec.get("value"), dict):
+            continue
+        rev_rec = facts.get("revenue_ttm") or {}
+        recon = reconcile_segments(seg_rec, rev_rec.get("value"))
+        if not recon:
+            continue
+        basis_info = recon.pop("_recon", None)
+        seg_rec.update(recon)
+        if basis_info is None:
+            continue
+        basis, target, limit = basis_info
+        delta = recon["segment_vs_revenue_delta_pct"]
+        if abs(delta) > limit:
+            warnings.append(
+                f"{seg_name}: parts sum to {recon['segment_sum']:,.0f} vs {basis} "
+                f"{target:,.0f} — {delta:+.2f}% (threshold ±{limit}%). The "
+                f"breakdown does not reconcile"
+                + ("" if recon.get("segment_declared_total") is not None else
+                   " and the payload declares no total of its own")
+                + "; do not present it as a complete mix until the filing "
+                  "explains the gap"
+            )
+
+    warnings.extend(check_conflicts(per_provider, build_alias_index(profiles)))
 
     payload = {
         "ticker": ticker,
