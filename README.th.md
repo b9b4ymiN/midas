@@ -21,7 +21,7 @@ Midas มี **เส้นทางวิจัยสองเส้นที�
 
 สองเส้นใช้ชั้นดึงข้อมูลเดียวกัน ตัวเลขจึงตรงกัน แต่ข้อสรุปแยกจากกันโดยตั้งใจ เพราะบริษัทหนึ่งอาจเป็นธุรกิจที่ทบต้นได้ดีแต่ราคาแพงเกินไป หรือราคาถูกแต่ไม่มีความสามารถในการทบต้นเลย
 
-คุณไม่จำเป็นต้องจำชื่อทักษะทั้งหมด เริ่มด้วย `/midas` อธิบายสิ่งที่ต้องการด้วยภาษาปกติ แล้วระบบจะชี้ไปยัง workflow ที่เหมาะสม
+คุณไม่จำเป็นต้องจำชื่อทักษะทั้งหมด เริ่มด้วย `/midas` (หรือ `/midas-skills:midas` ถ้าติดตั้งแบบ Claude Code plugin) อธิบายสิ่งที่ต้องการด้วยภาษาปกติ แล้วระบบจะชี้ไปยัง workflow ที่เหมาะสม
 
 > **เนื้อหาสำหรับการวิจัยและการศึกษาเท่านั้น ไม่ใช่คำแนะนำทางการเงิน** Midas ไม่ได้ตัดสินใจลงทุนแทนคุณและไม่รับประกันผลตอบแทน
 
@@ -51,7 +51,22 @@ Midas ออกแบบมาโดยมีเกราะป้องกั�
 
 ## การติดตั้ง
 
-คุณต้องมี Node.js พร้อม `npm`/`npx`, Python 3.8 ขึ้นไป และสภาพแวดล้อม AI agent ที่รองรับ Agent Skills แบบติดตั้งได้ Node.js ใช้ติดตั้งทักษะ ส่วน Python ใช้รัน data และ analytical helper ใน workflow แบบเต็ม บน Windows ให้ตรวจทั้งสองรายการด้วย `npx --version` และ `python --version` รันคำสั่งต่อไปนี้ใน terminal ไม่ใช่ในแชตของ agent:
+Midas คือชุด [Agent Skills](https://code.claude.com/docs/en/skills) ติดตั้งได้สองทาง: เป็น Claude Code plugin หรือติดตั้งทักษะโดยตรงสำหรับ agent ใดๆ ที่รองรับ `skills` CLI (Codex และตัวอื่นๆ)
+
+### Claude Code
+
+```bash
+claude plugin marketplace add b9b4ymiN/midas
+claude plugin install midas-skills@midas
+```
+
+Midas ยังไม่อยู่ใน plugin directory ทางการของ Anthropic จึงต้อง add marketplace จาก GitHub repo ก่อน เมื่อได้รับการอนุมัติแล้ว คำสั่งจะย่อเหลือ `claude plugin install midas-skills` (หรือ `/plugin install midas-skills` ในเซสชัน) หลังติดตั้งให้ **restart session** เพื่อให้ทักษะใหม่ปรากฏ วิธีนี้ติดตั้ง**ครบทั้ง 24 ทักษะ** ไม่มีตัวเลือกติดตั้งบางส่วนสำหรับ plugin — ถ้าต้องการเฉพาะบางทักษะ ให้ใช้วิธี `npx skills` ด้านล่าง
+
+ทักษะที่ติดตั้งด้วยวิธีนี้จะถูกเติมชื่อ plugin นำหน้า: router จะกลายเป็น `/midas-skills:midas` และทักษะที่ถูกอ้างถึงในเอกสารนี้ (เช่น `future-compounder`) จะเรียกจริงว่า `midas-skills:future-compounder`
+
+### Codex และ agent อื่นๆ
+
+คุณต้องมี Node.js พร้อม `npm`/`npx`, Python 3.8 ขึ้นไป และสภาพแวดล้อม AI agent ที่รองรับ Agent Skills แบบติดตั้งได้ Node.js ใช้ติดตั้งทักษะ ส่วน Python ใช้รัน data และ analytical helper ใน workflow แบบเต็ม บน Windows ให้ตรวจทั้งสองรายการด้วย `npx --version` และ `python --version` รันคำสั่งต่อไปนี้ใน terminal ไม่ใช่ในแชตของ agent วิธีนี้ใช้กับ Claude Code ได้เช่นกัน ถ้าคุณต้องการสำเนาที่แก้ไขได้และไม่มีการเติมชื่อ namespace (ชื่อทักษะยังเป็น `/midas`, `future-compounder` ตามเดิม) แทนที่จะใช้ plugin ด้านบน:
 
 ติดตั้งทุกทักษะแบบ global:
 
@@ -87,7 +102,7 @@ npx skills add b9b4ymiN/midas --all
 
 ## เริ่มใช้งานอย่างรวดเร็ว
 
-หากไม่แน่ใจว่าจะเริ่มจากตรงไหน ให้พิมพ์ข้อความนี้ในแชตหรือ prompt ของ AI agent หลัง restart session:
+หากไม่แน่ใจว่าจะเริ่มจากตรงไหน ให้พิมพ์ข้อความนี้ในแชตหรือ prompt ของ AI agent หลัง restart session (ใช้ `/midas-skills:midas` แทน `/midas` ถ้าติดตั้งแบบ Claude Code plugin):
 
 ```text
 /midas
@@ -106,7 +121,7 @@ Run a full analysis of CPALL.BK and produce the final BF-Report.
 
 ## Workflow ที่ใช้บ่อย
 
-คุณเขียนคำขอด้วยภาษาปกติได้ Slash command มีประโยชน์สำหรับทักษะที่ผู้ใช้เรียกเอง เช่น `/midas` ส่วนทักษะที่โมเดลเรียกใช้สามารถถูกเลือกโดยอัตโนมัติเมื่อคำขอของคุณชัดเจน
+คุณเขียนคำขอด้วยภาษาปกติได้ Slash command มีประโยชน์สำหรับทักษะที่ผู้ใช้เรียกเอง เช่น `/midas` (`/midas-skills:midas` ถ้าติดตั้งแบบ Claude Code plugin) ส่วนทักษะที่โมเดลเรียกใช้สามารถถูกเลือกโดยอัตโนมัติเมื่อคำขอของคุณชัดเจน
 
 | สิ่งที่คุณต้องการ | ตัวอย่าง prompt | ทักษะและผลลัพธ์ |
 |---|---|---|
@@ -182,7 +197,7 @@ Step 0: data snapshot (ทางเลือก ใช้ร่วมกับ�
 
 | คำถามของคุณ | ใช้ |
 |---|---|
-| “ฉันไม่รู้ว่าจะเริ่มตรงไหน” | `/midas` |
+| “ฉันไม่รู้ว่าจะเริ่มตรงไหน” | `/midas` (`/midas-skills:midas` ถ้าติดตั้งแบบ plugin) |
 | “ขอภาพรวมทั้งหมดและรายงานที่เสร็จสมบูรณ์” | `both-stock-analysis` |
 | “บริษัทนี้จะโตทบต้นต่อได้อีกสิบปีไหม” | `future-compounder` |
 | “จริงๆ แล้วบริษัทนี้อยู่ในธุรกิจอะไรกันแน่” | `business-identity-scope` |
@@ -215,7 +230,7 @@ Step 0: data snapshot (ทางเลือก ใช้ร่วมกับ�
 
 ### เริ่มที่นี่
 
-- **[midas](./skills/midas/SKILL.md)** — router ที่ผู้ใช้เรียกเองเพื่อเลือก workflow การลงทุนที่เหมาะสมจากคำขอภาษาปกติ
+- **[midas](./skills/midas/SKILL.md)** — router ที่ผู้ใช้เรียกเองเพื่อเลือก workflow การลงทุนที่เหมาะสมจากคำขอภาษาปกติ เรียกด้วย `/midas` หรือ `/midas-skills:midas` ถ้าติดตั้งแบบ Claude Code plugin
 
 ### Data layer
 

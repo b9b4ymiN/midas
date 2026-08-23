@@ -1,0 +1,23 @@
+{
+  "name": "midas",
+  "owner": {
+    "name": "b9b4ymiN",
+    "url": "https://github.com/b9b4ymiN"
+  },
+  "description": "Midas's investment-research skills for AI agents, as an installable Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "midas-skills",
+      "source": "./",
+      "description": "Midas's agent skills for investment research: valuation, compounding, technical timing, and adversarial review.",
+      "category": "productivity",
+      "keywords": [
+        "investing",
+        "finance",
+        "valuation",
+        "equity-research",
+        "compounding"
+      ]
+    }
+  ]
+}

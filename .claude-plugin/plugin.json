@@ -1,0 +1,47 @@
+{
+  "name": "midas-skills",
+  "version": "1.0.0",
+  "description": "Midas's investment-research agent skills: valuation, compounding, technical timing, and adversarial review, from ticker to sourced HTML report.",
+  "author": {
+    "name": "b9b4ymiN",
+    "url": "https://github.com/b9b4ymiN"
+  },
+  "homepage": "https://github.com/b9b4ymiN/midas",
+  "repository": "https://github.com/b9b4ymiN/midas",
+  "license": "MIT",
+  "keywords": [
+    "investing",
+    "finance",
+    "valuation",
+    "equity-research",
+    "dcf",
+    "compounding",
+    "technical-analysis"
+  ],
+  "skills": [
+    "./skills/midas",
+    "./skills/har-to-api",
+    "./skills/minervini-sepa",
+    "./skills/option-flow",
+    "./skills/stock-grill",
+    "./skills/compounder/business-economic-engine",
+    "./skills/compounder/business-identity-scope",
+    "./skills/compounder/compounder-bf-report",
+    "./skills/compounder/compounder-grill",
+    "./skills/compounder/future-compounder",
+    "./skills/compounder/market-growth-intelligence",
+    "./skills/compounder/reinvestment-runway",
+    "./skills/pipeline/bf-report",
+    "./skills/pipeline/bf-tech-analysis",
+    "./skills/pipeline/both-stock-analysis",
+    "./skills/pipeline/business-drivers",
+    "./skills/pipeline/business-narrative",
+    "./skills/pipeline/company-valuation",
+    "./skills/pipeline/earnings-preview",
+    "./skills/pipeline/earnings-quality",
+    "./skills/pipeline/earnings-recap",
+    "./skills/pipeline/growth-outlook",
+    "./skills/pipeline/investment-synthesis",
+    "./skills/pipeline/peer-impact"
+  ]
+}

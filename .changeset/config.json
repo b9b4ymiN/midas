@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "b9b4ymiN/midas" }
+  ],
+  "commit": false,
+  "privatePackages": { "version": true, "tag": true },
+  "fixed": [],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "master",
+  "updateInternalDependencies": "patch",
+  "ignore": []
+}

@@ -21,7 +21,7 @@ Midas contains **two research lines that answer two different questions**, and y
 
 Both lines share the same data layer, so their facts agree. Their conclusions stay separate on purpose: a company can be a fine compounder at a bad price, or cheap and unable to compound.
 
-You do not need to remember all the skill names. Start with `/midas`, describe what you want in normal language, and it will point you to the right workflow.
+You do not need to remember all the skill names. Start with `/midas` (`/midas-skills:midas` if you installed the Claude Code plugin), describe what you want in normal language, and it will point you to the right workflow.
 
 > **Research and educational output only. Not financial advice.** Midas does not make the final investment decision for you and does not promise returns.
 
@@ -51,7 +51,22 @@ The goal is not to guarantee a good outcome. It is to make the decision process 
 
 ## Installation
 
-You need Node.js with `npm`/`npx`, Python 3.8 or newer, and an AI agent environment that supports installable Agent Skills. Node.js installs the skills; Python runs the data and analytical helpers used by a full workflow. On Windows, check both with `npx --version` and `python --version`. Run the following command in your terminal, not in the agent chat:
+Midas is a collection of [Agent Skills](https://code.claude.com/docs/en/skills). Install it as a Claude Code plugin, or install skills directly for any agent that supports the `skills` CLI (Codex and others).
+
+### Claude Code
+
+```bash
+claude plugin marketplace add b9b4ymiN/midas
+claude plugin install midas-skills@midas
+```
+
+Midas is not yet listed in Anthropic's plugin directory, so add it by GitHub repo first; once it is listed there, this collapses to a single `claude plugin install midas-skills` (or `/plugin install midas-skills` inside a session). Restart your session afterward so the new skills appear. This installs all **24 skills** — there is no partial-install option for the plugin path; use the `npx skills` method below if you only want a few.
+
+Skills installed this way are namespaced under the plugin: the router becomes `/midas-skills:midas`, and any skill named elsewhere in this document (e.g. `future-compounder`) resolves to `midas-skills:future-compounder`.
+
+### Codex, and other agents
+
+You need Node.js with `npm`/`npx`, Python 3.8 or newer, and an AI agent environment that supports installable Agent Skills. Node.js installs the skills; Python runs the data and analytical helpers used by a full workflow. On Windows, check both with `npx --version` and `python --version`. Run the following command in your terminal, not in the agent chat. This method also works for Claude Code, if you would rather have editable, non-namespaced copies (skill names stay as `/midas`, `future-compounder`, and so on) instead of the plugin above.
 
 Install every skill globally:
 
@@ -87,7 +102,7 @@ Installed copies do not change automatically. Run `npx skills update` when you c
 
 ## Quick Start
 
-If you are unsure where to begin, type this in your AI agent's chat or prompt after restarting the session:
+If you are unsure where to begin, type this in your AI agent's chat or prompt after restarting the session (use `/midas-skills:midas` instead of `/midas` if you installed the Claude Code plugin):
 
 ```text
 /midas
@@ -106,7 +121,7 @@ This reaches `both-stock-analysis`, which confirms the market, gathers one consi
 
 ## Common workflows
 
-You can write requests in normal language. Slash commands are useful for user-invoked skills such as `/midas`, but model-invoked skills can be selected automatically when your request is clear.
+You can write requests in normal language. Slash commands are useful for user-invoked skills such as `/midas` (`/midas-skills:midas` if installed as a Claude Code plugin), but model-invoked skills can be selected automatically when your request is clear.
 
 | What you want | Example prompt | Skill and result |
 |---|---|---|
@@ -182,7 +197,7 @@ This line deliberately excludes DCF, fair value, target price, entry timing, and
 
 | Your question | Use |
 |---|---|
-| “I do not know where to start.” | `/midas` |
+| “I do not know where to start.” | `/midas` (`/midas-skills:midas` if installed as a plugin) |
 | “Give me the full picture and a finished report.” | `both-stock-analysis` |
 | “Can this company keep compounding for a decade?” | `future-compounder` |
 | “What business is this company really in?” | `business-identity-scope` |
@@ -215,7 +230,7 @@ The repository currently contains **24 skills**. Start with the router when you 
 
 ### Start here
 
-- **[midas](./skills/midas/SKILL.md)** — user-invoked router that selects the right investment workflow from a plain-language request.
+- **[midas](./skills/midas/SKILL.md)** — user-invoked router that selects the right investment workflow from a plain-language request. Invoke it as `/midas`, or `/midas-skills:midas` if installed as a Claude Code plugin.
 
 ### Data layer
 
