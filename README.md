@@ -11,6 +11,7 @@
 # midas
 
 [![skills.sh](https://skills.sh/b/b9b4ymiN/midas)](https://skills.sh/b9b4ymiN/midas)
+[![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Install%20Plugin-5A32FB?style=flat-square)](#claude-code)
 
 Midas is a collection of investment-research skills for AI agents. It helps you move from a ticker to a sourced thesis, a valuation, a conditional plan, and a self-contained HTML report. It can then challenge that work before you commit capital.
 
