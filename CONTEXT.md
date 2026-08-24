@@ -126,6 +126,30 @@ _Avoid_: reverse DCF, upside case, price target
 The signal a downstream skill raises when new evidence invalidates the Layer 0 business frame — it forces the frame to be redone rather than silently redefined mid-analysis.
 _Avoid_: scope creep, pivot
 
+## Accumulation (price & stage)
+
+Vocabulary of the two skills that run after the compounding verdict is settled (`compounder-stage-chart`, `compounder-accumulation-plan`). The compounding line above answers durability and refuses to look at price; this line is the only place in that run where price is allowed in, and it enters as a *comparison*, never as a valuation.
+
+**Price-Implied Expectations**:
+The growth the current share price already assumes, solved for by running the cash-flow arithmetic backwards from the market price at a stated required return. Rappaport & Mauboussin's method: the price is the input and the expectation is the output, so no fair value is ever produced. The required return is declared as an assumption and shown with its sensitivity, never derived into a single WACC.
+_Avoid_: reverse DCF, implied valuation, fair value
+
+**Expectation Gap**:
+The distance between Price-Implied Expectations and the `durable_growth` the compounding work concluded the engine can actually deliver — reported as a direction and a size (the price asks for less than / about / more than the engine can produce), never as an upside percentage. Distinct from the **Reverse Reality Check**, which starts from a 10x business outcome and asks whether the required world is plausible; the Expectation Gap starts from today's price and asks what it is already paying for.
+_Avoid_: upside, undervalued, margin of safety
+
+**Accumulation Band**:
+The price range in which buying is consistent with the Expectation Gap and the plan archetype — three bands (accumulate · hold, do not chase · too demanding), each a range with the condition that defines it. A band is not a target price and carries no instruction to trade.
+_Avoid_: buy price, entry point, target price
+
+**Stage Alignment**:
+The reading produced by crossing the business life-cycle stage (from `economic_engine_pack.life_cycle_stage`) with the chart's Weinstein stage on the monthly and weekly views — four readings covering agreement in both directions and the two divergences, where the divergence is the information. Uses Weinstein's stage vocabulary defined under Technical timing below, at long-term settings rather than SEPA's entry settings.
+_Avoid_: trend confirmation, technical setup, timing signal
+
+**Plan archetype**:
+Which shape the accumulation plan takes, selected from the thesis pack rather than chosen by judgement — `proven-compounder` (returns come from the business, so time in it matters more than entry price), `emerging-starter` (evidence is still shallow, so size is small and additions are conditional on evidence arriving), `narrow-runway` (the business cannot absorb capital at those returns, so the entry price is what the return depends on).
+_Avoid_: strategy, style, allocation model
+
 ## Technical timing (SEPA)
 
 **SEPA**:

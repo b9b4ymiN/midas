@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[COMPANY]: [the finding in five words]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ============================================================================
+   Compounder report house style. Green, theme-aware, print-ready, self-contained.
+   Tokens and component rules: references/design_system.md — keep this block
+   verbatim when filling the template.
+   ========================================================================== */
+:root{
+  --ground:#FAFAF8; --surface:#F0EFEA; --surface-2:#E5E3DB;
+  --line:#D5D2C6; --line-soft:#E4E1D7;
+  --ink:#16181A; --ink-2:#454A4D; --ink-3:#767C80;
+  --accent:#1D4F3F; --accent-soft:#DCE9E3;
+  --good:#1D4F3F; --good-soft:#DCE9E3;
+  --warn:#8C5E10; --warn-soft:#F3E9D3;
+  --risk:#8A2E24; --risk-soft:#F3DFDB;
+  --display:"Bai Jamjuree","IBM Plex Sans Thai",ui-sans-serif,system-ui,sans-serif;
+  --sans:"IBM Plex Sans Thai","IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --radius-panel:12px; --radius-row:8px;
+  --border:1.5px solid var(--line); --rule:1px solid var(--line);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ground:#101211; --surface:#191C1B; --surface-2:#232726;
+  --line:#363B39; --line-soft:#272B2A;
+  --ink:#EAEDEB; --ink-2:#B2B8B5; --ink-3:#848A87;
+  --accent:#6FBFA0; --accent-soft:#15302A;
+  --good:#6FBFA0; --good-soft:#15302A;
+  --warn:#D0A046; --warn-soft:#2C2415;
+  --risk:#D4837A; --risk-soft:#301C19;
+}}
+:root[data-theme="dark"]{
+  --ground:#101211; --surface:#191C1B; --surface-2:#232726;
+  --line:#363B39; --line-soft:#272B2A;
+  --ink:#EAEDEB; --ink-2:#B2B8B5; --ink-3:#848A87;
+  --accent:#6FBFA0; --accent-soft:#15302A;
+  --good:#6FBFA0; --good-soft:#15302A;
+  --warn:#D0A046; --warn-soft:#2C2415;
+  --risk:#D4837A; --risk-soft:#301C19;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);
+     font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+/* --- masthead ------------------------------------------------------------ */
+.masthead{border-bottom:2px solid var(--ink)}
+.masthead-in{max-width:1160px;margin:0 auto;padding:32px 28px 22px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+         color:var(--ink-3);display:flex;flex-wrap:wrap;gap:9px 20px}
+.head-title{display:flex;gap:16px;align-items:center;margin:15px 0 10px}
+.logo{width:64px;height:64px;object-fit:contain;background:#fff;border-radius:10px;
+      padding:6px;border:var(--rule);flex:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(29px,4.7vw,47px);line-height:1.25;
+   margin:0;text-wrap:balance;letter-spacing:-.01em}
+.dek{font-size:18px;color:var(--ink-2);max-width:62ch;font-weight:300;margin:0 0 18px;line-height:1.7}
+.tickline{display:flex;flex-wrap:wrap;gap:8px 24px;font-family:var(--mono);font-size:12.5px;
+          color:var(--ink-2);padding-top:14px;border-top:1px solid var(--line-soft)}
+.tickline b{color:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:12px;font-size:11.5px;color:var(--ink-3)}
+
+/* --- shell + toc --------------------------------------------------------- */
+.shell{max-width:1160px;margin:0 auto;padding:48px 28px 120px;
+       display:grid;grid-template-columns:228px minmax(0,1fr);gap:54px;align-items:start}
+.toc{position:sticky;top:32px;align-self:start;font-size:13.5px}
+.toc ol{list-style:none;margin:0;padding:0}
+.toc a{display:block;padding:5px 0 5px 12px;color:var(--ink-2);text-decoration:none;
+       border-left:2px solid transparent}
+.toc a:hover{color:var(--ink)}
+.toc a.active{color:var(--ink);border-left-color:var(--accent);font-weight:600}
+.toc .sub{padding-left:26px;font-size:12.5px;color:var(--ink-3)}
+.toc-toggle{display:none;align-items:center;gap:10px;width:100%;justify-content:space-between;
+            background:var(--ground);border:none;border-bottom:var(--rule);
+            padding:14px 16px;font-family:var(--sans);font-size:15px;font-weight:600;
+            color:var(--ink);cursor:pointer}
+.toc-toggle .hamb{width:20px;height:14px;position:relative;flex:none}
+.toc-toggle .hamb span{position:absolute;left:0;width:100%;height:2px;background:var(--ink);
+                       transition:transform .25s, opacity .25s, top .25s}
+.toc-toggle .hamb span:nth-child(1){top:0}
+.toc-toggle .hamb span:nth-child(2){top:6px}
+.toc-toggle .hamb span:nth-child(3){top:12px}
+.toc:not(.collapsed) .hamb span:nth-child(1){top:6px;transform:rotate(45deg)}
+.toc:not(.collapsed) .hamb span:nth-child(2){opacity:0}
+.toc:not(.collapsed) .hamb span:nth-child(3){top:6px;transform:rotate(-45deg)}
+.doc{max-width:820px;min-width:0}
+
+/* --- article summary ----------------------------------------------------- */
+.summary{font-size:17.5px;line-height:1.85;border-left:3px solid var(--accent);
+         padding:4px 0 4px 22px;margin:0 0 34px}
+.summary p{margin:0 0 16px}
+.summary p:first-child{font-size:19px}
+
+/* --- sections ------------------------------------------------------------ */
+section{margin:0 0 52px}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(21px,2.6vw,28px);line-height:1.35;
+   margin:0 0 6px;text-wrap:balance}
+h3{font-size:17.5px;font-weight:600;margin:28px 0 8px}
+.sechead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.secno{font-family:var(--mono);font-size:12px;color:var(--ink-3);letter-spacing:.12em}
+.rule{height:1px;background:var(--line);margin:0 0 20px}
+.takeaway{font-size:15px;color:var(--ink-2);font-style:italic;margin:0 0 18px}
+p{margin:0 0 16px}
+
+/* --- verdict panel ------------------------------------------------------- */
+.verdicts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:26px 0}
+.vcell{border:var(--border);border-radius:var(--radius-panel);padding:14px 16px;background:var(--surface)}
+.vlabel{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.vval{font-family:var(--display);font-size:23px;font-weight:700;margin-top:4px}
+.vnote{font-size:13px;color:var(--ink-2);margin-top:6px}
+.leg-binding td{background:var(--warn-soft);font-weight:600}
+
+/* --- tables -------------------------------------------------------------- */
+.tablewrap{overflow-x:auto;margin:20px 0}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+caption{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+        text-transform:uppercase;color:var(--ink-3);padding-bottom:8px}
+th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+   color:var(--ink-3);border-bottom:var(--rule);padding:8px 10px;white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.pos{color:var(--good)} .neg{color:var(--risk)} .flat{color:var(--ink-2)}
+
+/* --- callouts & evidence markers ---------------------------------------- */
+.callout{border:var(--border);border-left-width:3px;border-radius:var(--radius-panel);
+         padding:16px 18px;margin:22px 0;background:var(--surface)}
+.callout.good{border-left-color:var(--good)}
+.callout.amber{border-left-color:var(--warn)}
+.callout.risk{border-left-color:var(--risk)}
+.ctitle{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+        color:var(--ink-3);margin-bottom:6px}
+.tag{font-family:var(--mono);font-size:10px;vertical-align:super;padding:1px 4px;border-radius:4px;
+     text-decoration:none;margin-left:2px}
+.t-fact{background:var(--good-soft);color:var(--good)}
+.t-der{background:var(--accent-soft);color:var(--accent)}
+.t-mgmt{background:var(--warn-soft);color:var(--warn)}
+.t-est{background:var(--surface-2);color:var(--ink-2)}
+.t-mkt{background:var(--surface-2);color:var(--ink-2)}
+.t-unver{background:var(--risk-soft);color:var(--risk)}
+
+/* --- figures, gap bar, bands, blocked ----------------------------------- */
+.figure{border:var(--border);border-radius:var(--radius-panel);padding:14px;margin:24px 0;
+        background:var(--surface)}
+.figure img,.figure svg{width:100%;height:auto;display:block;max-width:100%}
+.figcap{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:10px;
+        display:flex;flex-wrap:wrap;gap:6px 18px}
+.gapbar{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin:18px 0 8px}
+.gapseg{padding:10px 12px;font-size:13px;text-align:center;background:var(--surface);
+        border:1px solid var(--line-soft)}
+.gapseg.on{background:var(--accent-soft);border-color:var(--accent);font-weight:600}
+.blocked{border:var(--border);border-left:3px solid var(--risk);border-radius:var(--radius-panel);
+         padding:18px 20px;background:var(--risk-soft)}
+.srclist{font-size:13.5px;color:var(--ink-2)}
+.mono{font-family:var(--mono)}
+footer{max-width:1160px;margin:0 auto;padding:26px 28px 60px;border-top:var(--rule);
+       font-size:12.5px;color:var(--ink-3)}
+
+/* --- mobile -------------------------------------------------------------- */
+@media(max-width:900px){
+  .masthead-in{padding:22px 16px 16px}
+  .shell{grid-template-columns:1fr;gap:0;padding:64px 16px 80px}
+  section,h3[id]{scroll-margin-top:64px}
+  .toc{position:fixed;top:0;left:0;right:0;z-index:100;background:var(--ground);
+       border-bottom:var(--rule);box-shadow:0 1px 6px rgba(0,0,0,.08)}
+  .toc-toggle{display:flex}
+  .toc ol{max-height:70vh;overflow-y:auto;transition:max-height .3s ease;padding:8px 16px 16px}
+  .toc.collapsed ol{max-height:0;overflow:hidden;padding-top:0;padding-bottom:0}
+  .summary{padding-left:14px;font-size:16.5px}
+  .summary p:first-child{font-size:18px}
+  .verdicts{grid-template-columns:1fr}
+  .gapbar{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .head-title{gap:12px}
+  .logo{width:48px;height:48px}
+}
+
+/* --- print --------------------------------------------------------------- */
+@media print{
+  .toc,.toc-toggle{display:none}
+  .shell{display:block;padding:0;max-width:none}
+  body{background:#fff;color:#000;font-size:11pt}
+  .callout,.figure,.vcell,table,.blocked,.gapbar{page-break-inside:avoid}
+  a[href^="#"]{color:inherit;text-decoration:none}
+  .masthead{border-bottom:1.5pt solid #000}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================ MASTHEAD ================================ -->
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="eyebrow">
+      <span>Future Compounder</span>
+      <span>[MARKET] · [TICKER with suffix]</span>
+      <span>ข้อมูลถึง [as_of]</span>
+      <span>ไม่ใช่คำแนะนำการลงทุน</span>
+    </div>
+    <div class="head-title">
+      <!-- FILL: base64 logo, or the monogram SVG from references/logos.md.
+           Never a remote URL. -->
+      <img class="logo" alt="[COMPANY] logo" src="data:image/png;base64,[BASE64]">
+      <h1>[COMPANY]: [the finding, in the reader's words — not a framework name]</h1>
+    </div>
+    <p class="dek">[One line a stranger would understand: what this company sells, and what
+       the report concluded about whether it can keep compounding.]</p>
+    <div class="tickline">
+      <span>ราคาปิดล่าสุด <b>[price] [CCY]</b></span>
+      <span>เกรด <b>[compounding_potential]</b></span>
+      <span>ความแน่นของหลักฐาน <b>[evidence_maturity]</b></span>
+      <span>ความมั่นใจ <b>[confidence]</b></span>
+      <span>ทบทวนอีกครั้ง <b>[next_review]</b></span>
+      <span>หมดอายุ <b>[expires_on]</b></span>
+    </div>
+    <div class="legend">
+      <span>ที่มาของตัวเลข:</span>
+      <span><a class="tag t-fact" href="#appA">F</a> ตัวเลขจากงบ</span>
+      <span><a class="tag t-der" href="#appA">D</a> คำนวณต่อ</span>
+      <span><a class="tag t-mgmt" href="#appA">M</a> ผู้บริหารพูด</span>
+      <span><a class="tag t-est" href="#appA">E</a> ประมาณการ</span>
+      <span><a class="tag t-mkt" href="#appA">X</a> ตลาดคาด</span>
+      <span><a class="tag t-unver" href="#appA">U</a> ยังไม่ยืนยัน</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ============================== TOC =================================== -->
+<nav class="toc" aria-label="สารบัญ">
+  <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="toclist">
+    <span>สารบัญ</span>
+    <span class="hamb" aria-hidden="true"><span></span><span></span><span></span></span>
+  </button>
+  <ol id="toclist">
+    <li><a href="#summary">สรุปให้ก่อน</a></li>
+    <li><a href="#verdict">เกรดและวันทบทวน</a></li>
+    <li><a href="#s1">1 · เขาทำเงินจากอะไร?</a></li>
+    <li><a href="#s2">2 · การเติบโตมาจากไหน?</a></li>
+    <li><a href="#s3">3 · เงินที่ใส่เพิ่ม ได้กลับมาเท่าไร?</a></li>
+    <li><a href="#s4">4 · ยังมีที่ให้ใส่เงินอีกไหม?</a></li>
+    <li><a href="#s5">5 · อะไรทำให้กำไรดีอยู่ได้นาน?</a></li>
+    <li><a href="#s6">6 · ถ้าเราคิดผิด จะผิดตรงไหน?</a></li>
+    <li><a href="#s7">7 · สรุปแล้วต้องกลับมาดูเมื่อไร?</a></li>
+    <li><a href="#s8">8 · ตลาดคิดยังไงกับธุรกิจนี้?</a></li>
+    <li><a href="#s9">9 · ถ้าจะเก็บ ควรเก็บยังไง?</a></li>
+    <li><a href="#appA" class="sub">ก · ตารางหลักฐาน</a></li>
+    <li><a href="#appB" class="sub">ข · ตัวเลขและวิธีคำนวณ</a></li>
+    <li><a href="#appC" class="sub">ค · แหล่งข้อมูล</a></li>
+    <li><a href="#appD" class="sub">ง · วิธีวิเคราะห์ที่ใช้</a></li>
+    <li><a href="#appE" class="sub">จ · ข้อจำกัด</a></li>
+  </ol>
+</nav>
+
+<main class="doc">
+
+<!-- ======================== ARTICLE SUMMARY ============================= -->
+<!-- 3,000-6,000 characters of continuous prose. No bullets, no question heading,
+     no bracketed evidence tags. The order is: what the company sells → how the
+     money machine works → the strongest evidence → the thing most likely to break
+     it → the verdict and which leg binds it → what happens next (if the gate
+     blocked: it stops here and why; if it passed: the bands and the plan in two
+     sentences, pointing to §9). Every paragraph's first sentence carries its point. -->
+<section id="summary" class="summary">
+  <p>[Lede: the finding itself, in one paragraph a stranger could follow.]</p>
+  <p>[How the money machine works.]</p>
+  <p>[The strongest piece of evidence, meaning first and the number after.]</p>
+  <p>[The thing most likely to break it, and the contradiction still unresolved.]</p>
+  <p>[The verdict, which leg binds it, and what happens next.]</p>
+</section>
+
+<!-- =========================== VERDICT PANEL ============================ -->
+<section id="verdict">
+  <div class="sechead"><span class="secno">VERDICT</span><h2>เกรด สามด้าน แยกกัน</h2></div>
+  <div class="rule"></div>
+  <div class="verdicts">
+    <div class="vcell">
+      <div class="vlabel">ศักยภาพการทบต้น</div>
+      <div class="vval">[compounding_potential]</div>
+      <div class="vnote">[potential_qualifier]</div>
+    </div>
+    <div class="vcell">
+      <div class="vlabel">ความแน่นของหลักฐาน</div>
+      <div class="vval">[evidence_maturity]</div>
+      <div class="vnote">[which rung of the ladder, in words]</div>
+    </div>
+    <div class="vcell">
+      <div class="vlabel">ความมั่นใจ</div>
+      <div class="vval">[confidence]</div>
+      <div class="vnote">[what limits it]</div>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>แต่ละขาของการทบต้น — ขาที่เป็นคอขวดถูกไฮไลต์</caption>
+      <thead><tr><th>ขา</th><th>เกรด</th><th>อ่านว่าอย่างไร</th></tr></thead>
+      <tbody>
+        <tr><td>ผลตอบแทนของเงินก้อนใหม่</td><td>[…]</td><td>[…]</td></tr>
+        <tr><td>ที่ว่างให้ลงทุนเพิ่ม</td><td>[…]</td><td>[…]</td></tr>
+        <tr><td>ความยาวนาน</td><td>[…]</td><td>[…]</td></tr>
+        <tr><td>กำไรตกถึงผู้ถือหุ้น</td><td>[…]</td><td>[…]</td></tr>
+        <tr><td>ความแข็งแรงของงบดุล</td><td>[…]</td><td>[…]</td></tr>
+        <tr><td>การใช้เงินของผู้บริหาร</td><td>[…]</td><td>[…]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="ctitle">อ่านจากตัวเลขไหน</div>
+    <p>[durable_growth on its stated basis, the two hurdle lines used, and the
+       compounder_class in plain words.]</p>
+  </div>
+</section>
+
+<!-- ===================== MOVEMENTS 1-7 (the questions) ================== -->
+<section id="s1">
+  <div class="sechead"><span class="secno">1</span><h2>เขาทำเงินจากอะไร?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[One line: the answer to the heading.]</p>
+  <!-- FILL: Layer 0 frame in plain words. Arena classes said as sentences, never as a
+       taxonomy table. The main alternative frame and why it was not chosen. Any
+       SCOPE_CHALLENGE goes here, not in a footnote. -->
+</section>
+
+<section id="s2">
+  <div class="sechead"><span class="secno">2</span><h2>การเติบโตมาจากไหน — ตลาดโต หรือแย่งของคนอื่นมา?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+  <!-- FILL: demand regime, profit pool, share mechanism, growth decomposition,
+       channel/store/country incrementality, promise → action → result.
+       Any break in metric comparability is stated HERE, at the point the affected
+       number first appears — never quarantined in an appendix. -->
+</section>
+
+<section id="s3">
+  <div class="sechead"><span class="secno">3</span><h2>เงินที่ใส่เพิ่มไป ได้กำไรกลับมาเท่าไร?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+  <!-- FILL: the economic unit and one unit's money; the bridge up to the company and
+       down to one share; return on old money beside return on the newest money. -->
+</section>
+
+<section id="s4">
+  <div class="sechead"><span class="secno">4</span><h2>ยังมีที่ให้ใส่เงินอีกเท่าไร และหาเงินมาลงไหวไหม?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+</section>
+
+<section id="s5">
+  <div class="sechead"><span class="secno">5</span><h2>อะไรทำให้กำไรดีแบบนี้อยู่ได้นาน?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+</section>
+
+<section id="s6">
+  <div class="sechead"><span class="secno">6</span><h2>ถ้าเราคิดผิด จะผิดตรงไหน?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+  <!-- FILL: the strongest opposing READING of evidence already presented. Do not
+       re-state figures — cite where they live and spend the words on what they mean
+       if the bear is right. Reverse reality check closes the movement; its
+       arithmetic goes to Appendix B. -->
+</section>
+
+<section id="s7">
+  <div class="sechead"><span class="secno">7</span><h2>สรุปแล้วได้เกรดอะไร และต้องกลับมาดูเมื่อไร?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[…]</p>
+  <!-- FILL: kill conditions AND upgrade conditions, each with a metric, a direction
+       and a threshold; the review schedule block; what is still unknown. -->
+  <div class="callout amber">
+    <div class="ctitle">กลับมาดูเมื่อไร</div>
+    <p><b>ข้อมูลถึงวันที่</b> [as_of] · <b>กลับมาดูอีกครั้ง</b> [next_review] — [the event
+       that settles it] · <b>ทำไมถึงเป็นรอบนี้</b> [cadence_basis] · <b>ดูก่อนกำหนดเมื่อ</b>
+       [watch_triggers] · <b>หมดอายุ</b> [expires_on]</p>
+  </div>
+</section>
+
+<!-- ===================== 8 · THE CHART, CROSSED ========================= -->
+<!-- Runs for EVERY company, including one that failed the gate. -->
+<section id="s8">
+  <div class="sechead"><span class="secno">8</span><h2>ตลาดคิดยังไงกับธุรกิจนี้?</h2></div>
+  <div class="rule"></div>
+  <p class="takeaway">[The stage alignment as a sentence with dates in it.]</p>
+
+  <div class="figure">
+    <!-- FILL: monthly chart — base64 PNG from the capture tool, or the rendered SVG
+         from stage_pack.chart_assets. Never a remote src. -->
+    <img alt="[TICKER] monthly chart" src="data:image/png;base64,[BASE64]">
+    <div class="figcap">
+      <span>[TICKER] · รายเดือน</span><span>[moving_average]</span>
+      <span>[bars] แท่ง</span><span>[captured_on]</span><span>[source]</span>
+    </div>
+  </div>
+
+  <div class="figure">
+    <img alt="[TICKER] weekly chart" src="data:image/png;base64,[BASE64]">
+    <div class="figcap">
+      <span>[TICKER] · รายสัปดาห์</span><span>[moving_average]</span>
+      <span>[bars] แท่ง</span><span>[captured_on]</span><span>[source]</span>
+    </div>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <caption>กราฟอยู่ช่วงไหน เทียบกับธุรกิจอยู่ช่วงไหน</caption>
+      <thead><tr><th>อ่านจาก</th><th>ผลที่ได้</th><th>ตั้งแต่</th><th>จะเปลี่ยนเมื่อ</th></tr></thead>
+      <tbody>
+        <tr><td>กราฟรายเดือน</td><td>[stage]</td><td>[stage_since]</td><td>[invalidates_if]</td></tr>
+        <tr><td>กราฟรายสัปดาห์</td><td>[stage]</td><td>[stage_since]</td><td>[invalidates_if]</td></tr>
+        <tr><td>ช่วงชีวิตของธุรกิจ</td><td>[life_cycle_stage]</td><td>—</td><td>[what would change it]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <div class="ctitle">แท่งล่าสุดกำลังบอกอะไร</div>
+    <p>[pending_change in words, or that there is none. Say which bar was excluded for
+       being unclosed, and that today's price is reported separately.]</p>
+  </div>
+</section>
+
+<!-- =================== 9 · THE PLAN, OR THE STOP ======================== -->
+<!-- ONE of the two blocks below. Gate PASSED → the plan. Gate BLOCKED → the stop,
+     and nothing else: no price band, no staging, no sizing. -->
+<section id="s9">
+  <div class="sechead"><span class="secno">9</span><h2>ถ้าจะเก็บ ควรเก็บยังไง?</h2></div>
+  <div class="rule"></div>
+
+  <!-- ---------- BLOCKED ---------- -->
+  <div class="blocked">
+    <div class="ctitle">รายงานหยุดตรงนี้</div>
+    <p>[Why the gate blocked, in plain words — the condition that failed and what it
+       means. Then: what would reopen it, each about the business rather than about a
+       lower price. Then the review date.]</p>
+  </div>
+
+  <!-- ---------- PASSED ---------- -->
+  <p class="takeaway">[The archetype in one line: what the return depends on for this
+     kind of business.]</p>
+
+  <h3>ราคาวันนี้กำลังเรียกร้องอะไร</h3>
+  <div class="gapbar">
+    <div class="gapseg">ราคาขอน้อยกว่าที่ธุรกิจทำได้</div>
+    <div class="gapseg on">ขอพอ ๆ กัน</div>
+    <div class="gapseg">ขอมากกว่าที่หลักฐานรองรับ</div>
+  </div>
+  <p>[The implied growth against durable_growth, both on the same basis, with the
+     required-return assumption named as an assumption and its range stated.]</p>
+
+  <div class="tablewrap">
+    <table>
+      <caption>โซนราคา — เงื่อนไขคือสิ่งที่กำหนดโซน ไม่ใช่ตัวเลข</caption>
+      <thead><tr><th>โซน</th><th class="num">ช่วงราคา</th><th>เงื่อนไขที่ทำให้เป็นโซนนี้</th></tr></thead>
+      <tbody>
+        <tr><td>ทยอยเก็บ</td><td class="num">[≤ x]</td><td>[condition]</td></tr>
+        <tr><td>ถือได้ แต่ไม่ไล่ราคา</td><td class="num">[x – y]</td><td>[condition]</td></tr>
+        <tr><td>แพงเกินหลักฐาน</td><td class="num">[≥ y]</td><td>[condition]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>ถ้าถือสิบปี ผลตอบแทนมาจากไหน</h3>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>ฉากทัศน์</th><th class="num">ธุรกิจโต</th><th class="num">ปันผล+ซื้อหุ้นคืน</th>
+        <th class="num">multiple เปลี่ยน</th><th class="num">รวมต่อปี</th><th>สมมติฐาน</th></tr></thead>
+      <tbody>
+        <tr><td>อ่อน</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td>[…]</td></tr>
+        <tr><td>กลาง</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td>[…]</td></tr>
+        <tr><td>ดี</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td class="num">[…]</td><td>[…]</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>แผนที่มีเงื่อนไข</h3>
+  <div class="callout good">
+    <div class="ctitle">ทยอยเก็บอย่างไร</div>
+    <p>[Staging in parts and conditions, tied to the stage alignment from §8. Never a
+       schedule of dates and amounts, never an instruction.]</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>กฎ</th><th>เงื่อนไข</th><th>มาจาก</th></tr></thead>
+      <tbody>
+        <tr><td>เพิ่มได้เมื่อ</td><td>[…]</td><td>upgrade_conditions</td></tr>
+        <tr><td>หยุดเพิ่มเมื่อ</td><td>[…]</td><td>[stage / data gap]</td></tr>
+        <tr><td>ออกเมื่อ</td><td>[…]</td><td>kill_conditions</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="mono" style="font-size:12.5px;color:var(--ink-3)">
+    แผนนี้เป็นแผนแบบมีเงื่อนไข ไม่ใช่คำสั่งซื้อขาย · หมดอายุพร้อมกับคำตัดสิน [expires_on]</p>
+</section>
+
+<!-- ============================ APPENDICES ============================== -->
+<section id="appA">
+  <div class="sechead"><span class="secno">ก</span><h2>ตารางหลักฐาน</h2></div>
+  <div class="rule"></div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>id</th><th>ข้อความ</th><th>ชั้นหลักฐาน</th><th>แหล่ง</th><th>ตำแหน่ง</th><th>วันที่</th></tr></thead>
+      <tbody><tr><td class="mono">F01</td><td>[…]</td><td>FACT</td><td>[…]</td><td>[…]</td><td>[…]</td></tr></tbody>
+    </table>
+  </div>
+  <!-- The evidence ladder table lives here. -->
+</section>
+
+<section id="appB">
+  <div class="sechead"><span class="secno">ข</span><h2>ตัวเลขและวิธีคำนวณ</h2></div>
+  <div class="rule"></div>
+  <!-- FILL: reinvestment-rate series, incremental-return derivation, per-share
+       reconciliation, reverse-reality arithmetic, hurdle basis, inflation basis,
+       and — where the gate passed — the price-implied expectations sensitivity grid. -->
+</section>
+
+<section id="appC">
+  <div class="sechead"><span class="secno">ค</span><h2>แหล่งข้อมูล</h2></div>
+  <div class="rule"></div>
+  <ol class="srclist"><li>[title · issuer · date · locator · which claim ids it supports]</li></ol>
+</section>
+
+<section id="appD">
+  <div class="sechead"><span class="secno">ง</span><h2>วิธีวิเคราะห์ที่ใช้</h2></div>
+  <div class="rule"></div>
+  <!-- Only where a published method materially shaped the reading. A methodology
+       citation never substitutes for company evidence. -->
+</section>
+
+<section id="appE">
+  <div class="sechead"><span class="secno">จ</span><h2>ข้อจำกัด</h2></div>
+  <div class="rule"></div>
+  <p>เอกสารนี้จัดทำเพื่อการศึกษาและการค้นคว้าเท่านั้น ไม่ใช่คำแนะนำการลงทุน
+     ไม่มีการประเมินมูลค่าที่เหมาะสมหรือราคาเป้าหมายในเอกสารนี้ และแผนทั้งหมดเป็นแผนแบบมีเงื่อนไข
+     คำตัดสินมีวันหมดอายุ [expires_on] หลังจากนั้นให้ถือเป็นบันทึกย้อนหลัง
+     ไม่ใช่ข้อมูลสำหรับตัดสินใจ</p>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Future Compounder · [COMPANY] ([TICKER]) · ข้อมูลถึง [as_of] · ทบทวน [next_review] ·
+  หมดอายุ [expires_on] — เพื่อการศึกษาและค้นคว้าเท่านั้น ไม่ใช่คำแนะนำการลงทุน
+</footer>
+
+<script>
+  // Run on DOMContentLoaded so we are safe even if the script is parsed before
+  // the rest of the body is ready. Each block is wrapped in its own try/catch
+  // so an error in one cannot silently disable the other (this was a real bug in
+  // the sibling report skill: a throw in the scrollspy block prevented the TOC
+  // toggle handlers from ever binding, leaving the mobile TOC permanently open).
+  function initReportInteractivity() {
+    try {
+      var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+      var map = {};
+      links.forEach(function(a){ var id=a.getAttribute('href').slice(1); if(id) map[id]=a; });
+      if ('IntersectionObserver' in window) {
+        var obs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting){
+              links.forEach(function(a){a.classList.remove('active');});
+              var a = map[e.target.id]; if(a) a.classList.add('active');
+            }
+          });
+        }, {rootMargin:'-20% 0px -70% 0px', threshold:0});
+        document.querySelectorAll('section[id], h3[id]').forEach(function(s){ obs.observe(s); });
+      }
+    } catch(err) { /* scrollspy is non-critical; never let it block the toggle */ }
+
+    try {
+      var toc = document.querySelector('.toc');
+      var btn = document.querySelector('.toc-toggle');
+      if(!toc || !btn) return;
+      function isMobile(){ return window.matchMedia('(max-width:900px)').matches; }
+      if(isMobile()) toc.classList.add('collapsed');
+
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var collapsed = toc.classList.toggle('collapsed');
+        btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      });
+
+      // Event delegation: one listener on the nav, so auto-collapse survives any
+      // DOM change and never silently no-ops.
+      toc.addEventListener('click', function(e){
+        if(e.target.tagName === 'A' && isMobile()) toc.classList.add('collapsed');
+      });
+
+      // Only act when the viewport CROSSES the breakpoint. Collapsing on every
+      // resize event would slam the menu shut mid-use on phones, where hiding the
+      // URL bar during a scroll fires a resize; tracking the crossing avoids that
+      // without reintroducing any per-click state flag.
+      var wasMobile = isMobile();
+      window.addEventListener('resize', function(){
+        var nowMobile = isMobile();
+        if(nowMobile === wasMobile) return;
+        wasMobile = nowMobile;
+        if(nowMobile){ toc.classList.add('collapsed'); btn.setAttribute('aria-expanded','false'); }
+        else { toc.classList.remove('collapsed'); btn.setAttribute('aria-expanded','true'); }
+      });
+    } catch(err) { console.error('Compounder report TOC init failed:', err); }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReportInteractivity);
+  } else {
+    initReportInteractivity();
+  }
+</script>
+</body>
+</html>

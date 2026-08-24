@@ -1,6 +1,6 @@
 ---
 name: future-compounder
-description: Use when the question is whether a company can keep compounding business value per share for many years, rather than what it is worth today — "is NVDA a compounder", "can CPALL still grow for another decade", "is this a 100-bagger candidate", "quality compounder or just a hot stock", "will they keep earning good returns on the cash they reinvest", "run the Future Compounder analysis on TSLA", or any request framed around long-term compounding, reinvestment runway, or Christopher Mayer's 100 Baggers. It orchestrates six specialist skills and keeps potential, evidence maturity, and confidence as three separate verdicts. It is deliberately not a valuation — it produces no DCF, no fair value, no target price, and no entry timing.
+description: Use when the question is whether a company can keep compounding business value per share for many years, rather than what it is worth today — "is NVDA a compounder", "can CPALL still grow for another decade", "is this a 100-bagger candidate", "quality compounder or just a hot stock", "will they keep earning good returns on the cash they reinvest", "run the Future Compounder analysis on TSLA", or any request framed around long-term compounding, reinvestment runway, or Christopher Mayer's 100 Baggers. It orchestrates eight specialist skills and keeps potential, evidence maturity, and confidence as three separate verdicts. It is deliberately not a valuation — it produces no DCF, no fair value, no target price, and no entry timing.
 ---
 
 # Future Compounder
@@ -17,9 +17,15 @@ Use, in order:
 2. `business-economic-engine`
 3. `reinvestment-runway`
 4. `compounder-grill`
-5. `compounder-bf-report`
+5. `compounder-stage-chart` — post-verdict, runs for every company
+6. `compounder-accumulation-plan` — post-verdict, runs only when the accumulation gate passes
+7. `compounder-bf-report`
 
-Read `references/pipeline-contract.md` before handoffs. Layer 0 precedes Layer 1; Layer 1 precedes internal economics.
+Steps 0–4 are the **core layers**. They answer durability and never look at the share price, and the verdict they reach is reached without knowing it — a durability judgement contaminated by price is no longer a durability judgement.
+
+Steps 5 and 6 are the **post-verdict layers**, and they are the only place in a run where price is admitted. They may never revise anything above them: where price evidence genuinely contradicts the thesis, that is a `SCOPE_CHALLENGE` and the core layers re-run.
+
+Read `references/pipeline-contract.md` before handoffs. Layer 0 precedes Layer 1; Layer 1 precedes internal economics; the verdict precedes any reading of price.
 
 ## Operating rules
 
@@ -40,7 +46,8 @@ Read `references/pipeline-contract.md` before handoffs. Layer 0 precedes Layer 1
 - Validate each upstream DoD before downstream work.
 - Pass `UNRESOLVED` and thesis-critical **Data Gaps** forward; never silently fill them.
 - Short histories do not reject young companies. Keep Potential, Evidence Maturity, and Confidence separate.
-- Keep DCF, target price, technical signals, portfolio sizing, and holding dashboards outside this core pipeline.
+- Keep DCF, fair value, target price, entry geometry, portfolio sizing, and holding dashboards outside the run entirely. The post-verdict layers read price to make one comparison and to describe one long-term stage; they produce no valuation and no instruction.
+- **Run the accumulation gate before any price is read for planning purposes.** It is mechanical, it reads only the thesis pack, and it is not overridden by judgement — if it is wrong, the thesis pack is wrong, and the fix belongs there.
 - Do not let downstream writing upgrade a management claim or inference into a fact.
 
 ## Data sources
@@ -74,16 +81,18 @@ Verify explicitly:
 10. Was counter-evidence actively sought and are Kill Conditions explicit?
 11. Does the **reverse** 10x business-reality check avoid impossible share, margin, capital, funding, or dilution assumptions?
 12. Does the verdict carry a review date, the event that settles it, and what would force an earlier look?
+13. Does the chart stage, crossed with the business life-cycle stage, agree or disagree — and if it disagrees, has that been read as information rather than resolved by preference?
+14. Did the accumulation gate decide the plan's existence, and where it blocked, does the report stop at the verdict with the unblock conditions stated?
 
 If a thesis-critical answer remains unknown, preserve `UNRESOLVED`, reduce certainty, and surface the next evidence needed.
 
 ## Final DoD
 
-A full run requires Layer 0 scope, Layer 1 external growth, Return × Reinvestment × Duration, per-share translation, financeability, outside view, evidence maturity, counter-thesis, reverse reality, traceable gaps, and a review schedule that gives the verdict an expiry.
+A full run requires Layer 0 scope, Layer 1 external growth, Return × Reinvestment × Duration, per-share translation, financeability, outside view, evidence maturity, counter-thesis, reverse reality, traceable gaps, and a review schedule that gives the verdict an expiry. It then requires a `stage_pack` for the company whatever the verdict, and an `accumulation_pack` recording the gate's decision — a plan where it passed, and the stop with its unblock conditions where it did not.
 
 The report is a reader-facing article, not an analyst note: headings are the reader's questions, technical terms are explained in plain words at first use, evidence markers sit in the margin rather than inside sentences, and the proving work lives in an appendix.
 
-**STOP:** The master orchestrates and validates. It does not redo specialist research, valuation, or holding analysis.
+**STOP:** The master orchestrates and validates. It does not redo specialist research, valuation, or holding analysis, and it never lets a price reading revise a verdict, a leg rating, or an evidence class.
 
 ---
 

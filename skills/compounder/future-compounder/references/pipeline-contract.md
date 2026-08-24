@@ -2,7 +2,9 @@
 
 ## Canonical handoff order
 
-`company_request` → `business_identity_pack` → `market_growth_pack` → `economic_engine_pack` → `reinvestment_runway_pack` → `compounder_thesis_pack` → `bf_report`
+`company_request` → `business_identity_pack` → `market_growth_pack` → `economic_engine_pack` → `reinvestment_runway_pack` → `compounder_thesis_pack` → `stage_pack` → *(gate)* → `accumulation_pack` → `bf_report`
+
+The first six packs are the **core layers**: they answer durability and never look at price. `stage_pack` and `accumulation_pack` are the **post-verdict layers**, and they are the only place in a run where price is admitted. `stage_pack` runs for every company. `accumulation_pack` runs only when the accumulation gate below passes; when it does not, the run ends at the verdict and the report says so in words.
 
 Each pack MUST carry **every entry from the preceding packs plus the entries its own layer produced**. The ledger only ever grows; an entry is never removed or rewritten, and the entry count may not fall between layers. Each entry carries `origin_layer` naming the pack that first recorded it, so the audit trail shows which layer produced which evidence. Copying an identical ledger into all five packs satisfies the letter of "same ledger" and destroys that trail — it is not compliant. Use `schema_version: future-compounder-v2.2` in serialized handoffs where a version field is available.
 
@@ -356,15 +358,88 @@ as `Proven Compounder`.
 
 Gate: the thesis pack must include an inside view, outside-view/base-rate challenge, evidence maturity explanation, reverse business-reality check, and counter-thesis. A bull-only pack fails. A pack whose `compounding_potential` exceeds `Moderate` while any leg in `leg_ratings` is `UNRESOLVED` fails.
 
+## `stage_pack`
+
+Produced by `compounder-stage-chart` for **every** company, whatever the verdict — a business that is compounding while its chart has been in decline for two years is information, and so is the reverse.
+
+Required fields:
+- `as_of`
+- `price_context` — last close, currency, and the exchange the bars came from
+- `monthly_read` — stage 1/2/3/4, the moving average used, price position, slope, `stage_since`, and what would invalidate the reading
+- `weekly_read` — the same fields on the weekly bars
+- `stage_conflict` — how the monthly and weekly readings differ, or `NONE`
+- `business_stage` — copied from `economic_engine_pack.life_cycle_stage`, adjusted stage and raw stage both
+- `stage_alignment` — one of `MARKET_HAS_NOT_PRICED_IT` · `MOVING_TOGETHER` · `LATE_AND_EXTENDED` · `MARKET_SEES_DAMAGE_FIRST` · `UNRESOLVED`, with the sentence that explains it
+- `chart_assets` — for each timeframe: `source` (`TRADINGVIEW_MCP` or `RENDERED_SVG`), the capture date, and the embedded asset
+- `data_quality` — bar coverage, whether the newest bar is unclosed, and any split/dividend adjustment note
+- `evidence_ledger`
+
+Rules:
+- The newest bar is excluded from any stage judgement until it closes; `data_quality` records that it was excluded.
+- A stage is stated with the date it began. A stage without a start date is `UNRESOLVED`.
+- `stage_alignment` describes the relationship; it never issues an instruction to buy, sell, or wait.
+- No entry price, stop, target, position size, or R-multiple appears in this pack. Those belong to the SEPA line, not here.
+
+## Accumulation gate
+
+Read from `compounder_thesis_pack` and evaluated mechanically by `compounder-accumulation-plan/scripts/gate.py`, so the same pack always produces the same decision:
+
+| Condition | Required to pass |
+|---|---|
+| `compounding_potential` | `Exceptional`, `Strong`, or `Moderate` |
+| `compounder_class` | anything except `Not a Compounder` |
+| `leg_ratings` | no leg rated `Broken` |
+| `leg_ratings` | no leg `UNRESOLVED` while `compounding_potential` is above `Moderate` |
+| `review_schedule.expires_on` | not in the past on the run date |
+
+A pass also selects the `plan_archetype`:
+
+| Thesis pack reads | Archetype |
+|---|---|
+| `compounder_class` = `Great Business, Narrow Runway` | `narrow-runway` |
+| `evidence_maturity` at the two lowest rungs, or `compounder_class` = `Emerging Candidate` | `emerging-starter` |
+| otherwise | `proven-compounder` |
+
+Where both the narrow-runway and the emerging conditions hold, `narrow-runway` wins: an unabsorbable runway constrains the plan more than shallow evidence does.
+
+A blocked gate is not a failure of the run. It produces `accumulation_pack: {"gate": "BLOCKED", ...}` carrying the reason, the conditions that would unblock it, and the review date — and the report closes at the verdict.
+
+## `accumulation_pack`
+
+Produced by `compounder-accumulation-plan` only when the gate passes.
+
+Required fields:
+- `gate` — `PASSED` or `BLOCKED`, with `gate_reason` naming the conditions that decided it
+- `plan_archetype`
+- `required_return_assumption` — the return the price-implied expectations were solved against, stated as an assumption with its basis, plus the sensitivity band tested around it
+- `price_implied_expectations` — the growth the current price assumes, its window, the inputs it was solved from, and the sensitivity table
+- `expectation_gap` — direction (`PRICE_ASKS_LESS` · `PRICE_ASKS_ABOUT_THE_SAME` · `PRICE_ASKS_MORE` · `UNRESOLVED`), size, and the `durable_growth` figure it was compared against, on the same real-or-nominal basis
+- `expected_return_paths` — three scenarios decomposed into business growth, shareholder yield, and multiple change, each with the assumption behind it
+- `accumulation_bands` — three price ranges with the condition that defines each
+- `staging` — how a position is built, tied to `stage_alignment` and expressed as conditions
+- `position_bounds` — the size range the plan is written against, as a range with its reasoning
+- `add_rules`, `pause_rules`, `exit_rules` — each wired to `kill_conditions`, `upgrade_conditions`, or a named stage event
+- `plan_review` — inherited from `review_schedule`, plus anything the plan itself must re-check sooner
+- `not_a_recommendation` — the standing conditional-plan statement
+- `evidence_ledger`
+
+Rules:
+- No fair value, blended value, target price, or price objective is produced. The bands come from expectations and the return paths, and each band states the condition that defines it rather than a valuation.
+- Every figure that depends on the required-return assumption is shown with its sensitivity. A single implied-growth number without its sensitivity band fails the pack.
+- Where the arithmetic cannot run — losses, a financial company, or missing cash-flow history — the pack records `price_implied_expectations: UNRESOLVED` with the reason and falls back to the expected-return paths alone, saying so.
+- Plans are conditional. An imperative to buy or sell fails the pack.
+
 ## `bf_report`
 
-Consumes the relevant upstream packs (`business_identity_pack`, `market_growth_pack`, `economic_engine_pack`, `reinvestment_runway_pack`, and `compounder_thesis_pack`) rather than relying on the thesis pack alone.
+Consumes the relevant upstream packs (`business_identity_pack`, `market_growth_pack`, `economic_engine_pack`, `reinvestment_runway_pack`, `compounder_thesis_pack`, `stage_pack`, and — when the gate passed — `accumulation_pack`) rather than relying on the thesis pack alone.
 
 Must preserve source lineage for every major claim and visibly separate FACT, DERIVED, MANAGEMENT_CLAIM, MARKET_EXPECTATION, ASSUMPTION, ESTIMATE, INFERENCE, and UNVERIFIED statements. It must surface unresolved gaps rather than smooth them away.
 
 ## Scope boundary
 
-Core v2 explicitly excludes:
+The exclusions below bind the **core layers** — `business_identity_pack` through `compounder_thesis_pack`. Nothing in those layers may look at the share price, and the verdict they produce is reached without knowing it. That is the point of the design: a durability judgement contaminated by price is no longer a durability judgement.
+
+The core layers explicitly exclude:
 - DCF / fair value / target price
 - technical analysis / entry-exit signals
 - portfolio sizing
@@ -373,3 +448,13 @@ Core v2 explicitly excludes:
 - mechanical probability of “100x”
 
 The Reverse Reality Check may use current scale or market capitalization as a **scenario anchor** but does not infer fair value or a target price.
+
+### What the post-verdict layers may do
+
+Once the verdict is settled and written, `stage_pack` and `accumulation_pack` may read price — under three standing limits that keep the core exclusions meaningful:
+
+- **No valuation output.** No DCF, no blended fair value, no target price, no price objective. The accumulation layer reads what the price already assumes and compares it to the growth the core layers concluded the engine can deliver.
+- **No trading signals.** No entry trigger, stop, target, or R-multiple. Long-term stage and its relationship to the business life cycle only; entry geometry belongs to the SEPA line.
+- **No revision upstream.** A price reading may never change a verdict, a leg rating, or an evidence class. If price evidence genuinely contradicts the thesis, that is a `SCOPE_CHALLENGE` and the core layers are re-run — not a quiet edit.
+
+Portfolio sizing stays excluded everywhere. `position_bounds` states the range a plan was written against so its arithmetic can be read; it does not size a portfolio.

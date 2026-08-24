@@ -1,4 +1,24 @@
-# Future Compounder BF Report Template v3.0
+# Future Compounder BF Report Template v4.0
+
+## What changed in v4, and why
+
+v3 fixed the shape and the voice. Two things it did not fix, both reported by the
+same reader: the opening was capped at 2,000 characters, which forced the finding
+into a summary that read like a specification rather than an article; and the
+report ended at the verdict, so a reader who had just been told a business was
+worth owning had nowhere to go with it.
+
+v4 changes three things and leaves everything else alone:
+
+- **The opening becomes an article.** 3,000–6,000 characters of continuous prose
+  that a reader can finish instead of the report. No bullets, no question heading,
+  no verdict table standing in for a paragraph. The spec is below.
+- **Two movements are added after the verdict** — what the market thinks (§8) and,
+  where the accumulation gate passed, how a position would be built (§9). Both draw
+  on packs produced outside the core layers, and §9 appears only when it is earned.
+- **The document gets a real HTML house style.** `design_system.md`,
+  `report_template.html`, and `logos.md` ship with the skill; the report is no
+  longer typeset from scratch each time.
 
 ## What changed in v3, and why
 
@@ -51,6 +71,8 @@ Two consequences:
 | 5 | **What keeps returns this good from fading?** | อะไรทำให้กำไรดีแบบนี้อยู่ได้นาน? | 15, 17 |
 | 6 | **If we are wrong, where are we wrong?** | ถ้าเราคิดผิด จะผิดตรงไหน? | 18, 19, 20 |
 | 7 | **So what is the verdict, and when do we look again?** | สรุปแล้วได้เกรดอะไร และต้องกลับมาดูเมื่อไร? | 21, 22, 23 |
+| 8 | **What does the market think of this business?** | ตลาดคิดยังไงกับธุรกิจนี้? | `stage_pack` (new in v4) |
+| 9 | **If you were going to build a position, how?** | ถ้าจะเก็บ ควรเก็บยังไง? | `accumulation_pack` (new in v4, gated) |
 | A–E | **Appendix** — the working | ภาคผนวก | 18 (table), 24, 25 |
 
 The questions are the fixed part; the wording is not. Ask them in the report's
@@ -58,7 +80,7 @@ own language, in words that market's reader would use. The Thai column is the
 form used for Thai-language reports and the one the movement specs below are
 written against.
 
-Seven is the ceiling, not a quota. A movement with nothing decision-relevant to
+Seven questions are the argument; §8 and §9 sit after the verdict and answer what follows from it. Seven is the ceiling for the argument, not a quota. A movement with nothing decision-relevant to
 say is dropped, and the ones that remain keep this order — it is the causal
 order v2 protected: **scope → outside world → internal economics → runway →
 duration → falsification → verdict.**
@@ -70,18 +92,47 @@ follow Rule 1 like any other heading.
 
 ## What each movement must carry
 
-### Opening
+### The article summary
 
-1,200–1,800 characters, hard cap 2,000. Five things, in this order: what the
-company does in one sentence a stranger would understand; what makes the money
-machine work; the single strongest piece of evidence; the single thing most
-likely to break it; the grade, and the date it must be looked at again.
+**3,000–6,000 characters of continuous prose.** This is the part most readers will
+read *instead of* the report, so it is written as an article, not as a form.
 
-No heading is needed — the masthead and the verdict strip sit above it. If a
-heading helps the layout, "สรุปให้ก่อน" or "ถ้าอ่านแค่ตรงนี้".
+The v3 cap of 2,000 characters was wrong for one specific reason: at that length
+the only way to fit five things was to state each in a sentence, which produced a
+summary that read like a specification — accurate, complete, and impossible to care
+about. The finding needs room to be explained, and a reader who understands the
+argument in the first two minutes reads the rest better.
 
-If it will not fit in 2,000 characters, the finding is not sharp enough yet. The
-detail belongs in the movements, not here.
+**The order of the telling**, which is a narrative order rather than a checklist:
+
+1. What this company sells and who pays for it, in a way someone who has never
+   heard of it can picture.
+2. How the money machine actually works — the thing that makes this business
+   different from a company that merely sells the same product.
+3. The single strongest piece of evidence, with meaning before the number.
+4. The thing most likely to break it, and the contradiction still unresolved.
+5. The verdict, and — this is the part v3 lost — **which leg binds it**. "Strong
+   but the runway is closing" is a different holding from "strong across the board".
+6. What happens next. Where the gate blocked: the report stops, and the summary
+   says so and says what would reopen it. Where it passed: the bands and the plan in
+   two sentences, pointing to §9.
+
+**Rules inside this block**, all stricter than in the movements:
+
+- **No bullets.** A list here is the specification voice coming back.
+- **No question heading.** Rule 1 governs the movements; the summary is prose and
+  the masthead already says what it is. "สรุปให้ก่อน" is available if the layout
+  needs a label.
+- **No bracketed evidence tags**, and superscript markers used sparingly — this is
+  the one place where flow beats traceability, and every figure here is repeated
+  with its marker in the movement it belongs to.
+- **First sentence of every paragraph carries the point.** Read only those six
+  sentences: they must still be a complete, honest answer.
+- **No term used before it is explained** (Rule 3), and the explanation happens in
+  the sentence, not in a parenthesis stack.
+
+If it runs past 6,000 characters, the movements are being duplicated. If it will
+not reach 3,000, the finding is probably thinner than the report claims.
 
 ### 1 — What does this company actually sell, and to whom?
 <!-- เขาทำเงินจากอะไร? -->
@@ -203,6 +254,66 @@ silently claims to be true forever.
 **What we still do not know.** Decision-relevant gaps, each with the source or
 event that could close it, ordered by how much the verdict would move if it were
 closed. A gap that would change nothing is not worth the reader's attention.
+
+### 8 — What does the market think of this business?
+<!-- ตลาดคิดยังไงกับธุรกิจนี้? -->
+
+From `stage_pack`, and written for **every** company — including one the gate
+blocked. What the market has concluded about a business you have just rejected is
+still worth a section.
+
+Two charts, monthly and weekly, each captioned with its interval, the moving
+average the stage was judged against, the bar count, and whether the image was
+captured or drawn. Then the cross-reading: the chart's stage beside the business
+life-cycle stage, and what their agreement or disagreement means. Write it as a
+sentence with dates in it — "the business is still reinvesting at high returns
+while the chart has been in decline since March 2025" — never as a label.
+
+The newest bar is excluded from the stage judgement until it closes, and the
+section says so rather than leaving a reader to wonder why the stage does not match
+this week's price. Where the newest closed bar already reads differently from the
+confirmed stage, that pending change is stated: it is the earliest visible sign
+that a multi-year phase is ending.
+
+**What may not appear here:** an entry price, a stop, a target, an R-multiple, or
+any instruction. The stage describes; it does not prescribe. A chart may never
+revise a verdict — where the disagreement is severe enough to matter, that is a
+`SCOPE_CHALLENGE` and the core layers re-run.
+
+### 9 — If you were going to build a position, how?
+<!-- ถ้าจะเก็บ ควรเก็บยังไง? -->
+
+**This movement is gated.** It is written only when `accumulation_pack.gate` is
+`PASSED`. Where it is `BLOCKED`, the movement carries the stop instead: what was
+found, which condition failed, what would reopen it — each about the business
+rather than about a lower price — and the review date. Nothing else: no band, no
+staging, no size. A report that gives a rejected company a price to act on has done
+harm, not analysis.
+
+Where the gate passed, four parts in order:
+
+**What the price is asking for.** The growth today's price already assumes, against
+the growth the engine has shown it can deliver, both on the same nominal-or-real
+basis. The required return is named as an assumption in the sentence that uses it,
+with the range it was moved across. This is a comparison, not a valuation: no fair
+value and no target price appears anywhere in the movement.
+
+**What it would earn.** The ten-year return decomposed into business growth,
+shareholder yield, and the change in the multiple, across three stated assumption
+sets. The decomposition is the point — where most of the return comes from the
+multiple rather than the business, say so in those words.
+
+**The bands.** Three price ranges, each with the condition that defines it. The
+condition column is not optional: a band without it has quietly become a target
+price. Bands are reported with the sensitivity that produced them.
+
+**The plan.** Conditional, always, and in parts rather than dates. Staging keys off
+§8's alignment; the add, pause, and exit rules come from `upgrade_conditions`,
+the data gaps, and `kill_conditions` — nothing new is invented here, which is what
+makes the plan checkable a year later. A price move is not a kill condition.
+
+The movement closes with the standing line that this is a conditional plan rather
+than an instruction, and that it expires with the verdict.
 
 ---
 
@@ -406,7 +517,7 @@ Two additions for this pipeline:
 | | Contents |
 |---|---|
 | **A — ตารางหลักฐาน** | Every marker in the body, in id order: claim, class, source, locator, date, and for derived figures the inputs and calculation. The evidence ladder table lives here. |
-| **B — ตัวเลขและวิธีคำนวณ** | The working: reinvestment-rate series, incremental-return derivation, per-share reconciliation, reverse-reality arithmetic, hurdle-rate basis, and the inflation basis for the real growth figure. |
+| **B — ตัวเลขและวิธีคำนวณ** | The working: reinvestment-rate series, incremental-return derivation, per-share reconciliation, reverse-reality arithmetic, hurdle-rate basis, the inflation basis for the real growth figure, and — where the gate passed — the price-implied expectations sensitivity grid and the band arithmetic. |
 | **C — แหล่งข้อมูล** | Source title, issuer, date, locator/URL, evidence role, and the claim ids each supports. |
 | **D — วิธีวิเคราะห์ที่ใช้** | Methodology provenance, only where a framework materially shaped the reading. Methodology citations never substitute for company evidence. |
 | **E — ข้อจำกัด** | The standing disclaimer, in full. Also repeated in the page footer. |
@@ -428,9 +539,17 @@ refuses to break leaves most of a page empty.
 down a column. Wide tables scroll inside their own container so the page body
 never scrolls sideways.
 
-**Navigation.** A sticky table of contents listing the seven questions. The
-reader should be able to see the whole argument as seven lines and jump to the
-one they care about.
+**Navigation.** A sticky table of contents listing the movements. The reader should
+be able to see the whole argument as a short list and jump to the one they care
+about. On screens at or below 900px it collapses behind a fixed hamburger bar that
+stays reachable however far the reader has scrolled.
+
+**House style.** Do not typeset the report from scratch. `design_system.md` holds
+the tokens and every component; `report_template.html` implements them as a fillable
+scaffold with the movements, the appendices, the theme handling and the print rules
+already in place; `logos.md` resolves the masthead logo. Copy the template and fill
+it. The palette is green and stays green — re-theming a research document to a
+company's brand colours tells the reader something untrue about its independence.
 
 ---
 
@@ -452,6 +571,17 @@ Answer these. A "no" is a rewrite, not a note.
 9. Could the reader trace any material number to an original source in one click?
 10. Would the intended reader — intelligent, not an analyst — finish this knowing
     what they now believe, and what would change their mind?
+11. Does the article summary read as an article — continuous prose, no bullets, no
+    question heading — and does it land between 3,000 and 6,000 characters?
+12. Is §9 present only because the gate passed, and absent — replaced by the stop —
+    when it did not?
+13. Is there a fair value, a target price, an upside percentage, or an imperative to
+    buy or sell anywhere in the document?
+14. Does every chart caption say whether the image was captured or drawn, and does
+    every asset in the file start with `data:` rather than `http`?
+15. On a 360px-wide screen: does the first viewport avoid sideways scrolling, does
+    the table of contents start collapsed, does it open on the first tap, and does
+    it close again?
 
 ---
 

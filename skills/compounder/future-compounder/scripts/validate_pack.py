@@ -34,6 +34,10 @@ PIPELINE: List[str] = [
     "economic_engine_pack",
     "reinvestment_runway_pack",
     "compounder_thesis_pack",
+    # Post-verdict layers. They are the only place in a run where price is read,
+    # and they may never revise anything above them.
+    "stage_pack",
+    "accumulation_pack",
 ]
 
 REQUIRED: Dict[str, List[str]] = {
@@ -83,7 +87,38 @@ REQUIRED: Dict[str, List[str]] = {
         "compounding_potential", "potential_qualifier", "compounder_class",
         "evidence_maturity", "confidence", "evidence_ledger",
     ],
+    "stage_pack": [
+        "as_of", "price_context", "monthly_read", "weekly_read", "stage_conflict",
+        "business_stage", "stage_alignment", "chart_assets", "data_quality",
+        "evidence_ledger",
+    ],
+    # A blocked gate is a valid outcome, so only the fields both outcomes share are
+    # required here; the rest are demanded per-outcome in validate().
+    "accumulation_pack": [
+        "gate", "gate_reason", "plan_review", "not_a_recommendation",
+        "evidence_ledger",
+    ],
 }
+
+# Fields a passing accumulation pack must carry on top of the shared ones.
+ACCUMULATION_PASSED_FIELDS: List[str] = [
+    "plan_archetype", "required_return_assumption", "price_implied_expectations",
+    "expectation_gap", "expected_return_paths", "accumulation_bands", "staging",
+    "position_bounds", "add_rules", "pause_rules", "exit_rules",
+]
+
+CHART_STAGES = {"STAGE_1", "STAGE_2", "STAGE_3", "STAGE_4", "TRANSITIONAL", "UNRESOLVED"}
+STAGE_ALIGNMENTS = {
+    "MARKET_HAS_NOT_PRICED_IT", "MOVING_TOGETHER", "LATE_AND_EXTENDED",
+    "MARKET_SEES_DAMAGE_FIRST", "UNRESOLVED",
+}
+PLAN_ARCHETYPES = {"proven-compounder", "emerging-starter", "narrow-runway"}
+EXPECTATION_GAP_STATES = {
+    "PRICE_ASKS_LESS", "PRICE_ASKS_ABOUT_THE_SAME", "PRICE_ASKS_MORE", "UNRESOLVED",
+}
+# Words that mean a valuation or an instruction has leaked into a layer that may
+# produce neither. Checked against the serialized pack, not against prose files.
+FORBIDDEN_IN_POST_VERDICT = ("fair_value", "target_price", "price_target")
 
 # Fields required only when a trigger fires, checked against the pack itself.
 # Field names may be dotted: the contract nests the reconciliation inside
@@ -376,6 +411,101 @@ def validate(pack_name: str, pack: Dict[str, Any]) -> Tuple[List[str], List[str]
     ver = pack.get("schema_version")
     if ver and ver != SCHEMA_VERSION:
         warns.append(f"schema_version is '{ver}', contract expects '{SCHEMA_VERSION}'")
+
+    if pack_name == "stage_pack":
+        for side in ("monthly_read", "weekly_read"):
+            read = pack.get(side)
+            if isinstance(read, dict) and read.get("status") == "READ":
+                stage = read.get("stage")
+                if stage not in CHART_STAGES:
+                    errors.append(f"{side}.stage='{stage}' is not one of {sorted(CHART_STAGES)}")
+                if _empty(read.get("stage_since")):
+                    errors.append(
+                        f"{side}.stage_since is empty — a stage without a start date "
+                        f"is UNRESOLVED, not a stage"
+                    )
+                if _empty(read.get("invalidates_if")):
+                    errors.append(
+                        f"{side}.invalidates_if is empty — a read nobody can check "
+                        f"later is not evidence"
+                    )
+        alignment = pack.get("stage_alignment")
+        if isinstance(alignment, dict):
+            reading = alignment.get("reading")
+            if reading not in STAGE_ALIGNMENTS:
+                errors.append(
+                    f"stage_alignment.reading='{reading}' is not one of "
+                    f"{sorted(STAGE_ALIGNMENTS)}"
+                )
+        business = pack.get("business_stage")
+        if isinstance(business, dict):
+            st = business.get("adjusted")
+            if isinstance(st, str) and st.strip() and st.strip() not in LIFE_CYCLE_STAGES:
+                errors.append(
+                    f"business_stage.adjusted='{st}' is not one of "
+                    f"{sorted(LIFE_CYCLE_STAGES)}"
+                )
+        assets = pack.get("chart_assets")
+        if isinstance(assets, list):
+            for asset in assets:
+                if not isinstance(asset, dict):
+                    continue
+                blob = str(asset.get("asset") or "")
+                if 'src="http' in blob or blob.startswith("http"):
+                    errors.append(
+                        f"chart_assets[{asset.get('timeframe')}]: remote asset — the "
+                        f"report must be self-contained"
+                    )
+
+    if pack_name == "accumulation_pack":
+        gate = pack.get("gate")
+        if gate not in {"PASSED", "BLOCKED"}:
+            errors.append(f"gate='{gate}' must be PASSED or BLOCKED")
+        elif gate == "PASSED":
+            absent = [f for f in ACCUMULATION_PASSED_FIELDS if _empty(pack.get(f))]
+            if absent:
+                errors.append(
+                    f"gate is PASSED but missing: {', '.join(sorted(absent))}"
+                )
+            archetype = pack.get("plan_archetype")
+            if archetype not in PLAN_ARCHETYPES:
+                errors.append(
+                    f"plan_archetype='{archetype}' is not one of {sorted(PLAN_ARCHETYPES)}"
+                )
+            gap = pack.get("expectation_gap")
+            if isinstance(gap, dict) and gap.get("direction") not in EXPECTATION_GAP_STATES:
+                errors.append(
+                    f"expectation_gap.direction='{gap.get('direction')}' is not one of "
+                    f"{sorted(EXPECTATION_GAP_STATES)}"
+                )
+            pie = pack.get("price_implied_expectations")
+            if isinstance(pie, dict) and _empty(pie.get("sensitivity")):
+                errors.append(
+                    "price_implied_expectations.sensitivity is empty — an implied "
+                    "growth figure without its sensitivity band is a false precision"
+                )
+        else:
+            if _empty(pack.get("unblock_conditions")):
+                errors.append(
+                    "gate is BLOCKED but unblock_conditions is empty — a blocked gate "
+                    "must name its way out"
+                )
+            for field in ACCUMULATION_PASSED_FIELDS:
+                if field in ("plan_archetype",) or _empty(pack.get(field)):
+                    continue
+                errors.append(
+                    f"gate is BLOCKED but '{field}' is populated — a plan may not be "
+                    f"written for a company that did not clear the gate"
+                )
+
+    if pack_name in ("stage_pack", "accumulation_pack"):
+        blob = json.dumps(pack, ensure_ascii=False).lower()
+        for token in FORBIDDEN_IN_POST_VERDICT:
+            if token in blob:
+                errors.append(
+                    f"'{token}' appears in {pack_name} — the post-verdict layers "
+                    f"produce no valuation"
+                )
 
     # Evidence ledger must grow, never be replaced.
     ledger = pack.get("evidence_ledger")

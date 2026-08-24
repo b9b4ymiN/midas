@@ -206,6 +206,8 @@ This line deliberately excludes DCF, fair value, target price, entry timing, and
 | “How does one store or one customer actually make money?” | `business-economic-engine` |
 | “What does the next dollar they reinvest earn?” | `reinvestment-runway` |
 | “Try to break this compounding thesis.” | `compounder-grill` |
+| “Has the market noticed this business yet?” | `compounder-stage-chart` |
+| “It passed — how would I build a position?” | `compounder-accumulation-plan` |
 | “Write the compounding research up as a document.” | `compounder-bf-report` |
 | “Fetch the facts once and show where they came from.” | `har-to-api` |
 | “Explain the business story behind the numbers.” | `business-narrative` |
@@ -256,13 +258,15 @@ The repository currently contains **24 skills**. Start with the router when you 
 - **[investment-synthesis](./skills/pipeline/investment-synthesis/SKILL.md)** — joins narrative, valuation, earnings, and timing into scenarios and a conditional plan.
 - **[bf-report](./skills/pipeline/bf-report/SKILL.md)** — renders the completed research as a filing-style, self-contained HTML document.
 
-### Compounding: six focused skills
+### Compounding: eight focused skills
 
 - **[business-identity-scope](./skills/compounder/business-identity-scope/SKILL.md)** — settles what business the company actually operates before any market size, competitor, or runway claim is trusted, labelling each arena as proven, emerging, an option, or narrative.
 - **[market-growth-intelligence](./skills/compounder/market-growth-intelligence/SKILL.md)** — explains growth from outside the company: category demand, who captures the profit, share gains and their cause, and whether new channels, stores, and countries add demand or move it around.
 - **[business-economic-engine](./skills/compounder/business-economic-engine/SKILL.md)** — rebuilds how one repeatable unit of the business makes money, and traces that through to cash flow and owner economics per share.
 - **[reinvestment-runway](./skills/compounder/reinvestment-runway/SKILL.md)** — measures what incremental capital earns rather than what past capital averaged, sizes how much more can be deployed, and tests whether the balance sheet can fund it. The reinvestment rate, incremental return, and the split between growth bought with new capital and growth taken from rising returns are mandatory measures with fixed definitions.
 - **[compounder-grill](./skills/compounder/compounder-grill/SKILL.md)** — challenges the compounding thesis with the outside-view base rate, falsification tests, and a reverse check that starts from the outcome and backs out what the world would have to look like. Grades against written rubrics rather than judgement: two hurdle lines, five potential bands, and three guards that void a return computed on too short a window, too small a capital base, or below the cost of capital.
+- **[compounder-stage-chart](./skills/compounder/compounder-stage-chart/SKILL.md)** — reads the share price on monthly and weekly bars, dates the phase it has been in, and crosses that with where the business itself is in its life cycle, so a business that is compounding while its chart has gone nowhere shows up as a question rather than as a coincidence. It produces no entry, stop, or target.
+- **[compounder-accumulation-plan](./skills/compounder/compounder-accumulation-plan/SKILL.md)** — runs only for companies the compounding work cleared, and answers what today's price already assumes rather than what the company is worth: the growth baked into the price against the growth the engine has shown, turned into three price bands and a conditional plan. No fair value, no target price, no instruction to buy.
 - **[compounder-bf-report](./skills/compounder/compounder-bf-report/SKILL.md)** — writes the research up with every claim labelled by evidence type and traceable to an original source, and with the gaps left visible.
 
 ### Adversarial review

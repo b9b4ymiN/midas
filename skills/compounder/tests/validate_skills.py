@@ -1,6 +1,6 @@
 from pathlib import Path
 import re, sys
-# The seven Future Compounder skills live directly under this root.
+# The nine Future Compounder skills live directly under this root.
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {
     'future-compounder': ['SKILL.md','references/pipeline-contract.md'],
@@ -9,7 +9,9 @@ EXPECTED = {
     'business-economic-engine': ['SKILL.md','references/economic-unit-guide.md','references/evidence-ledger.md','references/life-cycle-stage.md'],
     'reinvestment-runway': ['SKILL.md','references/reinvestment-methods.md','references/runway-methods.md','references/emerging-compounder.md'],
     'compounder-grill': ['SKILL.md','references/falsification-tests.md','references/potential-rubric.md','references/confidence-rubric.md','references/hurdle-rates.md','references/reverse-reality-check.md'],
-    'compounder-bf-report': ['SKILL.md','references/report-template.md','references/citation-standard.md'],
+    'compounder-bf-report': ['SKILL.md','references/report-template.md','references/citation-standard.md','references/design_system.md','references/logos.md','references/report_template.html'],
+    'compounder-stage-chart': ['SKILL.md','references/stage-classification.md','references/stage-business-alignment.md','references/chart-capture.md'],
+    'compounder-accumulation-plan': ['SKILL.md','references/gate.md','references/price-implied-expectations.md','references/expected-return-math.md','references/accumulation-plan.md','references/research-foundations.md'],
 }
 errors=[]
 for skill, files in EXPECTED.items():
@@ -153,6 +155,90 @@ if tmpl.exists():
     if 'never in the body' not in tt.lower():
         errors.append('report-template: evidence markers must be banned from body text')
 
+
+# V4 contract: price is admitted only after the verdict, the chart read is crossed with
+# the business life cycle, the plan is gated, and the report is an article with a real
+# HTML house style. Enforced as terms so a rewrite cannot quietly drop any of them.
+v4_checks = {
+ 'compounder-stage-chart/SKILL.md':[
+    'stage_pack','Stage Alignment','life-cycle','monthly','weekly','Weinstein',
+    'no target price','STOP'
+ ],
+ 'compounder-stage-chart/references/stage-classification.md':[
+    'Stage 1','Stage 2','Stage 3','Stage 4','30-week','unclosed','stage_since'
+ ],
+ 'compounder-stage-chart/references/stage-business-alignment.md':[
+    'MARKET_HAS_NOT_PRICED_IT','MOVING_TOGETHER','LATE_AND_EXTENDED',
+    'MARKET_SEES_DAMAGE_FIRST','life_cycle_stage'
+ ],
+ 'compounder-stage-chart/references/chart-capture.md':[
+    'TRADINGVIEW_MCP','RENDERED_SVG','base64','fallback'
+ ],
+ 'compounder-accumulation-plan/SKILL.md':[
+    'accumulation_pack','Expectation Gap','plan_archetype','conditional',
+    'no target price','STOP'
+ ],
+ 'compounder-accumulation-plan/references/gate.md':[
+    'proven-compounder','emerging-starter','narrow-runway','BLOCKED','Not a Compounder'
+ ],
+ 'compounder-accumulation-plan/references/price-implied-expectations.md':[
+    'required return','sensitivity','durable_growth','Expectation Gap','UNRESOLVED'
+ ],
+ 'compounder-accumulation-plan/references/expected-return-math.md':[
+    'shareholder yield','multiple','scenario','per share'
+ ],
+ 'compounder-accumulation-plan/references/accumulation-plan.md':[
+    'Accumulation Band','kill_conditions','conditional plan','staging'
+ ],
+ 'compounder-bf-report/SKILL.md':[
+    'report_template.html','design_system.md','logo','mobile','article'
+ ],
+ 'compounder-bf-report/references/report-template.md':[
+    'article','stage','accumulation','gate'
+ ],
+ 'compounder-bf-report/references/design_system.md':[
+    '--accent','print','sticky','dark','article summary','verdict panel'
+ ],
+ 'compounder-bf-report/references/logos.md':[
+    'base64','fallback','monogram'
+ ],
+ 'future-compounder/SKILL.md':[
+    'compounder-stage-chart','compounder-accumulation-plan','gate'
+ ],
+ 'future-compounder/references/pipeline-contract.md':[
+    'stage_pack','accumulation_pack','plan_archetype','post-verdict'
+ ],
+}
+for rel, terms in v4_checks.items():
+    pp=ROOT/rel
+    if pp.exists():
+        tt=pp.read_text(encoding='utf-8')
+        for term in terms:
+            if term.lower() not in tt.lower():
+                errors.append(f'{rel}: missing V4 term {term}')
+    else:
+        errors.append(f'MISSING {rel}')
+
+# The report template is a real, fillable HTML scaffold — not prose about one. The
+# mobile TOC script is the part that has broken before, so its shape is pinned here.
+tpl=ROOT/'compounder-bf-report/references/report_template.html'
+if tpl.exists():
+    ht=tpl.read_text(encoding='utf-8')
+    for term in ['<style','DOMContentLoaded','toc-toggle','@media print','prefers-color-scheme','data-theme']:
+        if term.lower() not in ht.lower():
+            errors.append(f'report_template.html: missing {term}')
+    if 'src="http' in ht:
+        errors.append('report_template.html: remote asset reference — the report must be self-contained')
+
+# Provenance columns are required of every research-foundations file, not just the report's.
+for rel in ['compounder-bf-report/references/research-foundations.md',
+            'compounder-accumulation-plan/references/research-foundations.md']:
+    fp=ROOT/rel
+    if fp.exists():
+        ft=fp.read_text(encoding='utf-8')
+        for term in ['https://','Concept used','Limitation','Publication date','Source role']:
+            if term.lower() not in ft.lower():
+                errors.append(f'{rel}: missing provenance term {term}')
 
 # Repo rule (AGENTS.md): every skill touching investing carries the standing disclaimer.
 DISCLAIMER = 'Research and educational output only. Not financial advice.'
