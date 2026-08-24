@@ -24,6 +24,14 @@ An **Accumulation Band** boundary is produced by inverting the expectations arit
 
 Where the expectations reading is `UNRESOLVED`, there are no bands. The plan then rests on the return paths and the staging, and says so.
 
+### When the bands stop discriminating
+
+The band construction assumes the price sits somewhere near what the engine could justify. Where the gap is very large it does not, and the arithmetic produces an accumulate ceiling far above anything the stock trades at — every price a buyer could pay lands in the same band, and the three bands answer nothing.
+
+`band_discrimination` reports this: where the accumulate ceiling is more than twice the current price, the pack is marked `BANDS_DO_NOT_DISCRIMINATE`. The report must then say so in words rather than quoting a ceiling nobody will ever see. The finding is still real — the price is nowhere near what the engine could justify — but the plan's shape has to come from the staging and the kill conditions instead of from the bands.
+
+This was found by running the pipeline on a company trading below a no-growth perpetuity. It is not a rare case: it is what any cheap stock with a strong measured engine produces.
+
 ---
 
 ## Staging

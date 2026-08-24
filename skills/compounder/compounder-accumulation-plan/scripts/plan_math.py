@@ -132,6 +132,44 @@ def price_for_growth(cash_flow, growth, required_return, horizon=HORIZON,
     return value_per_share(cash_flow, growth, required_return, horizon, terminal_growth)
 
 
+# A band ceiling this far above the traded price stops discriminating: every price
+# a buyer could actually pay falls inside one band, so the bands answer nothing.
+BAND_DISCRIMINATION_LIMIT = 2.0
+
+
+def band_discrimination(bands_list, price):
+    """Do the bands actually separate the prices a buyer could pay?"""
+    if not bands_list or not price:
+        return {"status": "UNRESOLVED", "note": "no bands were computed"}
+    ceiling = bands_list[0].get("upper")
+    if not ceiling:
+        return {"status": "UNRESOLVED", "note": "the accumulate band has no ceiling"}
+    ratio = ceiling / price
+    if ratio > BAND_DISCRIMINATION_LIMIT:
+        return {
+            "status": "BANDS_DO_NOT_DISCRIMINATE",
+            "accumulate_ceiling_over_price": round(ratio, 2),
+            "note": (
+                "The accumulate ceiling sits more than twice the current price, so every "
+                "price a buyer could realistically pay falls inside the accumulate band. "
+                "The bands are arithmetically correct and practically useless here: they "
+                "say the price is nowhere near what the engine could justify, which is a "
+                "finding, but they give no guidance on where to buy. Say that plainly "
+                "rather than quoting a ceiling nobody will ever see, and let the staging "
+                "and the kill conditions carry the plan instead of the bands."),
+        }
+    if ratio < 0.5:
+        return {
+            "status": "PRICE_FAR_ABOVE_BANDS",
+            "accumulate_ceiling_over_price": round(ratio, 2),
+            "note": ("The price is more than twice the accumulate ceiling. The bands "
+                     "discriminate, and the answer is that nothing is buyable here."),
+        }
+    return {"status": "BANDS_DISCRIMINATE",
+            "accumulate_ceiling_over_price": round(ratio, 2),
+            "note": "the accumulate ceiling sits within a usable distance of the traded price"}
+
+
 def bands(cash_flow, durable, required_return, archetype, horizon=HORIZON,
           terminal_growth=TERMINAL_GROWTH):
     """Invert the expectations arithmetic into three price ranges."""
@@ -246,6 +284,8 @@ def return_paths(durable, shareholder_yield, current_multiple, median_multiple,
 
 def build(args):
     cash_flow = args.fcf_per_share
+    computed_bands = bands(cash_flow, args.durable_growth, args.required_return,
+                           args.archetype, args.horizon, args.terminal_growth)
     implied = implied_growth(args.price, cash_flow, args.required_return,
                              args.horizon, args.terminal_growth)
     unresolved_reason = None
@@ -289,10 +329,9 @@ def build(args):
                                               args.current_multiple,
                                               args.median_multiple,
                                               args.horizon),
-        "accumulation_bands": bands(cash_flow, args.durable_growth,
-                                    args.required_return, args.archetype,
-                                    args.horizon, args.terminal_growth)
+        "accumulation_bands": computed_bands
         or "UNRESOLVED — the bands need a positive cash flow and a durable growth figure",
+        "band_discrimination": band_discrimination(computed_bands, args.price),
     }
 
 

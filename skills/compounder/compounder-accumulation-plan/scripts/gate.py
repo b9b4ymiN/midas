@@ -138,9 +138,11 @@ def evaluate_gate(thesis_pack: dict, run_date: str) -> dict:
                f"position on it")
     else:
         archetype = "proven-compounder"
-        why = (f"{klass} with {maturity} evidence and no binding constraint: the "
-               f"return comes from the business, so time held matters more than the "
-               f"entry price")
+        binding = pack.get("binding_leg") or "UNRESOLVED"
+        why = (f"{klass} with {maturity} evidence; the binding leg is {binding}, and "
+               f"it constrains the rate rather than blocking the plan: the return "
+               f"comes from the business, so time held matters more than the entry "
+               f"price")
 
     return _result("PASSED", [why], archetype, [], run_date, pack)
 
