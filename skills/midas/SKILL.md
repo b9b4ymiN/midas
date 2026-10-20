@@ -13,7 +13,7 @@ The router over the **midas** investment skills — self-contained pipelines fro
 **Two research lines, two different questions.** *"What is it worth today?"* → the valuation line (`both-stock-analysis`, Damodaran-style). *"Can it keep compounding for years?"* → the compounding line (`future-compounder`, Mayer-style). They share the `har-to-api` data layer and nothing else; run one, or run both and compare, but do not merge their outputs into a single verdict.
 
 The repo has four layers:
-- **Valuation pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 11 construction sub-skills (`business-narrative` → `business-drivers` → `earnings-quality` → `company-valuation` → `peer-impact` → `earnings-recap`/`earnings-preview` → `growth-outlook` → `bf-tech-analysis` → `investment-synthesis` → `bf-report`) over one shared `har-to-api` snapshot, then hands the finished report to `stock-grill`.
+- **Valuation pipeline** (`skills/pipeline/`) — `both-stock-analysis` orchestrates 12 construction sub-skills (`business-narrative` → `business-drivers` → `earnings-quality` → `company-valuation` → `peer-impact` → `earnings-recap`/`earnings-preview` → `growth-outlook` → `bf-tech-analysis` → `investment-synthesis` → `report-storytelling` → `bf-report`) over one shared `har-to-api` snapshot, then hands the finished report to `stock-grill`.
 - **Compounding pipeline** (`skills/compounder/`) — `future-compounder` orchestrates 6 sub-skills (`business-identity-scope` → `market-growth-intelligence` → `business-economic-engine` → `reinvestment-runway` → `compounder-grill` → `compounder-bf-report`) to judge whether the next dollar of reinvested capital still earns well, and for how long.
 - **Adversarial** (`skills/stock-grill`) — attacks a finished thesis before you commit capital.
 - **Standalone technical** (`skills/minervini-sepa`, `skills/option-flow`) — trade-timing tools usable on their own or as a follow-up check on the pipeline's technical-timing step.
@@ -21,12 +21,16 @@ The repo has four layers:
 ## Skills (entry points)
 
 ### `both-stock-analysis` — full analysis + report (the orchestrator)
-**Use when:** the user gives a ticker/company and wants the full picture — narrative + valuation + earnings + investment plan + a written HTML report. It chains the 11 construction sub-skills automatically and ends with the adversarial review.
+**Use when:** the user gives a ticker/company and wants the full picture — narrative + valuation + earnings + investment plan + a written HTML report. It chains the 12 construction sub-skills automatically and ends with the adversarial review.
 **Not for:** attacking a thesis you already have (use `stock-grill`), or a single slice like pure valuation (use `company-valuation` directly).
 
 ### `future-compounder` — long-horizon compounding investigation (the second orchestrator)
 **Use when:** the question is durability rather than price — "is this a compounder", "can it still grow for another decade", "100-bagger candidate", "will reinvested capital keep earning". It chains the 6 sub-skills, gating the market frame before the market research and the market research before the internal economics, and reports Compounding Potential, Evidence Maturity, and Confidence as three separate verdicts.
 **Not for:** what the stock is worth or when to buy it — it produces no DCF, fair value, target price, position size, or entry timing (`both-stock-analysis` covers those). Also not a shortcut for a name you only want to trade.
+
+### `report-storytelling` — beginner-investor editorial gate (Step 5.5)
+**Use when:** a complete investment report or article must be rewritten faithfully for beginner investors, with clarified advanced concepts, numerical consistency checks and evidence-led chart specs. `both-stock-analysis` invokes it automatically before `bf-report`.
+**Not for:** conducting new valuations, modifying investment theses or creating the HTML itself.
 
 ### `stock-grill` — adversarial thesis stress-test
 **Use when:** you have a **BF-Report** (or a thesis / Investment Synthesis / SEPA verdict) and want to **attack it before committing capital**. Point it at the report file — R0 checks the document against itself, then R1-R5 attack the reasoning — pre-mortem, sensitivity attack, variant-perception check, gate audit, sell pre-commit.
@@ -41,7 +45,7 @@ The repo has four layers:
 **Not for:** predicting direction (it only answers sticky/slippery, never up/down) or non-US tickers (options liquidity is almost always too thin).
 
 ### Sub-skills (usually reached via an orchestrator, not directly)
-Under `both-stock-analysis`: `business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report`.
+Under `both-stock-analysis`: `report-storytelling` (editorial gate before `bf-report`) · `business-narrative` · `business-drivers` · `earnings-quality` · `company-valuation` · `earnings-preview` · `earnings-recap` · `peer-impact` · `growth-outlook` · `bf-tech-analysis` · `investment-synthesis` · `bf-report`.
 
 Under `future-compounder`: `business-identity-scope` · `market-growth-intelligence` · `business-economic-engine` · `reinvestment-runway` · `compounder-grill` · `compounder-bf-report`.
 
@@ -58,6 +62,7 @@ Reach directly only when the user wants a single slice (e.g. just the valuation,
 | "Is that growth real, or a TAM story?" / share vs category vs M&A | `market-growth-intelligence` |
 | "What business is this company really in?" / the TAM looks inflated | `business-identity-scope` |
 | "How does one store / one customer actually make money?" | `business-economic-engine` |
+| Finished investment report/article, need reader-friendly full rewrite | `report-storytelling` |
 | Have a thesis/Synthesis, want to check before committing | `stock-grill` |
 | Already in a position, want a pre-mortem ("why would this drop 40%?") | `stock-grill` |
 | Want pure SEPA / trade timing on a stock | `minervini-sepa` |

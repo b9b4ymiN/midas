@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "report_id": "DEMO-2026-10-20",
+  "ticker": "DEMO.BK",
+  "as_of": "2026-10-20",
+  "language": "th",
+  "audience": "beginner-investor",
+  "upstream_snapshot": "example:fictional:2026-10-20",
+  "source_sections": ["executive-summary", "financials", "valuation", "risks", "appendix"],
+  "sections": [
+    {"id": "summary", "source_ids": ["executive-summary"], "content_heading": "สรุปธุรกิจและความเสี่ยง", "completeness": "COMPLETE"},
+    {"id": "financials", "source_ids": ["financials"], "content_heading": "หนี้สุทธิเปลี่ยนไป", "completeness": "COMPLETE"},
+    {"id": "valuation", "source_ids": ["valuation"], "content_heading": "สมมติฐานขับเคลื่อนมูลค่าที่ประเมิน", "completeness": "COMPLETE"},
+    {"id": "risks", "source_ids": ["risks"], "content_heading": "ข้อจำกัดและสิ่งที่อาจทำให้ผิด", "completeness": "COMPLETE"},
+    {"id": "appendix", "source_ids": ["appendix"], "content_heading": "สมมติฐานและแหล่งข้อมูล", "completeness": "COMPLETE"}
+  ],
+  "claims": [
+    {"id": "debt_prior", "source_step": "3", "source_ref": "fictional:analysis:year-end", "period": "2025-12-31", "unit": "times", "basis": "net interest-bearing debt / equity, leases excluded", "classification": "DERIVED", "verification": "SOURCE_ONLY", "value": 0.86},
+    {"id": "debt_current", "source_step": "3", "source_ref": "fictional:analysis:Q2", "period": "2026-06-30", "unit": "times", "basis": "net interest-bearing debt / equity, leases excluded", "classification": "DERIVED", "verification": "SOURCE_ONLY", "value": 1.10}
+  ],
+  "issues": [],
+  "checks": [
+    {"id": "ratio-difference", "kind": "difference", "inputs": {"a": 1.10, "b": 0.86}, "expected": 0.24, "tolerance": 0.000001},
+    {"id": "probability-sum", "kind": "sum", "inputs": {"values": [0.5, 0.275, 0.225]}, "expected": 1.0, "tolerance": 0.000001}
+  ],
+  "visuals": [
+    {
+      "id": "debt-trend", "question": "Did the debt-to-equity ratio rise?",
+      "takeaway_title": "ภาระหนี้สุทธิต่อทุนสูงขึ้นในตัวอย่างสมมติ",
+      "chart_type": "bar", "classification": "DERIVED", "unit": "times",
+      "period": "2025 year-end vs 2026 H1", "basis": "same net IBD / equity definition",
+      "source_claim_ids": ["debt_prior", "debt_current"],
+      "data": [{"label": "Dec 2025", "value": 0.86, "claim_id": "debt_prior"}, {"label": "Jun 2026", "value": 1.10, "claim_id": "debt_current"}],
+      "source_note": "Fictional fixture; not actual stock data",
+      "text_fallback": "The ratio rose from 0.86 to 1.10 times in this fictional example."
+    }
+  ],
+  "disclaimer": "Research and educational output only. Not financial advice."
+}

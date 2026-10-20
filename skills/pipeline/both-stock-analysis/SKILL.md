@@ -8,9 +8,9 @@ description: >
   NVDA", "build an investment thesis", "should I invest in PTT", "research CPALL and write
   me a report", or any request that combines valuation + earnings + an investment plan + a
   written report.
-  This skill orchestrates eleven construction sub-skills in sequence — business-narrative,
+  This skill orchestrates twelve construction sub-skills in sequence — business-narrative,
   business-drivers, earnings-quality, company-valuation, peer-impact, earnings-recap,
-  earnings-preview, growth-outlook, bf-tech-analysis, investment-synthesis, and bf-report —
+  earnings-preview, growth-outlook, bf-tech-analysis, investment-synthesis, report-storytelling, and bf-report —
   over one shared har-to-api data snapshot, and ends by handing the finished report to
   stock-grill. ALWAYS confirm
   the market first (Thai / US / other)
@@ -23,7 +23,7 @@ description: >
 
 A full-stack equity research pipeline. You are the analyst, working **in the spirit of Aswath Damodaran**: every valuation is a bridge between a *story* about the business and the *numbers* that story implies. You are rigorous, intellectually honest about uncertainty, allergic to hype with no cash flows behind it, and you always tie value back to four drivers — **cash flows, growth, reinvestment efficiency, and risk (cost of capital).**
 
-The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains twelve installed sub-skills, and opens by pulling the data once:
+The pipeline runs from ticker to report and then, deliberately, does not stop there: the last step attacks what the previous six built. It chains thirteen installed sub-skills, and opens by pulling the data once:
 
 | Step | Sub-skill used | Purpose |
 |---|---|---|
@@ -37,10 +37,11 @@ The pipeline runs from ticker to report and then, deliberately, does not stop th
 | 4 | `earnings-preview` + `earnings-recap` + `growth-outlook` | Setup, track record, sentiment · growth decomposed by source · dated catalysts |
 | 4.5 | `bf-tech-analysis` | TradingView chart image + top-down technical timing, entry zone, stop, target, R |
 | 5 | `investment-synthesis` | Select the key investment insight → thesis, 1–3 yr scenarios + investment plan |
+| 5.5 | `report-storytelling` | Verify, explain and prepare full beginner-investor manuscript and evidence-led chart specifications |
 | 6 | `bf-report` | Filing-grade HTML research document (10-K / 56-1 style), insight-first and mobile-responsive |
 | 7 | `stock-grill` | Attack the finished report before any capital moves — R0 consistency, then the five adversarial rounds |
 
-> **Dependencies:** This skill assumes `har-to-api`, `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `peer-impact`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
+> **Dependencies:** This skill assumes `har-to-api`, `business-narrative`, `business-drivers`, `earnings-quality`, `company-valuation`, `peer-impact`, `growth-outlook`, `earnings-preview`, `earnings-recap`, `bf-tech-analysis`, `investment-synthesis`, `report-storytelling`, `bf-report`, and `stock-grill` are installed. If one is missing, tell the user which `.skill` to install before continuing.
 
 > **Disclaimer:** Research and educational output only. **Not financial advice.** Carry this disclaimer into the final document (appendix + footer). yfinance data is unofficial — cross-check decisions against primary filings.
 
@@ -64,7 +65,7 @@ Examples of possible hooks include: a look-through asset value exceeding the par
 
 ## Step 0: Pull the Data Once — use `har-to-api`
 
-Run this **before Step 1**, as soon as the ticker is known.
+**First resolve the market and exchange suffix under Step 1.** Once the canonical ticker, currency and market are confirmed, fetch this shared snapshot **before any research starts**. This avoids using the wrong exchange or country risk inputs.
 
 ```bash
 python skills/har-to-api/scripts/fetch.py [TICKER] --market [venue] --profiles skills/har-to-api/profiles
@@ -347,9 +348,26 @@ Anchor every target to the Step-3 fair value and its drivers — do not invent p
 
 ---
 
+## Step 5.5: Prepare reader-ready content — use `report-storytelling`
+
+Before building any HTML, read and follow **`report-storytelling`**. Feed it the **complete outputs from Steps 2–5**, the shared `har-to-api` snapshot, and the finished Investment Synthesis—not only the short thesis paragraph. Default audience: **beginner investor** (familiar with P/E, EPS, D/E, dividends; advanced methods such as WACC, ROIC, FCFF and DCF require explanation). For Thai-listed companies, use Thai prose unless requested otherwise.
+
+This is an editorial and evidence-integrity gate, **not another analyst or valuation engine**. Preserve all material sections, numerical claims, assumptions, probabilities, scenarios, downside risk, uncertainty, sources and original conclusions. Explain difficult ideas with their economic meaning and sourced examples; replace compressed arrow/acronym chains with complete prose. Plan charts only with comparable, attributable data.
+
+Produce the validated **Report-Ready Content Pack** alongside the run artifacts:
+- `report-storytelling/report-ready.md` — complete edited manuscript, not a summary.
+- `report-storytelling/report-manifest.json` — original-section crosswalk, claim/source ledger, arithmetic checks and visual exhibits.
+- `report-storytelling/evidence-review.md` — verification, corrections and remaining uncertainties.
+
+Run `python <installed-report-storytelling-skill-dir>/scripts/validate_pack.py <path-to-report-manifest.json>`. **An unresolved BLOCKER or arithmetic mismatch stops Step 6.** Send the issue to its originating skill, correct that skill's source output, re-run dependent analysis (including Step 5 when impacted), and then repeat Step 5.5. Never allow the editor to repair financial models or strengthen investment conclusions silently. The validator checks declared structures and arithmetic; perform an additional content-coverage and primary-source review because it cannot establish completeness or factual truth.
+
+Pass **both** the validated content pack **and original immutable analysis outputs** to BF-Report; retain the original as-of date and data provenance.
+
+---
+
 ## Step 6: Build the Report — use `bf-report`
 
-Read and follow the **`bf-report`** skill to generate the deliverable: a single self-contained, **filing-grade HTML document** (10-K / 56-1 style) — a continuous, navigable report, not a slide deck. Collect the outputs of Steps 2–5 and hand them over as its inputs (it is a renderer):
+Read and follow the **`bf-report`** skill to generate the deliverable, using Step 5.5's validated manuscript and exhibit specifications: a single self-contained, **filing-grade HTML document** (10-K / 56-1 style) — a continuous, navigable report, not a slide deck. Collect the original outputs of Steps 2–5 as immutable analytic sources **alongside** Step 5.5's validated content pack (it is a renderer):
 - **Step 2** → §1 Business & Narrative (incl. the Moat subsection and the Growth subsection) and the 3-P verdict.
 - **Step 3** → §2 Financial Dashboard (the ~20-metric snapshot with 5-yr trends) and §3 Valuation (methods, DCF build, sensitivity heatmap, peers, SOTP-if-any).
 - **Step 4** → §4 Earnings & Sentiment.
@@ -358,7 +376,7 @@ Read and follow the **`bf-report`** skill to generate the deliverable: a single 
 
 `bf-report` owns the house style (sober editorial palette, sticky linked TOC, numbered/anchored sections, judgement-coloured metrics, inline SVG sparklines, the moat meter, print CSS) — **do not** brand-match the palette to the company. It writes one `.html` via bash heredoc, then presents it. For Thai investors, write the report in **Thai** unless the user explicitly asks otherwise. The final HTML must be responsive and usable on mobile, with no horizontal overflow in the first viewport or key tables.
 
-Then present the finished HTML file to the user.
+Hold the rendered HTML as a **DRAFT** until Step 7 Stock Grill R0 passes. Only then present it as R0-checked; clearly distinguish R0 from the interactive R1–R5 adversarial review, which must never be claimed complete unless completed.
 
 ---
 
@@ -379,7 +397,7 @@ It runs **R0 first** — a mechanical pass over the document's self-agreement:
 does the current price match across §3 and §5, do the scenario probabilities sum
 to 100, is the §6 target anchored to the §3 fair value, does every figure have a
 source. Those are arithmetic errors, not wrong opinions, and they invalidate any
-argument built on top of them. Fix the high findings before going further.
+argument built on top of them. Fix the high findings before going further. If R0 finds a material source-content mismatch, return it to the responsible upstream skill and repeat any affected steps, including Step 5.5 and Step 6. Never let the editor or renderer silently change an investment model.
 
 Then R1-R5 as documented in `stock-grill`: pre-mortem, sensitivity attack,
 variant-perception check, gate audit, and the sell pre-commit that ends in a

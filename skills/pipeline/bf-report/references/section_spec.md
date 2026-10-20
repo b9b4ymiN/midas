@@ -1,6 +1,6 @@
 # BF-Report Section Spec
 
-The exact section-by-section content of a BF-Report, and which upstream step each part is drawn from. The document is numbered and anchored like a 10-K / 56-1: a reader can jump to any part from the TOC and knows where each topic lives. Fill `references/report_template.html` against this spec. Keep every figure dated and currency-labelled; lead with judgement, not raw numbers.
+The exact section-by-section content of a BF-Report, and which upstream step each part is drawn from. **With a validated `report-storytelling` pack, use its complete reader-ready manuscript and original-section/claim crosswalk, referring back to untouched analytic inputs for source values.** The document is numbered and anchored like a 10-K / 56-1: a reader can jump to any part from the TOC and knows where each topic lives. Fill `references/report_template.html` against this spec. Keep every figure dated and currency-labelled; lead with judgement, not raw numbers.
 
 Section map (TOC order):
 
@@ -88,6 +88,16 @@ The 3–5 assumptions that move the answer most, ranked by impact, each with dir
 - **Data sources & dates** (filings, IR, market data; note yfinance is unofficial — cross-check primary filings).
 - Methodology notes / glossary (optional).
 - **Disclaimer:** research and educational output only; not financial advice. (Also keep a short disclaimer in the footer.)
+
+---
+
+## Beginner-Investor Editorial Handoff (when Step 5.5 ran)
+
+- Reader knows P/E, EPS, D/E and dividends. Explain first-use WACC, ROIC, FCFF, terminal value, lease treatment, reverse DCF and SOTP in economic context, without talking down to the reader.
+- Preserve *all* materially distinct topics, source evidence, forecasts, assumptions and bearish qualifications: do not turn a full research report into an executive summary.
+- Replace unexplained arrow/acronym chains with sentences naming metric, period, change, cause when supported and implication.
+- Use only traceable and comparable chart specifications. Each has a takeaway headline, source, time period, unit/basis, caveat and text/table fallback; no invented points.
+- Editorial rewriting cannot silently update valuation, strengthen recommendations, invent evidence or discard unresolved model discrepancies. Return material conflicts to upstream analytic owners.
 
 ---
 

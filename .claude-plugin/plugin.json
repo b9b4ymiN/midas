@@ -19,11 +19,6 @@
     "technical-analysis"
   ],
   "skills": [
-    "./skills/midas",
-    "./skills/har-to-api",
-    "./skills/minervini-sepa",
-    "./skills/option-flow",
-    "./skills/stock-grill",
     "./skills/compounder/business-economic-engine",
     "./skills/compounder/business-identity-scope",
     "./skills/compounder/compounder-accumulation-plan",
@@ -33,6 +28,10 @@
     "./skills/compounder/future-compounder",
     "./skills/compounder/market-growth-intelligence",
     "./skills/compounder/reinvestment-runway",
+    "./skills/har-to-api",
+    "./skills/midas",
+    "./skills/minervini-sepa",
+    "./skills/option-flow",
     "./skills/pipeline/bf-report",
     "./skills/pipeline/bf-tech-analysis",
     "./skills/pipeline/both-stock-analysis",
@@ -44,6 +43,8 @@
     "./skills/pipeline/earnings-recap",
     "./skills/pipeline/growth-outlook",
     "./skills/pipeline/investment-synthesis",
-    "./skills/pipeline/peer-impact"
+    "./skills/pipeline/peer-impact",
+    "./skills/pipeline/report-storytelling",
+    "./skills/stock-grill"
   ]
 }

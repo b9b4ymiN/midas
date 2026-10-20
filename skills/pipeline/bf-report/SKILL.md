@@ -33,7 +33,7 @@ BF-Report **renders** completed analysis; it does not generate the underlying nu
 - **Synthesis** (`investment-synthesis`) — the thesis paragraph, the scenario timeline + expected value, the conditional plan, and the ranked key risks.
 - **Key Investment Insight** (`investment-synthesis`) — the one primary hook in plain language, or an explicit "No clear investment hook identified."
 
-In the full `both-stock-analysis` pipeline these are already produced upstream — just collect them.
+In the full `both-stock-analysis` pipeline these are already produced upstream. Also require Step 5.5's **validated `report-storytelling` content pack** (`report-ready.md`, `report-manifest.json`, `evidence-review.md`): the full reader-facing manuscript and sourced exhibit specifications. Keep original analytical outputs available as numerical ground truth. Standalone runs may operate without a pack but must disclose that the editorial gate was not performed.
 
 ---
 
@@ -63,7 +63,7 @@ Use **`references/report_template.html`** as the scaffold — it already impleme
 
    Always **validate** the result (a real logo PNG is >500 bytes and starts with magic bytes `89 50 4E 47`); anything smaller or HTML is an error page → move to the next step. Then base64-encode and drop into `src="data:image/png;base64,..."` in the `<img class="logo">`. **Never link the remote URL** — the report must be a single self-contained file that works offline.
 3. **Keep the entire `<style>` block, the TOC (including the `.toc-toggle` hamburger button and `.collapsed` class), the scrollspy, and the TOC-toggle `<script>` verbatim.** Do not swap the palette to the company's brand colours — the editorial house style is deliberate (a filing is sober). A single accent override is acceptable only if the user explicitly asks.
-4. Replace every `[placeholder]` and `<!-- FILL -->` with real content from the inputs, section by section per `section_spec.md`. Add rows / family tables / SVG charts as the data warrants (e.g., the full six metric families in §2; a SOTP block in §3 only if 2+ distinct segments). The Executive Summary must lead with the **Key Investment Insight** before the KPI band.
+4. Replace every `[placeholder]` and `<!-- FILL -->` with the **validated full manuscript** when Step 5.5 ran, cross-checking the original numerical inputs, section by section per `section_spec.md`. Add rows / family tables / SVG charts as the data warrants (e.g., the full six metric families in §2; a SOTP block in §3 only if 2+ distinct segments). The Executive Summary must lead with the **Key Investment Insight** before the KPI band.
 5. Build sparklines by mapping 5 yearly values to the SVG `points` (x = 0,30,60,90,120; y = 30·(1 − (v−min)/(max−min))). Colour every chip and stroke by **judgement** (good / watch / bad), never by sign.
 6. For the moat meter (§1.2): set the strength segments, the durability arrow, and the ROIC−WACC spread + its 5-yr sparkline as the quantitative proof.
 
@@ -84,7 +84,7 @@ Match the report's **language to the user's**. For reports intended for Thai inv
 ## Step 3: Quality checklist (before presenting)
 
 - The **company logo** is embedded as base64 in the header (left of the title), not linked to a remote URL.
-- Every figure carries units / currency; numerics right-aligned with tabular figures.
+- Every figure carries units / currency; numerics right-aligned with tabular figures. When a Storytelling pack exists, charts must follow its sourced exhibit contract and show dates, bases, units, qualifiers and text/table fallbacks. Do not fabricate chart points or compare incompatible accounting bases.
 - Colour encodes judgement, not decoration; nothing is coloured purely for flourish.
 - Executive Summary starts with the Key Investment Insight in plain language, not with generic KPI cards.
 - §2 leads with ROIC−WACC spread, CapEx-vs-FCF, and the leverage trend; each metric has a 5-yr trend + a read.
@@ -103,7 +103,7 @@ Match the report's **language to the user's**. For reports intended for Thai inv
 
 ## Step 4: Present
 
-Copy the final file to the outputs directory and present it:
+Copy the rendered **draft** file to the outputs directory. In the full pipeline, present it as **R0-checked** only after Stock Grill R0 passes; R1–R5 are separate and may still be pending. In standalone use, disclose if the editorial gate or Grill checks were not run:
 
 ```bash
 cp /home/claude/[TICKER]_BF-Report.html /mnt/user-data/outputs/
